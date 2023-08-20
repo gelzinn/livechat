@@ -1,1 +1,0 @@
-# Template Next.js 13, Typescript and Tailwind CSS.
