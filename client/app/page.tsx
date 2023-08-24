@@ -72,11 +72,11 @@ const Homepage = () => {
             <footer className="flex flex-col items-center justify-center gap-4 w-full">
               <div className="sm:grid sm:grid-cols-2 flex flex-col-reverse items-center justify-center gap-4 w-full">
                 <button className="w-full flex items-center justify-center gap-4 bg-red-600 hover:bg-red-500 text-white p-4 rounded-lg">
-                  <GoogleLogo className="fill-white" />
+                  <GoogleLogo className="fill-white w-6 h-6" />
                   <p>Entre com <strong>Google</strong></p>
                 </button>
                 <button className="w-full flex items-center justify-center gap-4 bg-zinc-950 hover:bg-zinc-800 text-white p-4 rounded-lg">
-                  <GitHubLogo className="fill-white" />
+                  <GitHubLogo className="fill-white w-6 h-6" />
                   <p>Entre com <strong>GitHub</strong></p>
                 </button>
               </div>
