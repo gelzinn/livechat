@@ -1,13 +1,15 @@
 'use client'
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { GitHubLogo, GoogleLogo } from "./components/Logos/OtherBrands";
 import { UserSignUp } from "./@types/User";
 import { isValidUsername } from "./helpers/testers/isValidUsername";
 import { isValidEmail } from "./helpers/testers/isValidEmail";
+import Icon from "./components/Icon";
 
 const Homepage = () => {
   const [tab, setTab] = useState<"login" | "register">("register");
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [formData, setFormData] = useState<UserSignUp>({
     username: "",
     email: "",
@@ -90,7 +92,10 @@ const Homepage = () => {
       <section className="flex flex-col items-center justify-center gap-4 bg-zinc-100 w-full h-full">
         <div className="flex items-center justify-center w-full h-full">
           <div className="flex flex-col items-center justify-center p-8 w-full max-w-2xl h-full text-zinc-900">
-            <form className="flex flex-col items-center justify-center gap-4 w-full h-auto">
+            <form
+              className="flex flex-col items-center justify-center gap-4 w-full h-auto"
+              onSubmit={(e: FormEvent) => e.preventDefault()}
+            >
               <header>
                 <h3 className="text-2xl sm:text-3xl text-center font-medium">
                   {tab === "login" ? "Entre na sua conta" : "Crie uma conta"}
@@ -133,18 +138,23 @@ const Homepage = () => {
                 <label htmlFor="password">Senha</label>
                 <div className="flex items-center justify-center border border-black rounded-lg text-black w-full bg-transparent overflow-hidden">
                   <input
-                    type="password"
+                    type={isPasswordVisible ? "text" : "password"}
                     name="password"
                     id="password"
                     placeholder="*********"
                     className="bg-transparent w-full h-full outline-none p-4"
                     onChange={handleChangeInput}
                   />
-                  <span
-                    className="flex items-center justify-center select-none min-w-[56px] w-auto h-full p-4 border-l border-black bg-zinc-200 rounded-e-md"
+                  <button
+                    className="flex items-center justify-center select-none min-w-[56px] w-auto h-full p-4 border-l border-black bg-zinc-200 rounded-e-md cursor-pointer transition ease-in-out duration-250 hover:bg-zinc-300"
+                    onClick={() => setIsPasswordVisible(!isPasswordVisible)}
                   >
-                    @
-                  </span>
+                    <Icon
+                      icon={isPasswordVisible ? "EyeSlash" : "Eye"}
+                      size={20}
+                      className="group-hover:text-white text-brand-blue-600-75 transition ease-in-out duration-250 pointer-events-none select-none"
+                    />
+                  </button>
                 </div>
               </div>
               <footer className="flex items-center justify-center gap-4 w-full">
