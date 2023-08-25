@@ -1,10 +1,11 @@
 'use client'
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { GitHubLogo, GoogleLogo } from "./components/Logos/OtherBrands";
 import { UserSignUp } from "./@types/User";
 import Icon from "./components/Icon";
 import { userValidationSchema } from "./helpers/validators/schemas/userValidationSchema";
+import { PasswordStrength } from "./utils/PasswordStrength";
 
 const Homepage = () => {
   const [tab, setTab] = useState<"login" | "register">("register");
@@ -50,6 +51,11 @@ const Homepage = () => {
       password: "",
     });
 
+    setFormStatus({
+      errors: [],
+      isValid: false,
+    });
+
     inputs.forEach(input => input.value = "");
   }
 
@@ -61,6 +67,7 @@ const Homepage = () => {
       });
 
       userValidationSchema.parse(formData);
+
       setFormStatus({
         errors: [],
         isValid: true,
@@ -90,10 +97,14 @@ const Homepage = () => {
   return (
     <div className="lg:grid lg:grid-cols-2 max-lg:grid-rows-[minmax(84px,_100px)_1fr] items-center justify-center h-screen w-screen overflow-hidden">
       <section className="relative flex items-center justify-center gap-4 w-full lg:h-full bg-zinc-950 lg:py-4 px-4 py-6">
-        <div className="flex lg:flex-col items-center justify-center gap-4 z-[1] h-full w-full">
+        <div className="flex lg:flex-col items-center justify-center gap-4 z-[1] h-full w-full max-w-lg">
           <i className="text-3xl lg:text-8xl not-italic">💬</i>
-          <h1 className="text-2xl lg:text-5xl font-bold">Live Chat</h1>
-          <p className="text-center hidden lg:block">Connect and converse with our real-time browser chat experience.</p>
+          <h1 className="text-2xl lg:text-5xl font-bold">
+            Live Chat
+          </h1>
+          <p className="text-center hidden lg:block">
+            Connect and converse with our real-time browser chat experience.
+          </p>
         </div>
         <div className="absolute z-0 flex items-center justify-center w-full h-full overflow-hidden">
           <i className="text-[800px] not-italic skew-x-3 skew-y-12 rotate-6 opacity-[1%] select-none pointer-events-none">💬</i>
@@ -108,15 +119,15 @@ const Homepage = () => {
             >
               <header>
                 <h3 className="text-2xl sm:text-3xl text-center font-medium">
-                  {tab === "login" ? "Entre na sua conta" : "Crie uma conta"}
+                  {tab === "login" ? "Sign In" : "Create Account"}
                 </h3>
               </header>
               {tab === "register" && (
                 <div className="flex flex-col items-start justify-center gap-2 w-full">
-                  <label htmlFor="username">Usuário</label>
-                  <div className="flex items-center justify-center border border-black rounded-lg text-black w-full bg-transparent overflow-hidden">
+                  <label htmlFor="username">Username</label>
+                  <div className="flex items-center justify-center border border-black rounded text-black w-full bg-transparent overflow-hidden">
                     <span
-                      className="flex items-center justify-center pointer-events-none select-none min-w-[56px] w-auto h-full p-4 border-r border-black bg-zinc-200 rounded-s-md"
+                      className="flex items-center justify-center pointer-events-none select-none min-w-[56px] w-auto h-full p-4 border-r border-black bg-zinc-200 rounded-s"
                     >
                       @
                     </span>
@@ -124,7 +135,7 @@ const Homepage = () => {
                       type="text"
                       name="username"
                       id="username"
-                      placeholder="fulano"
+                      placeholder="johndoe"
                       className="bg-transparent w-full h-full outline-none p-4"
                       onChange={handleChangeInput}
                     />
@@ -132,7 +143,7 @@ const Homepage = () => {
                   {formStatus.errors && formStatus.errors.username && (
                     <div>
                       {formData.username.length < 1 ? (
-                        <p className="text-red-600">O usuário é obrigatório.</p>
+                        <p className="text-red-600">Username is required.</p>
                       ) : (
                         formStatus.errors.username.map((err: string, index: number) => (
                           <p key={index} className="text-red-600">{err}</p>
@@ -143,13 +154,13 @@ const Homepage = () => {
                 </div>
               )}
               <div className="flex flex-col items-start justify-center gap-2 w-full">
-                <label htmlFor="email">E-mail</label>
-                <div className="flex items-center justify-center gap-2 border border-black rounded-lg text-black w-full bg-transparent overflow-hidden">
+                <label htmlFor="email">Email</label>
+                <div className="flex items-center justify-center gap-2 border border-black rounded text-black w-full bg-transparent overflow-hidden">
                   <input
                     type="email"
                     name="email"
                     id="email"
-                    placeholder="fulano@email.com"
+                    placeholder="email@domain.com"
                     className="bg-transparent w-full h-full outline-none p-4"
                     onChange={handleChangeInput}
                   />
@@ -157,7 +168,7 @@ const Homepage = () => {
                 {formStatus.errors && formStatus.errors.email && (
                   <div>
                     {formData.email.length < 1 ? (
-                      <p className="text-red-600">O email é obrigatório.</p>
+                      <p className="text-red-600">Email is required.</p>
                     ) : (
                       formStatus.errors.email.map((err: string, index: number) => (
                         <p key={index} className="text-red-600">{err}</p>
@@ -167,18 +178,26 @@ const Homepage = () => {
                 )}
               </div>
               <div className="flex flex-col items-start justify-center gap-2 w-full">
-                <label htmlFor="password">Senha</label>
-                <div className="flex items-center justify-center border border-black rounded-lg text-black w-full bg-transparent overflow-hidden">
+                <label htmlFor="password">Password</label>
+                <div className="relative flex items-center justify-center border border-black rounded text-black w-full bg-transparent overflow-hidden">
                   <input
                     type={isPasswordVisible ? "text" : "password"}
                     name="password"
                     id="password"
-                    placeholder="*********"
+                    placeholder={isPasswordVisible ? "LiveChatIsAwasome123!" : "*********************"}
                     className="bg-transparent w-full h-full outline-none p-4"
                     onChange={handleChangeInput}
                   />
+                  <hr className={`absolute duration-500 left-0 bottom-0 h-[3px] bg-red-500 border-0`} style={{
+                    width: `${PasswordStrength(formData.password)}%`,
+                    backgroundColor: PasswordStrength(formData.password) < 25 ?
+                      "red" : PasswordStrength(formData.password) < 50 ?
+                        "orange" : PasswordStrength(formData.password) < 75 ?
+                          "gold" :
+                          "green",
+                  }} />
                   <button
-                    className="flex items-center justify-center select-none min-w-[56px] w-auto h-full p-4 border-l border-black bg-zinc-200 rounded-e-md cursor-pointer transition ease-in-out duration-250 hover:bg-zinc-300"
+                    className="flex items-center justify-center select-none min-w-[56px] w-auto h-full p-4 border-l border-black bg-zinc-200 rounded-e cursor-pointer transition ease-in-out duration-250 hover:bg-zinc-300"
                     onClick={() => setIsPasswordVisible(!isPasswordVisible)}
                   >
                     <Icon
@@ -191,7 +210,7 @@ const Homepage = () => {
                 {formStatus.errors && formStatus.errors.password && (
                   <div>
                     {formData.password.length < 1 ? (
-                      <p className="text-red-600">A senha é obrigatória.</p>
+                      <p className="text-red-600">Password is required.</p>
                     ) : (
                       formStatus.errors.password.map((err: string, index: number) => (
                         <p key={index} className="text-red-600">{err}</p>
@@ -202,7 +221,7 @@ const Homepage = () => {
               </div>
               <footer className="flex items-center justify-center gap-4 w-full">
                 <button
-                  className="mt-2 py-4 px-8 flex items-center justify-center gap-2 border border-black bg-zinc-950 text-white rounded-lg w-full h-auto max-h-[56px] hover:bg-zinc-900 duration-300"
+                  className="mt-2 py-4 px-8 flex items-center justify-center gap-2 border border-black bg-zinc-950 text-white rounded w-full h-auto max-h-[56px] hover:bg-zinc-900 duration-300"
                   onClick={(e: any) => {
                     if (tab === "login") {
                       handleSignIn(e);
@@ -211,14 +230,14 @@ const Homepage = () => {
                     }
                   }}
                 >
-                  {tab === "login" ? "Entrar" : "Criar conta"}
+                  {tab === "login" ? "Sign In" : "Start Chatting"}
                 </button>
               </footer>
               <p
                 className="text-zinc-500 cursor-pointer hover:underline"
                 onClick={() => handleTabChange(tab === "login" ? "register" : "login")}
               >
-                {tab === "login" ? "Não tem uma conta? Crie uma!" : "Já tem uma conta? Entre!"}
+                {tab === "login" ? "Don't have an account? Create one." : "Already have an account? Sign in."}
               </p>
             </form>
             <div className="relative inline-flex items-center justify-center w-full">
@@ -229,27 +248,34 @@ const Homepage = () => {
             </div>
             <footer className="flex flex-col items-center justify-center gap-4 w-full">
               <div className="sm:grid sm:grid-cols-2 flex flex-col-reverse items-center justify-center gap-4 w-full">
-                <button className="group w-full flex items-center justify-center gap-4 border border-red-600 hover:bg-red-600 text-red-600 hover:text-white p-4 rounded-lg duration-300">
+                <button className="group w-full flex items-center justify-center gap-4 border border-red-600 hover:bg-red-600 text-red-600 hover:text-white p-4 rounded duration-300">
                   <GoogleLogo
                     className="fill-red-600 group-hover:fill-white duration-300 w-6 h-6"
                     removeDefaultClasses
                   />
-                  <p>Entre com <strong>Google</strong></p>
+                  <p>Login with <strong>Google</strong></p>
                 </button>
-                <button className="group w-full flex items-center justify-center gap-4 border border-zinc-950 hover:bg-zinc-950 text-zinc-950 hover:text-white p-4 rounded-lg duration-300">
+                <button className="group w-full flex items-center justify-center gap-4 border border-zinc-950 hover:bg-zinc-950 text-zinc-950 hover:text-white p-4 rounded duration-300">
                   <GitHubLogo
                     className="fill-zinc-950 group-hover:fill-white duration-300 w-6 h-6"
                     removeDefaultClasses
                   />
-                  <p>Entre com <strong>GitHub</strong></p>
+                  <p>Login with <strong>GitHub</strong></p>
                 </button>
               </div>
-              <a
-                className="text-zinc-500 hover:underline"
-                href=""
-              >
-                Entrar como Anônimo
-              </a>
+              {tab === "login" ? (
+                <a
+                  className="text-zinc-500 cursor-pointer hover:underline"
+                >
+                  Forgot your password?
+                </a>
+              ) : (
+                <a
+                  className="text-zinc-500 cursor-pointer hover:underline"
+                >
+                  Login without an account.
+                </a>
+              )}
             </footer>
           </div>
         </div>
