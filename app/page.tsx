@@ -20,10 +20,7 @@ const Homepage = () => {
     isValid: false,
   });
 
-  const handleTabChange = (tab: "login" | "register") => {
-    setTab(tab ? tab : "register")
-    handleResetInputs();
-  };
+  const handleTabChange = (tab: "login" | "register") => setTab(tab ? tab : "register");
 
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -110,9 +107,9 @@ const Homepage = () => {
           <i className="text-[800px] not-italic skew-x-3 skew-y-12 rotate-6 opacity-[1%] select-none pointer-events-none">💬</i>
         </div>
       </section>
-      <section className="flex flex-col items-center justify-center gap-4 bg-zinc-100 w-full h-full max-lg:h-[calc(100vh-84px)]">
+      <section className="flex flex-col items-center justify-center gap-4 bg-zinc-100 w-full lg:h-full max-lg:h-[calc(100vh-84px)] overflow-y-auto">
         <div className="flex items-center justify-center w-full h-full overflow-y-auto">
-          <div className="flex flex-col items-center justify-center max-lg:justify-start lg:p-8 p-4 w-full max-w-2xl max-lg:h-full text-zinc-900">
+          <div className="flex flex-col items-center min-h-[750px]:justify-center max-h-[750px]:justify-start lg:p-8 p-4 w-full max-w-2xl h-full text-zinc-900 lg:overflow-y-auto">
             <form
               className="flex flex-col items-center justify-center gap-4 w-full h-auto"
               onSubmit={(e: FormEvent) => e.preventDefault()}
