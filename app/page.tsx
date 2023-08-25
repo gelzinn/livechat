@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import { GitHubLogo, GoogleLogo } from "./components/Logos/OtherBrands";
-import { UserSignIn } from "./@types/User";
+import { UserSignUp } from "./@types/User";
 import { isValidUsername } from "./helpers/testers/isValidUsername";
 import { isValidEmail } from "./helpers/testers/isValidEmail";
 
 const Homepage = () => {
   const [tab, setTab] = useState<"login" | "register">("register");
-  const [formData, setFormData] = useState<UserSignIn>({
+  const [formData, setFormData] = useState<UserSignUp>({
     username: "",
     email: "",
     password: "",
