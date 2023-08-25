@@ -111,8 +111,8 @@ const Homepage = () => {
         </div>
       </section>
       <section className="flex flex-col items-center justify-center gap-4 bg-zinc-100 w-full h-full max-lg:h-[calc(100vh-84px)]">
-        <div className="flex items-center justify-center w-full h-full">
-          <div className="flex flex-col items-center justify-center max-lg:justify-start lg:p-8 p-4 w-full max-w-2xl h-full text-zinc-900 overflow-y-auto">
+        <div className="flex items-center justify-center w-full h-full overflow-y-auto">
+          <div className="flex flex-col items-center justify-center max-lg:justify-start lg:p-8 p-4 w-full max-w-2xl max-lg:h-full text-zinc-900">
             <form
               className="flex flex-col items-center justify-center gap-4 w-full h-auto"
               onSubmit={(e: FormEvent) => e.preventDefault()}
