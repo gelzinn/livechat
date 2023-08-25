@@ -95,7 +95,7 @@ const Homepage = () => {
   }
 
   return (
-    <div className="lg:grid lg:grid-cols-2 max-lg:grid-rows-[minmax(84px,_100px)_1fr] items-center justify-center h-screen w-screen overflow-hidden">
+    <div className="lg:grid lg:grid-cols-2 flex flex-col items-center justify-center lg:h-screen w-screen overflow-hidden">
       <section className="relative flex items-center justify-center gap-4 w-full lg:h-full bg-zinc-950 lg:py-4 px-4 py-6">
         <div className="flex lg:flex-col items-center justify-center gap-4 z-[1] h-full w-full max-w-lg">
           <i className="text-3xl lg:text-8xl not-italic">💬</i>
@@ -110,9 +110,9 @@ const Homepage = () => {
           <i className="text-[800px] not-italic skew-x-3 skew-y-12 rotate-6 opacity-[1%] select-none pointer-events-none">💬</i>
         </div>
       </section>
-      <section className="flex flex-col items-center justify-center gap-4 bg-zinc-100 w-full h-full">
+      <section className="flex flex-col items-center justify-center gap-4 bg-zinc-100 w-full h-full max-lg:h-[calc(100vh-84px)]">
         <div className="flex items-center justify-center w-full h-full">
-          <div className="flex flex-col items-center justify-center p-8 w-full max-w-2xl h-full text-zinc-900">
+          <div className="flex flex-col items-center justify-center max-lg:justify-start lg:p-8 p-4 w-full max-w-2xl h-full text-zinc-900 overflow-y-auto">
             <form
               className="flex flex-col items-center justify-center gap-4 w-full h-auto"
               onSubmit={(e: FormEvent) => e.preventDefault()}
@@ -189,12 +189,12 @@ const Homepage = () => {
                     onChange={handleChangeInput}
                   />
                   <hr className={`absolute duration-500 left-0 bottom-0 h-[3px] bg-red-500 border-0`} style={{
-                    width: `${calculatePasswordStrength(formData.password)}%`,
-                    backgroundColor: calculatePasswordStrength(formData.password) < 25 ?
-                      "red" : calculatePasswordStrength(formData.password) < 50 ?
-                        "orange" : calculatePasswordStrength(formData.password) < 75 ?
-                          "gold" :
-                          "green",
+                    width: `calc(${calculatePasswordStrength(formData.password)}% - 56px)`,
+                    backgroundColor: calculatePasswordStrength(formData.password) <= 20 ?
+                      "red" : calculatePasswordStrength(formData.password) < 40 ?
+                        "orange" : calculatePasswordStrength(formData.password) < 60 ?
+                          "yellowgreen" : calculatePasswordStrength(formData.password) < 80 ?
+                            "green" : "limegreen"
                   }} />
                   <button
                     className="flex items-center justify-center select-none min-w-[56px] w-auto h-full p-4 border-l border-black bg-zinc-200 rounded-e cursor-pointer transition ease-in-out duration-250 hover:bg-zinc-300"
@@ -234,7 +234,7 @@ const Homepage = () => {
                 </button>
               </footer>
               <p
-                className="text-zinc-500 cursor-pointer hover:underline"
+                className="text-center text-zinc-500 cursor-pointer hover:underline"
                 onClick={() => handleTabChange(tab === "login" ? "register" : "login")}
               >
                 {tab === "login" ? "Don't have an account? Create one." : "Already have an account? Sign in."}
@@ -265,13 +265,13 @@ const Homepage = () => {
               </div>
               {tab === "login" ? (
                 <a
-                  className="text-zinc-500 cursor-pointer hover:underline"
+                  className="text-center text-zinc-500 cursor-pointer hover:underline max-lg:py-4"
                 >
                   Forgot your password?
                 </a>
               ) : (
                 <a
-                  className="text-zinc-500 cursor-pointer hover:underline"
+                  className="text-center text-zinc-500 cursor-pointer hover:underline max-lg:py-4"
                 >
                   Login without an account.
                 </a>
