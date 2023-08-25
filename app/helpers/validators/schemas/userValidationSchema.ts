@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 import { isValidUsername } from "../testers/isValidUsername";
-import { isValidEmail } from "../testers/isValidEmail";
 
 import {
     hasUppercase,
@@ -18,10 +17,7 @@ export const userValidationSchema = z.object({
         }),
     email: z.string().email({ message: "Insira um endereço de email válido." })
         .min(4, { message: "Mínimo de 4 caracteres." })
-        .max(64, { message: "Máximo de 64 caracteres." })
-        .refine(isValidEmail, {
-            message: "Insira um endereço de email válido.",
-        }),
+        .max(64, { message: "Máximo de 64 caracteres." }),
     password: z.string().min(8, { message: "Mínimo de 8 caracteres." })
         .max(64, { message: "Máximo de 64 caracteres." })
         .refine((password) => {
