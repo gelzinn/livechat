@@ -1,11 +1,10 @@
 'use client'
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { GitHubLogo, GoogleLogo } from "./components/Logos/OtherBrands";
 import { UserSignUp } from "./@types/User";
-import { isValidUsername } from "./helpers/testers/isValidUsername";
-import { isValidEmail } from "./helpers/testers/isValidEmail";
 import Icon from "./components/Icon";
+import { userValidationSchema } from "./helpers/validators/schemas/userValidationSchema";
 
 const Homepage = () => {
   const [tab, setTab] = useState<"login" | "register">("register");
@@ -15,6 +14,10 @@ const Homepage = () => {
     email: "",
     password: "",
   });
+  const [formStatus, setFormStatus] = useState<any>({
+    errors: [],
+    isValid: false,
+  });
 
   const handleTabChange = (tab: "login" | "register") => {
     setTab(tab ? tab : "register")
@@ -23,6 +26,14 @@ const Homepage = () => {
 
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
+    const updatedErrors = { ...formStatus.errors };
+    delete updatedErrors[name];
+
+    setFormStatus({
+      errors: updatedErrors,
+      isValid: false,
+    });
 
     setFormData({
       ...formData,
@@ -43,26 +54,25 @@ const Homepage = () => {
   }
 
   const handleCheckInputs = () => {
-    const { username, email, password } = formData;
-    if (!username || !email || !password) {
-      alert("Please, fill all the inputs.");
-      return;
-    };
+    try {
+      setFormStatus({
+        errors: [],
+        isValid: false,
+      });
 
-    if (username.length < 4 || username.length > 16 || !isValidUsername(username)) {
-      alert("Invalid username.");
-      return;
-    };
+      userValidationSchema.parse(formData);
+      setFormStatus({
+        errors: [],
+        isValid: true,
+      });
+    } catch (error: any) {
+      const errors = error.errors.reduce((acc: Record<string, string[]>, err: { path: string[]; message: string }) => {
+        acc[err.path[0]] = [...(acc[err.path[0]] || []), err.message];
+        return acc;
+      }, {});
 
-    if (email.length < 4 || email.length > 64 || !isValidEmail(email)) {
-      alert("Invalid email.");
-      return;
-    };
-
-    if (password.length < 8 || password.length > 64) {
-      alert("Invalid password.");
-      return;
-    };
+      setFormStatus({ errors, isValid: false });
+    }
   }
 
   const handleSignIn = (e: React.FormEvent<HTMLFormElement>) => {
@@ -119,6 +129,17 @@ const Homepage = () => {
                       onChange={handleChangeInput}
                     />
                   </div>
+                  {formStatus.errors && formStatus.errors.username && (
+                    <div>
+                      {formData.username.length < 1 ? (
+                        <p className="text-red-600">O usuário é obrigatório.</p>
+                      ) : (
+                        formStatus.errors.username.map((err: string, index: number) => (
+                          <p key={index} className="text-red-600">{err}</p>
+                        ))
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
               <div className="flex flex-col items-start justify-center gap-2 w-full">
@@ -133,6 +154,17 @@ const Homepage = () => {
                     onChange={handleChangeInput}
                   />
                 </div>
+                {formStatus.errors && formStatus.errors.email && (
+                  <div>
+                    {formData.email.length < 1 ? (
+                      <p className="text-red-600">O email é obrigatório.</p>
+                    ) : (
+                      formStatus.errors.email.map((err: string, index: number) => (
+                        <p key={index} className="text-red-600">{err}</p>
+                      ))
+                    )}
+                  </div>
+                )}
               </div>
               <div className="flex flex-col items-start justify-center gap-2 w-full">
                 <label htmlFor="password">Senha</label>
@@ -156,6 +188,17 @@ const Homepage = () => {
                     />
                   </button>
                 </div>
+                {formStatus.errors && formStatus.errors.password && (
+                  <div>
+                    {formData.password.length < 1 ? (
+                      <p className="text-red-600">A senha é obrigatória.</p>
+                    ) : (
+                      formStatus.errors.password.map((err: string, index: number) => (
+                        <p key={index} className="text-red-600">{err}</p>
+                      ))
+                    )}
+                  </div>
+                )}
               </div>
               <footer className="flex items-center justify-center gap-4 w-full">
                 <button

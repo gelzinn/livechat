@@ -22,7 +22,8 @@
     "react-dom": "18.2.0",
     "socket.io-client": "4.7.2",
     "styled-jsx": "5.1.0",
-    "use-count-up": "3.0.1"
+    "use-count-up": "3.0.1",
+    "zod": "3.22.2"
   },
   "devDependencies": {
     "@types/node": "18.0.3",
