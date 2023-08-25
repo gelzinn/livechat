@@ -92,7 +92,7 @@ const Homepage = () => {
   }
 
   return (
-    <div className="lg:grid lg:grid-cols-2 flex flex-col items-center justify-center lg:h-screen w-screen overflow-hidden">
+    <main className="lg:grid lg:grid-cols-2 flex flex-col items-center justify-center lg:h-screen w-screen overflow-hidden">
       <section className="relative flex items-center justify-center gap-4 w-full lg:h-full bg-zinc-950 lg:py-4 px-4 py-6">
         <div className="flex lg:flex-col items-center justify-center gap-4 z-[1] h-full w-full max-w-lg">
           <i className="text-3xl lg:text-8xl not-italic">💬</i>
@@ -116,7 +116,10 @@ const Homepage = () => {
             >
               <header>
                 <h3 className="text-2xl sm:text-3xl text-center font-medium">
-                  {tab === "login" ? "Sign In" : "Create Account"}
+                  {tab === "login" ?
+                    "Welcome back" :
+                    "Create an account"
+                  }
                 </h3>
               </header>
               {tab === "register" && (
@@ -227,7 +230,10 @@ const Homepage = () => {
                     }
                   }}
                 >
-                  {tab === "login" ? "Sign In" : "Start Chatting"}
+                  {tab === "login" ?
+                    "Sign In" :
+                    "Create Account"
+                  }
                 </button>
               </footer>
               <p
@@ -277,7 +283,7 @@ const Homepage = () => {
           </div>
         </div>
       </section>
-    </div>
+    </main>
   );
 };
 
