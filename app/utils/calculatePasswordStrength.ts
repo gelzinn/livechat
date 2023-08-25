@@ -1,6 +1,6 @@
 import { hasUppercase, hasLowercase, hasSymbol, hasNumber } from "../helpers/validators/testers/passwordValidators";
 
-export const PasswordStrength = (password: string) => {
+export const calculatePasswordStrength = (password: string) => {
     const calculateStrength = () => {
         const requirements = [
             hasUppercase(password),

@@ -5,7 +5,7 @@ import { GitHubLogo, GoogleLogo } from "./components/Logos/OtherBrands";
 import { UserSignUp } from "./@types/User";
 import Icon from "./components/Icon";
 import { userValidationSchema } from "./helpers/validators/schemas/userValidationSchema";
-import { PasswordStrength } from "./utils/PasswordStrength";
+import { calculatePasswordStrength } from "./utils/calculatePasswordStrength";
 
 const Homepage = () => {
   const [tab, setTab] = useState<"login" | "register">("register");
@@ -189,10 +189,10 @@ const Homepage = () => {
                     onChange={handleChangeInput}
                   />
                   <hr className={`absolute duration-500 left-0 bottom-0 h-[3px] bg-red-500 border-0`} style={{
-                    width: `${PasswordStrength(formData.password)}%`,
-                    backgroundColor: PasswordStrength(formData.password) < 25 ?
-                      "red" : PasswordStrength(formData.password) < 50 ?
-                        "orange" : PasswordStrength(formData.password) < 75 ?
+                    width: `${calculatePasswordStrength(formData.password)}%`,
+                    backgroundColor: calculatePasswordStrength(formData.password) < 25 ?
+                      "red" : calculatePasswordStrength(formData.password) < 50 ?
+                        "orange" : calculatePasswordStrength(formData.password) < 75 ?
                           "gold" :
                           "green",
                   }} />
