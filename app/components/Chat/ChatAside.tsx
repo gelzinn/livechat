@@ -15,7 +15,7 @@ export const ChatAside = ({
     <aside
       className="flex flex-col min-w-96 w-full max-w-[420px] h-screen bg-zinc-950 border-r border-zinc-900"
     >
-      <span className="flex justify-between items-center text-2xl px-4 py-8 h-full max-h-[100px] border-b border-zinc-800 bg-zinc-950">
+      <span className="flex justify-between items-center text-2xl px-4 py-8 h-full max-h-24 border-b border-zinc-800 bg-zinc-950">
         <h1 className="font-medium">Chat</h1>
         <span
           className="flex items-center justify-center w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 text-sm text-zinc-100 font-medium"
@@ -37,7 +37,7 @@ export const ChatAside = ({
               <div className="flex-shrink-0 w-12 h-12 rounded-full bg-zinc-800">
                 <picture className="w-12 h-12 flex items-center justify-center border border-zinc-800 rounded-full overflow-hidden">
                   <img
-                    src={chat.contact.avatar ? chat.contact.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${index + 1}&bgColor=%2318181b&textColor=%23fff`}
+                    src={chat.contact.avatar ? chat.contact.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${chat.contact.name[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
                     alt={`${chat.contact.name} profile's picture`}
                     className="pointer-events-none select-none"
                   />

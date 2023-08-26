@@ -14,15 +14,15 @@ export const ChatContent = ({
   return (
     <div className="flex flex-col flex-1 w-full h-full">
       {chat && (
-        <span className="flex justify-between items-center text-2xl px-4 py-8 h-full max-h-[100px] border-b border-zinc-800 bg-zinc-950">
+        <span className="flex justify-between items-center text-2xl px-4 py-8 h-full max-h-24 border-b border-zinc-800 bg-zinc-950">
           <div className="flex items-center space-x-4">
             <picture className="w-12 h-12 flex items-center justify-center border border-zinc-800 rounded-full overflow-hidden">
               <img
-                src={`https://images.placeholders.dev/?width=320&height=320&text=1&bgColor=%2318181b&textColor=%23fff`}
+                src={chat.contact.avatar ? chat.contact.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${chat.contact.name[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
                 className="pointer-events-none select-none"
               />
             </picture>
-            <h1 className="font-medium">{chat.contact.name}</h1>
+            <h1 className="font-medium text-lg">{chat.contact.name}</h1>
           </div>
           <div className="flex items-center">
             <button
@@ -84,7 +84,7 @@ export const ChatContent = ({
           </ul>
         ) : (
           <div className="flex flex-col items-center justify-center w-full h-full gap-4">
-            <Icon icon="Chat" className="w-24 h-24 text-2xl text-zinc-400" />
+            <Icon icon="Chat" weight="light" className="w-24 h-24 text-2xl text-zinc-400" />
             <h1 className="text-zinc-400 text-xl">Select a chat to start messaging.</h1>
           </div>
         )}

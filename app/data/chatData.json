@@ -1,7 +1,8 @@
 [
   {
     "contact": {
-      "name": "Alice"
+      "name": "Alice",
+      "avatar": "https://randomuser.me/api/portraits/women/63.jpg"
     },
     "messages": [
       {
@@ -38,7 +39,8 @@
   },
   {
     "contact": {
-      "name": "David"
+      "name": "David",
+      "avatar": "https://randomuser.me/api/portraits/men/15.jpg"
     },
     "messages": [
       {
@@ -111,7 +113,8 @@
   },
   {
     "contact": {
-      "name": "Sophia"
+      "name": "Sophia",
+      "avatar": "https://randomuser.me/api/portraits/women/82.jpg"
     },
     "messages": [
       {
@@ -148,7 +151,8 @@
   },
   {
     "contact": {
-      "name": "Alex"
+      "name": "Alex",
+      "avatar": "https://randomuser.me/api/portraits/men/25.jpg"
     },
     "messages": [
       {
@@ -185,7 +189,8 @@
   },
   {
     "contact": {
-      "name": "Emily"
+      "name": "Emily",
+      "avatar": "https://randomuser.me/api/portraits/women/45.jpg"
     },
     "messages": [
       {
@@ -222,7 +227,8 @@
   },
   {
     "contact": {
-      "name": "Michael"
+      "name": "Michael",
+      "avatar": "https://randomuser.me/api/portraits/men/98.jpg"
     },
     "messages": [
       {
@@ -259,7 +265,8 @@
   },
   {
     "contact": {
-      "name": "Olivia"
+      "name": "Olivia",
+      "avatar": "https://randomuser.me/api/portraits/women/18.jpg"
     },
     "messages": [
       {
