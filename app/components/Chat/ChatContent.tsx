@@ -1,6 +1,7 @@
 'use client'
 
 import { FormEvent } from "react";
+import { format } from 'date-fns';
 import Icon from "../Icon";
 
 interface ChatContentProps {
@@ -56,12 +57,24 @@ export const ChatContent = ({
                 >
                   <div className={`flex flex-col ${isUser ? "items-end" : "items-start"} justify-center w-auto bg-zinc-900 p-4 rounded-md gap-2 ${isUser ? "flex-row-reverse" : "flex-row"}`}>
                     <div className={`flex flex-col w-full overflow-hidden ${isUser ? "items-end" : "items-start"}`}>
-                      <span className="text-zinc-400 text-sm">{message.content}</span>
+                      <span className="text-zinc-200 text-sm">{message.content}</span>
                     </div>
                     <div className={`flex items-center gap-2 ${isUser ? "flex-row" : "flex-row-reverse"}`}>
-                      <span className="text-zinc-400 text-xs">{message.timestamp}</span>
-                      <span className={`flex items-center justify-center rounded-full ${isReaded ? "text-green-600" : "text-zinc-800"} text-zinc-100 font-medium`}>
-                        <Icon icon="Check" size={16} />
+                      <span
+                        className="text-zinc-400 text-xs"
+                        title={format(new Date(message.timestamp), 'dd/MM/yyyy HH:mm')}
+                      >
+                        {format(new Date(message.timestamp), 'HH:mm')}
+                      </span>
+                      <span className={`relative flex items-center justify-center rounded-full text-zinc-100 font-medium`}>
+                        {isReaded ? (
+                          <>
+                            <Icon icon="Check" size={16} className={`mr-1 ${isReaded ? "text-green-600" : "text-zinc-400"}`} />
+                            <Icon icon="Check" size={16} className={`absolute left-[6px] top-0 bottom-0 ${isReaded ? "text-green-600" : "text-zinc-400"}`} />
+                          </>
+                        ) : (
+                          <Icon icon="Check" size={16} className={`${isReaded ? "text-green-600" : "text-zinc-400"}`} />
+                        )}
                       </span>
                     </div>
                   </div>
