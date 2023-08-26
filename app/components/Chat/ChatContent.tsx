@@ -1,0 +1,101 @@
+'use client'
+
+import { FormEvent } from "react";
+import Icon from "../Icon";
+
+interface ChatContentProps {
+  chat: any;
+}
+
+export const ChatContent = ({
+  chat
+}: ChatContentProps) => {
+  return (
+    <div className="flex flex-col flex-1 w-full h-full">
+      {chat && (
+        <span className="flex justify-between items-center text-2xl px-4 py-8 h-full max-h-[100px] border-b border-zinc-800 bg-zinc-950">
+          <div className="flex items-center space-x-4">
+            <picture className="w-12 h-12 flex items-center justify-center border border-zinc-800 rounded-full overflow-hidden">
+              <img
+                src={`https://images.placeholders.dev/?width=320&height=320&text=1&bgColor=%2318181b&textColor=%23fff`}
+                className="pointer-events-none select-none"
+              />
+            </picture>
+            <h1 className="font-medium">{chat.contact.name}</h1>
+          </div>
+          <div className="flex items-center">
+            <button
+              className="flex items-center justify-center w-12 h-12 rounded text-zinc-100 font-medium"
+            >
+              <Icon icon="MagnifyingGlass" className="w-5 h-5" />
+            </button>
+            <button
+              className="flex items-center justify-center w-12 h-12 rounded text-zinc-100 font-medium"
+            >
+              <Icon icon="Info" className="w-5 h-5" />
+            </button>
+            <button
+              className="flex items-center justify-center w-12 h-12 rounded text-zinc-100 font-medium ml-4"
+            >
+              <Icon icon="DotsThreeOutlineVertical" className="w-5 h-5" />
+            </button>
+          </div>
+        </span>
+      )}
+      <main className="flex-1 overflow-y-auto">
+        {chat ? (
+          <ul className="flex flex-col gap-4 p-4">
+            {chat.messages.map((message: any, index: number) => {
+              const isUser = message.sender === 'user';
+              const isReaded = message.isReaded;
+
+              return (
+                <li
+                  key={index}
+                  className={`flex flex-col gap-1 ${isUser ? "items-end" : "items-start"}`}
+                >
+                  <div className={`flex flex-col ${isUser ? "items-end" : "items-start"} justify-center w-auto bg-zinc-900 p-4 rounded-md gap-2 ${isUser ? "flex-row-reverse" : "flex-row"}`}>
+                    <div className={`flex flex-col w-full overflow-hidden ${isUser ? "items-end" : "items-start"}`}>
+                      <span className="text-zinc-400 text-sm">{message.content}</span>
+                    </div>
+                    <div className={`flex items-center gap-2 ${isUser ? "flex-row" : "flex-row-reverse"}`}>
+                      <span className="text-zinc-400 text-xs">{message.timestamp}</span>
+                      <span className={`flex items-center justify-center rounded-full ${isReaded ? "text-green-600" : "text-zinc-800"} text-zinc-100 font-medium`}>
+                        <Icon icon="Check" size={16} />
+                      </span>
+                    </div>
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        ) : (
+          <div className="flex flex-col items-center justify-center w-full h-full gap-4">
+            <Icon icon="Chat" className="w-24 h-24 text-2xl text-zinc-400" />
+            <h1 className="text-zinc-400 text-xl">Select a chat to start messaging.</h1>
+          </div>
+        )}
+      </main>
+      {chat && (
+        <footer>
+          <form
+            className="flex items-center justify-between px-4 py-4 border-t border-zinc-800 bg-zinc-950"
+            onSubmit={(e: FormEvent) => e.preventDefault()}
+          >
+            <input
+              type="text"
+              placeholder="Type a message"
+              className="flex-1 bg-transparent text-zinc-100 placeholder-zinc-400 focus:outline-none"
+            />
+            <button
+              type="submit"
+              className="flex items-center justify-center w-12 h-12 rounded-full bg-green-600 text-zinc-100 font-medium"
+            >
+              <Icon icon="PaperPlane" className="w-5 h-5 rotate-45" />
+            </button>
+          </form>
+        </footer>
+      )}
+    </div >
+  );
+}

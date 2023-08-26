@@ -1,0 +1,297 @@
+[
+  {
+    "contact": {
+      "name": "Alice"
+    },
+    "messages": [
+      {
+        "content": "Hey Alice, how's your day going?",
+        "timestamp": "2023-08-26T10:00:00.000Z",
+        "isReaded": true,
+        "sender": "user"
+      },
+      {
+        "content": "Hi there! It's been a busy day, but good overall. How about you?",
+        "timestamp": "2023-08-26T10:05:00.000Z",
+        "isReaded": true,
+        "sender": "contact"
+      },
+      {
+        "content": "I'm doing pretty well, thanks for asking. Any exciting plans for the weekend?",
+        "timestamp": "2023-08-26T10:10:00.000Z",
+        "isReaded": true,
+        "sender": "user"
+      },
+      {
+        "content": "Not much planned, just catching up on some reading. What about you?",
+        "timestamp": "2023-08-26T10:15:00.000Z",
+        "isReaded": true,
+        "sender": "contact"
+      },
+      {
+        "content": "I'm going hiking with a few friends. Should be fun!",
+        "timestamp": "2023-08-26T10:20:00.000Z",
+        "isReaded": true,
+        "sender": "user"
+      }
+    ]
+  },
+  {
+    "contact": {
+      "name": "David"
+    },
+    "messages": [
+      {
+        "content": "Hey David, have you watched any good movies lately?",
+        "timestamp": "2023-08-25T18:00:00.000Z",
+        "isReaded": true,
+        "sender": "user"
+      },
+      {
+        "content": "Hi! Yes, I watched the new sci-fi flick that just came out. It was mind-blowing!",
+        "timestamp": "2023-08-25T18:05:00.000Z",
+        "isReaded": true,
+        "sender": "contact"
+      },
+      {
+        "content": "Oh, I've been wanting to see that! How were the special effects?",
+        "timestamp": "2023-08-25T18:10:00.000Z",
+        "isReaded": true,
+        "sender": "user"
+      },
+      {
+        "content": "Absolutely stunning. The visuals alone are worth the ticket.",
+        "timestamp": "2023-08-25T18:15:00.000Z",
+        "isReaded": true,
+        "sender": "contact"
+      },
+      {
+        "content": "Nice! Let's plan a movie night and watch it together.",
+        "timestamp": "2023-08-25T18:20:00.000Z",
+        "isReaded": true,
+        "sender": "user"
+      },
+      {
+        "content": "Sounds like a plan! I'll bring the popcorn.",
+        "timestamp": "2023-08-25T18:25:00.000Z",
+        "isReaded": true,
+        "sender": "contact"
+      },
+      {
+        "content": "Hey, did you hear about the new cafe that opened downtown? It's supposed to have amazing coffee!",
+        "timestamp": "2023-08-25T18:30:00.000Z",
+        "isReaded": false,
+        "sender": "contact"
+      },
+      {
+        "content": "Absolutely stunning. The visuals alone are worth the ticket.",
+        "timestamp": "2023-08-25T18:35:00.000Z",
+        "isReaded": false,
+        "sender": "contact"
+      },
+      {
+        "content": "I just finished reading that book you recommended. Mind-blowing!",
+        "timestamp": "2023-08-25T18:40:00.000Z",
+        "isReaded": false,
+        "sender": "contact"
+      },
+      {
+        "content": "Hey, are you up for a game of chess this weekend?",
+        "timestamp": "2023-08-25T18:45:00.000Z",
+        "isReaded": false,
+        "sender": "contact"
+      },
+      {
+        "content": "I tried out that new recipe you shared. It was a hit with my family!",
+        "timestamp": "2023-08-25T18:50:00.000Z",
+        "isReaded": false,
+        "sender": "contact"
+      }
+    ]
+  },
+  {
+    "contact": {
+      "name": "Sophia"
+    },
+    "messages": [
+      {
+        "content": "Hey Sophia, how's your trip going?",
+        "timestamp": "2023-08-24T14:00:00.000Z",
+        "isReaded": true,
+        "sender": "user"
+      },
+      {
+        "content": "Hi! I'm having a blast. Just visited some historic sites today.",
+        "timestamp": "2023-08-24T14:05:00.000Z",
+        "isReaded": true,
+        "sender": "contact"
+      },
+      {
+        "content": "That sounds amazing! Any must-see places you'd recommend?",
+        "timestamp": "2023-08-24T14:10:00.000Z",
+        "isReaded": true,
+        "sender": "user"
+      },
+      {
+        "content": "Definitely check out the local markets and try the street food. Unforgettable!",
+        "timestamp": "2023-08-24T14:15:00.000Z",
+        "isReaded": true,
+        "sender": "contact"
+      },
+      {
+        "content": "I'll make sure to do that. Can't wait to hear more when you're back!",
+        "timestamp": "2023-08-24T14:20:00.000Z",
+        "isReaded": true,
+        "sender": "user"
+      }
+    ]
+  },
+  {
+    "contact": {
+      "name": "Alex"
+    },
+    "messages": [
+      {
+        "content": "Hey Alex, how's your week going?",
+        "timestamp": "2023-08-27T09:00:00.000Z",
+        "isReaded": true,
+        "sender": "user"
+      },
+      {
+        "content": "Hi! It's been pretty busy at work, but I'm managing.",
+        "timestamp": "2023-08-27T09:05:00.000Z",
+        "isReaded": true,
+        "sender": "contact"
+      },
+      {
+        "content": "Any exciting plans for the weekend?",
+        "timestamp": "2023-08-27T09:10:00.000Z",
+        "isReaded": true,
+        "sender": "user"
+      },
+      {
+        "content": "I'm thinking of checking out that new art exhibition in town.",
+        "timestamp": "2023-08-27T09:15:00.000Z",
+        "isReaded": true,
+        "sender": "contact"
+      },
+      {
+        "content": "Sounds interesting! Let me know how it goes.",
+        "timestamp": "2023-08-27T09:20:00.000Z",
+        "isReaded": true,
+        "sender": "user"
+      }
+    ]
+  },
+  {
+    "contact": {
+      "name": "Emily"
+    },
+    "messages": [
+      {
+        "content": "Hey Emily, have you tried that new restaurant in town?",
+        "timestamp": "2023-08-28T16:00:00.000Z",
+        "isReaded": true,
+        "sender": "user"
+      },
+      {
+        "content": "Hi! Yes, I went there last weekend. The food was amazing!",
+        "timestamp": "2023-08-28T16:05:00.000Z",
+        "isReaded": true,
+        "sender": "contact"
+      },
+      {
+        "content": "I heard they have a special dessert. Is it worth trying?",
+        "timestamp": "2023-08-28T16:10:00.000Z",
+        "isReaded": true,
+        "sender": "user"
+      },
+      {
+        "content": "Absolutely! Their chocolate lava cake is to die for.",
+        "timestamp": "2023-08-28T16:15:00.000Z",
+        "isReaded": true,
+        "sender": "contact"
+      },
+      {
+        "content": "I'm definitely going to give it a try then.",
+        "timestamp": "2023-08-28T16:20:00.000Z",
+        "isReaded": true,
+        "sender": "user"
+      }
+    ]
+  },
+  {
+    "contact": {
+      "name": "Michael"
+    },
+    "messages": [
+      {
+        "content": "Hey Michael, did you catch the latest football match?",
+        "timestamp": "2023-08-29T14:00:00.000Z",
+        "isReaded": true,
+        "sender": "user"
+      },
+      {
+        "content": "Hi! Yes, it was an intense game. Our team managed to win!",
+        "timestamp": "2023-08-29T14:05:00.000Z",
+        "isReaded": true,
+        "sender": "contact"
+      },
+      {
+        "content": "That's awesome! I couldn't watch it due to work.",
+        "timestamp": "2023-08-29T14:10:00.000Z",
+        "isReaded": true,
+        "sender": "user"
+      },
+      {
+        "content": "You missed out, but there's a replay available online.",
+        "timestamp": "2023-08-29T14:15:00.000Z",
+        "isReaded": true,
+        "sender": "contact"
+      },
+      {
+        "content": "I'll definitely check it out. Thanks for the update!",
+        "timestamp": "2023-08-29T14:20:00.000Z",
+        "isReaded": true,
+        "sender": "user"
+      }
+    ]
+  },
+  {
+    "contact": {
+      "name": "Olivia"
+    },
+    "messages": [
+      {
+        "content": "Hey Olivia, how's your new job going?",
+        "timestamp": "2023-08-30T11:00:00.000Z",
+        "isReaded": true,
+        "sender": "user"
+      },
+      {
+        "content": "Hi! It's been a learning curve, but I'm enjoying the challenges.",
+        "timestamp": "2023-08-30T11:05:00.000Z",
+        "isReaded": true,
+        "sender": "contact"
+      },
+      {
+        "content": "That's great to hear! How's the team there?",
+        "timestamp": "2023-08-30T11:10:00.000Z",
+        "isReaded": true,
+        "sender": "user"
+      },
+      {
+        "content": "They're supportive and friendly. I'm fitting in well.",
+        "timestamp": "2023-08-30T11:15:00.000Z",
+        "isReaded": true,
+        "sender": "contact"
+      },
+      {
+        "content": "Keep up the good work! Looking forward to catching up soon.",
+        "timestamp": "2023-08-30T11:20:00.000Z",
+        "isReaded": true,
+        "sender": "user"
+      }
+    ]
+  }
+]
