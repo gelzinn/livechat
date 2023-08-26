@@ -3,11 +3,13 @@
 interface ChatAsideProps {
   chats: any;
   onChatSelected: (chat: any) => void;
+  selectedChat: any;
 }
 
 export const ChatAside = ({
   chats,
-  onChatSelected
+  onChatSelected,
+  selectedChat
 }: ChatAsideProps) => {
   if (!chats) throw new Error("Chats not found at Chat Root Component.");
 
@@ -31,10 +33,13 @@ export const ChatAside = ({
           return (
             <li
               key={index}
-              className="flex items-center space-x-4 p-4 hover:bg-zinc-900 duration-75 cursor-pointer"
+              className={`relative flex items-center gap-4 p-4 cursor-pointer ${selectedChat === chat ? "bg-pink-950 bg-opacity-25 hover:bg-pink-900 hover:bg-opacity-30" : "bg-zinc-950 hover:bg-zinc-900"} duration-75`}
               onClick={() => onChatSelected(chat)}
             >
-              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-zinc-800">
+              {selectedChat === chat && (
+                <div className="absolute left-0 w-1 h-full bg-pink-900" />
+              )}
+              <div className="flex-shrink-0 w-12 h-12">
                 <picture className="w-12 h-12 flex items-center justify-center border border-zinc-800 rounded-full overflow-hidden">
                   <img
                     src={chat.contact.avatar ? chat.contact.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${chat.contact.name[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
@@ -49,7 +54,7 @@ export const ChatAside = ({
                   <p className="text-zinc-400 truncate">{lastMessage}</p>
                 </div>
                 {isUnread && (
-                  <span className="flex flex-shrink-0 items-center justify-center w-8 h-8 rounded-full bg-green-600 border border-zinc-100 text-sm text-zinc-100 font-medium">
+                  <span className="flex flex-shrink-0 items-center justify-center w-8 h-8 rounded-full bg-pink-950 bg-opacity-25 border border-pink-950 text-sm text-zinc-100 font-medium">
                     {chat.messages.filter((message: any) => !message.isReaded).length}
                   </span>
                 )}

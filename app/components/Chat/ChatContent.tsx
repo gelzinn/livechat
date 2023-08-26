@@ -45,18 +45,33 @@ export const ChatContent = ({
       )}
       <main className="flex-1 overflow-y-auto">
         {chat ? (
-          <ul className="flex flex-col gap-4 p-4">
+          <ul className="flex flex-col gap-2 p-4">
             {chat.messages.map((message: any, index: number) => {
               const isUser = message.sender === 'user';
               const isReaded = message.isReaded;
 
+              const prevMessage = index > 0 ? chat.messages[index - 1] : null;
+              const nextMessage = index < chat.messages.length - 1 ? chat.messages[index + 1] : null;
+
+              const isSameAsPrevious = index > 0 && prevMessage && prevMessage.sender === message.sender;
+              const isSameAsNext = nextMessage && nextMessage.sender === message.sender;
+
               return (
                 <li
                   key={index}
-                  className={`flex flex-col gap-1 ${isUser ? "items-end" : "items-start"}`}
+                  className={`flex flex-col gap-1 ${isUser ? "items-end" : "items-start"} ${!isSameAsPrevious && index != 0 ? "mt-4" : "mt-0"}`}
                 >
-                  <div className={`flex flex-col ${isUser ? "items-end" : "items-start"} justify-center w-auto bg-zinc-900 p-4 rounded-md gap-2 ${isUser ? "flex-row-reverse" : "flex-row"}`}>
-                    <div className={`flex flex-col w-full overflow-hidden ${isUser ? "items-end" : "items-start"}`}>
+                  <div className={`relative flex flex-col ${isUser ? "items-end" : "items-start"} justify-center w-auto  ${isUser ? "bg-pink-950" : "bg-zinc-900"} p-4 rounded-md gap-2 ${isUser ? "flex-row-reverse" : "flex-row"}`}>
+                    {!isSameAsNext && (
+                      <div
+                        className={`absolute ${isUser ? "right-0 rotate-180" : "left-0 -rotate-180"} -bottom-2 -scale-x-100 w-4 h-4 ${isUser ? "bg-pink-950" : "bg-zinc-900"} max-lg:hidden`}
+                        style={{
+                          clipPath: `polygon(${isUser ? "100% 0%, 0% 100%, 100% 100%" : "0% 0%, 100% 100%, 0% 100%"})`,
+                          backgroundColor: isUser ? "bg-zinc-900" : "bg-zinc-950"
+                        }}
+                      />
+                    )}
+                    <div className={`flex flex-col w-full z-10 overflow-hidden ${isUser ? "items-end" : "items-start"}`}>
                       <span className="text-zinc-200 text-sm">{message.content}</span>
                     </div>
                     <div className={`flex items-center gap-2 ${isUser ? "flex-row" : "flex-row-reverse"}`}>
@@ -70,7 +85,7 @@ export const ChatContent = ({
                         {isReaded ? (
                           <>
                             <Icon icon="Check" size={16} className={`mr-1 ${isReaded ? "text-green-600" : "text-zinc-400"}`} />
-                            <Icon icon="Check" size={16} className={`absolute left-[6px] top-0 bottom-0 ${isReaded ? "text-green-600" : "text-zinc-400"}`} />
+                            <Icon icon="Check" size={16} className={`absolute left-[5px] top-0 bottom-0 ${isReaded ? "text-green-600" : "text-zinc-400"}`} />
                           </>
                         ) : (
                           <Icon icon="Check" size={16} className={`${isReaded ? "text-green-600" : "text-zinc-400"}`} />

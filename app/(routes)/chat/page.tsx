@@ -17,6 +17,7 @@ const ChatPage = () => {
         <Chat.Aside
           chats={chatData}
           onChatSelected={handleSelectedChat}
+          selectedChat={selectedChat}
         />
         <Chat.Content
           chat={selectedChat}
