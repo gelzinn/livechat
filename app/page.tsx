@@ -1,11 +1,13 @@
 'use client'
 
 import { FormEvent, useState } from "react";
-import { GitHubLogo, GoogleLogo } from "./components/Logos/OtherBrands";
 import { UserSignUp } from "./@types/User";
-import Icon from "./components/Icon";
+
 import { userValidationSchema } from "./helpers/validators/schemas/userValidationSchema";
 import { calculatePasswordStrength } from "./utils/calculatePasswordStrength";
+
+import Icon from "./components/Icon";
+import { GitHubLogo, GoogleLogo } from "./components/Logos/OtherBrands";
 
 const Homepage = () => {
   const [tab, setTab] = useState<"login" | "register">("register");
@@ -107,8 +109,8 @@ const Homepage = () => {
           <i className="text-[800px] not-italic skew-x-3 skew-y-12 rotate-6 opacity-[1%] select-none pointer-events-none">💬</i>
         </div>
       </section>
-      <section className="flex flex-col items-center justify-center gap-4 bg-zinc-100 w-full lg:h-full max-lg:h-[calc(100vh-84px)] overflow-y-auto">
-        <div className="flex items-center justify-center w-full overflow-y-auto">
+      <section className="flex flex-col items-center lg:justify-center gap-4 bg-zinc-100 w-full lg:h-full max-lg:h-[calc(100vh-84px)] overflow-y-auto">
+        <div className="flex items-center justify-center w-full max-lg:h-full overflow-y-auto">
           <div className="flex flex-col items-center justify-start lg:p-8 p-4 w-full max-w-2xl h-full text-zinc-900 lg:overflow-y-auto">
             <form
               className="flex flex-col items-center justify-center gap-4 w-full h-auto"
@@ -188,14 +190,16 @@ const Homepage = () => {
                     className="bg-transparent w-full h-full outline-none p-4"
                     onChange={handleChangeInput}
                   />
-                  <hr className={`absolute duration-500 left-0 bottom-0 h-[3px] bg-red-500 border-0`} style={{
-                    width: `calc(${calculatePasswordStrength(formData.password)}% - 56px)`,
-                    backgroundColor: calculatePasswordStrength(formData.password) <= 20 ?
-                      "red" : calculatePasswordStrength(formData.password) < 40 ?
-                        "orange" : calculatePasswordStrength(formData.password) < 60 ?
-                          "yellowgreen" : calculatePasswordStrength(formData.password) < 80 ?
-                            "green" : "limegreen"
-                  }} />
+                  {tab === "register" && (
+                    <hr className={`absolute duration-500 left-0 bottom-0 h-[3px] bg-red-500 border-0`} style={{
+                      width: `calc(${calculatePasswordStrength(formData.password)}% - 56px)`,
+                      backgroundColor: calculatePasswordStrength(formData.password) <= 20 ?
+                        "red" : calculatePasswordStrength(formData.password) < 40 ?
+                          "orange" : calculatePasswordStrength(formData.password) < 60 ?
+                            "yellowgreen" : calculatePasswordStrength(formData.password) < 80 ?
+                              "green" : "limegreen"
+                    }} />
+                  )}
                   <button
                     className="flex items-center justify-center select-none min-w-[56px] w-auto h-full p-4 border-l border-black bg-zinc-200 rounded-e cursor-pointer transition ease-in-out duration-250 hover:bg-zinc-300"
                     onClick={() => setIsPasswordVisible(!isPasswordVisible)}
@@ -268,13 +272,13 @@ const Homepage = () => {
               </div>
               {tab === "login" ? (
                 <a
-                  className="text-center text-zinc-500 cursor-pointer hover:underline max-lg:py-4"
+                  className="text-center text-zinc-500 cursor-pointer hover:underline max-lg:pb-4"
                 >
                   Forgot your password?
                 </a>
               ) : (
                 <a
-                  className="text-center text-zinc-500 cursor-pointer hover:underline max-lg:py-4"
+                  className="text-center text-zinc-500 cursor-pointer hover:underline max-lg:pb-4"
                 >
                   Login without an account.
                 </a>
