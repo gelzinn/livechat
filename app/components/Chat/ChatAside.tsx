@@ -17,14 +17,14 @@ export const ChatAside = ({
     <aside
       className={`flex flex-col min-w-96 w-full lg:max-w-[420px] h-screen bg-zinc-950 border-r border-zinc-900 ${selectedChat ? "max-lg:translate-x-full" : "max-lg:translate-x-0"} max-lg:absolute max-lg:left-0 max-lg:z-50`}
     >
-      <span className="flex justify-between items-center text-2xl px-4 py-8 h-full max-h-24 border-b border-zinc-800 bg-zinc-950">
-        <h1 className="font-medium">Chat</h1>
+      <header className="flex justify-between items-center text-2xl p-4 h-20 sm:h-full max-h-24 border-b border-zinc-800 bg-zinc-950">
+        <h1 className="font-medium max-sm:text-xl">Chat</h1>
         <span
           className="flex items-center justify-center w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 text-sm text-zinc-100 font-medium"
         >
           {chats.length}
         </span>
-      </span>
+      </header>
       <ul className="divide-y divide-zinc-800 overflow-y-auto">
         {chats.map((chat: any, index: number) => {
           const lastMessage = chat.messages[chat.messages.length - 1].content;

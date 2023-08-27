@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { format } from 'date-fns';
 import Icon from "../Icon";
 
@@ -15,20 +15,41 @@ export const ChatContent = ({
   onChatSelected,
   selectedChat
 }: ChatContentProps) => {
+  const [typedMessage, setTypedMessage] = useState("");
+
+  const bottomOfListRef = useRef<HTMLLIElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
   const handleUnselectChat = () => onChatSelected(null);
+
+  const handleChangeTextAreaHeight = (element: HTMLTextAreaElement) => {
+    element.style.height = "auto";
+    element.style.height = `${element.scrollHeight}px`;
+
+    if (textareaRef.current) {
+      const lineCount = textareaRef.current.value.split('\n').length;
+      textareaRef.current.rows = lineCount;
+    }
+  }
+
+  useEffect(() => {
+    if (bottomOfListRef.current) {
+      bottomOfListRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chat]);
 
   return (
     <div className="flex flex-col flex-1 w-full h-screen">
       {chat && (
-        <span className="flex justify-between items-center text-2xl p-4 h-full max-h-24 border-b border-zinc-800 bg-zinc-950">
-          <div className="flex items-center space-x-4">
+        <header className="flex justify-between items-center text-2xl sm:p-4 px-2 py-4 h-20 sm:h-full max-h-24 border-b border-zinc-800 bg-zinc-950">
+          <div className="flex items-center h-full">
             <button
               className="flex items-center justify-center w-8 h-full rounded text-zinc-100 font-medium"
               onClick={handleUnselectChat}
             >
               <Icon icon="ArrowLeft" className="w-5 h-5" />
             </button>
-            <picture className="w-12 h-12 flex items-center justify-center border border-zinc-800 rounded-full overflow-hidden">
+            <picture className="w-10 h-10 sm:w-12 sm:h-12 mx-2 flex items-center justify-center border border-zinc-800 rounded-full overflow-hidden">
               <img
                 src={chat.contact.avatar ? chat.contact.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${chat.contact.name[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
                 className="pointer-events-none select-none"
@@ -43,17 +64,17 @@ export const ChatContent = ({
               <Icon icon="MagnifyingGlass" className="w-5 h-5" />
             </button>
             <button
-              className="flex items-center justify-center w-12 h-12 rounded text-zinc-100 font-medium"
+              className="sm:flex hidden items-center justify-center w-12 h-12 rounded text-zinc-100 font-medium"
             >
               <Icon icon="Info" className="w-5 h-5" />
             </button>
             <button
-              className="flex items-center justify-center w-12 h-12 rounded text-zinc-100 font-medium ml-4"
+              className="flex items-center justify-center w-12 h-12 rounded text-zinc-100 font-medium"
             >
               <Icon icon="DotsThreeOutlineVertical" className="w-5 h-5" />
             </button>
           </div>
-        </span>
+        </header>
       )}
       <main className="flex-1 overflow-y-auto bg-zinc-950">
         {chat ? (
@@ -108,6 +129,7 @@ export const ChatContent = ({
                 </li>
               )
             })}
+            <li ref={bottomOfListRef} />
           </ul>
         ) : (
           <div className="flex flex-col items-center justify-center w-full h-full gap-4">
@@ -117,19 +139,28 @@ export const ChatContent = ({
         )}
       </main>
       {chat && (
-        <footer>
+        <footer className="h-fit max-h-40">
           <form
-            className="flex items-center justify-between px-4 py-4 border-t border-zinc-800 bg-zinc-950"
+            className="flex items-center justify-between h-full max-h-40 px-4 py-4 border-t border-zinc-800 bg-zinc-950"
             onSubmit={(e: FormEvent) => e.preventDefault()}
           >
-            <input
-              type="text"
+            <textarea
+              className="flex-1 w-full bg-transparent text-zinc-100 placeholder-zinc-400 focus:outline-none h-[30px] resize-none"
+              ref={textareaRef}
+              rows={1}
               placeholder="Type a message"
-              className="flex-1 bg-transparent text-zinc-100 placeholder-zinc-400 focus:outline-none"
+              onChange={(e) => {
+                setTypedMessage(e.target.value);
+                handleChangeTextAreaHeight(e.target);
+              }}
+              value={typedMessage}
+              style={{
+                maxHeight: "8rem"
+              }}
             />
             <button
               type="submit"
-              className="flex items-center justify-center w-12 h-12 rounded-full bg-green-600 text-zinc-100 font-medium"
+              className="flex items-center justify-center w-12 h-12 rounded-full text-zinc-100 font-medium"
             >
               <Icon icon="PaperPlane" className="w-5 h-5 rotate-45" />
             </button>
