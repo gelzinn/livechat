@@ -71,11 +71,15 @@ export const ChatContent = ({
   }
 
   const handleScrollToRecentMessage = () => {
-    if (messageContainerRef.current) {
-      const targetPosition = messageContainerRef.current.scrollHeight - messageContainerRef.current.clientHeight + 20;
-      messageContainerRef.current.scrollTop = targetPosition;
-    }
+    if (!messageContainerRef.current) return;
+
+    const scrollPosition = messageContainerRef.current.scrollHeight - messageContainerRef.current.clientHeight + 20;
+    messageContainerRef.current.scrollTo({
+      top: scrollPosition,
+      behavior: "smooth"
+    });
   }
+
 
   useEffect(() => {
     if (messages && messages.length > 0) {
@@ -145,9 +149,9 @@ export const ChatContent = ({
       )}
       <main
         className="flex-1 overflow-y-auto bg-zinc-950"
-        style={{
-          maxHeight: barActionRef.current && headerRef.current ? `calc(100dvh - ${barActionRef.current.clientHeight}px - ${headerRef.current.clientHeight}px)` : "100%"
-        }}
+        // style={{
+        //   maxHeight: barActionRef.current && headerRef.current ? `calc(100vh - ${barActionRef.current.clientHeight}px - ${headerRef.current.clientHeight}px)` : "100%"
+        // }}
         ref={messageContainerRef}
       >
         {chat && messages ? (
@@ -216,7 +220,7 @@ export const ChatContent = ({
       </main>
       {chat && (
         <footer
-          className="max-lg:absolute max-lg:bottom-0 w-full h-fit max-h-40 z-10"
+          className="w-full h-fit max-h-40 z-10"
           ref={barActionRef}
         >
           <form
