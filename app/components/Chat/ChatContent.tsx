@@ -57,8 +57,7 @@ export const ChatContent = ({
         return message;
       });
 
-      const chatWithReadMessages = { ...updatedChat, messages: newMessages };
-      onChatSelected(chatWithReadMessages);
+      setMessages(newMessages);
     }
   }
 
@@ -95,7 +94,10 @@ export const ChatContent = ({
   }, [typedMessage]);
 
   useEffect(() => {
-    if (selectedChat) setMessages(selectedChat.messages);
+    if (!selectedChat) return;
+
+    setMessages(selectedChat.messages);
+    handleReadMessage(selectedChat);
   }, [selectedChat]);
 
   useEffect(() => {

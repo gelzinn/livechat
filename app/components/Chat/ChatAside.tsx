@@ -1,5 +1,7 @@
 'use client'
 
+import Icon from "../Icon";
+
 interface ChatAsideProps {
   chats: any;
   onChatSelected: (chat: any) => void;
@@ -19,13 +21,8 @@ export const ChatAside = ({
     >
       <header className="flex justify-between items-center text-2xl p-4 h-20 sm:h-full max-h-24 border-b border-zinc-800 bg-zinc-950">
         <h1 className="font-medium max-sm:text-xl">Chat</h1>
-        <span
-          className="flex items-center justify-center w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 text-sm text-zinc-100 font-medium"
-        >
-          {chats.length}
-        </span>
       </header>
-      <ul className="divide-y divide-zinc-800 overflow-y-auto">
+      <ul className="divide-y divide-zinc-800 overflow-y-auto h-full">
         {chats.map((chat: any, index: number) => {
           const lastMessage = chat.messages[chat.messages.length - 1].content;
           const isUnread = chat.messages.some((message: any) => !message.isReaded);
@@ -63,6 +60,24 @@ export const ChatAside = ({
           )
         })}
       </ul>
+      <footer className="flex justify-between items-center text-2xl p-4 h-20 sm:h-full max-h-[81px] border-t border-zinc-800 bg-zinc-950">
+        <button
+          className="flex items-center justify-center min-w-12 h-12 rounded bg-zinc-900 border border-zinc-800 text-base text-zinc-100"
+          onClick={() => {
+            window.location.href = "/";
+          }}
+        >
+          <i className="p-4 border-r border-zinc-800">
+            <Icon icon="SignOut" className="-scale-x-100" size={16} />
+          </i>
+          <span className="flex items-center justify-center p-4 h-full text-center">Sign Out</span>
+        </button>
+        <button
+          className="flex items-center justify-center min-w-12 h-12 rounded bg-zinc-900 border border-zinc-800 text-base text-zinc-100 p-4"
+        >
+          <Icon icon="Gear" size={16} />
+        </button>
+      </footer>
     </aside>
   )
 }
