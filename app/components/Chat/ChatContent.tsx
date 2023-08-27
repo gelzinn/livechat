@@ -75,7 +75,8 @@ export const ChatContent = ({
     if (!messageContainerRef.current) return;
 
     const scrollPosition = messageContainerRef.current.scrollHeight - messageContainerRef.current.clientHeight + 20;
-    messageContainerRef.current.scrollTo({
+
+    messageContainerRef.current!.scrollTo({
       top: scrollPosition,
       behavior: "smooth"
     });
@@ -268,11 +269,11 @@ export const ChatContent = ({
       </div >
       {chat && chat.contact && (
         <aside
-          className={`fixed inset-0 z-50 bg-black bg-opacity-50 ${isOpenChatInfo ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"} duration-300`}
+          className={`fixed inset-0 z-50 bg-black bg-opacity-80 ${isOpenChatInfo ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"} duration-300`}
           onClick={() => setIsOpenChatInfo(false)}
         >
           <div
-            className={`min-w-96 w-full lg:max-w-[420px] fixed top-0 right-0 z-50 h-full bg-zinc-950 ${isOpenChatInfo ? "translate-x-0" : "translate-x-full"} duration-300`}
+            className={`min-w-96 w-full lg:max-w-[420px] fixed top-0 right-0 z-50 h-full bg-zinc-950 border-l border-zinc-900 ${isOpenChatInfo ? "translate-x-0" : "translate-x-full"} duration-300`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between w-full h-20 sm:h-full max-h-24 px-4 py-4 border-b border-zinc-800">
@@ -295,6 +296,12 @@ export const ChatContent = ({
                 <h1 className="text-zinc-100 text-lg font-medium">{chat.contact.name}</h1>
               </div>
               <div className="flex flex-col gap-2 p-4">
+                <div className="relative inline-flex items-center justify-center w-full">
+                  <hr className="w-full h-px my-8 bg-zinc-800 border-0" />
+                  <span className="absolute pr-3 text-zinc-400 -translate-x-100 bg-zinc-950 left-0">
+                    Notifications
+                  </span>
+                </div>
                 <div className="flex items-center justify-between">
                   <span className="text-zinc-400 text-sm">Mute notifications</span>
                   <button
@@ -303,13 +310,11 @@ export const ChatContent = ({
                     <Icon icon="Bell" className="w-5 h-5" />
                   </button>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-zinc-400 text-sm">Custom notifications</span>
-                  <button
-                    className="flex items-center justify-center w-8 h-8 rounded-full text-zinc-100 font-medium"
-                  >
-                    <Icon icon="Bell" className="w-5 h-5" />
-                  </button>
+                <div className="relative inline-flex items-center justify-center w-full">
+                  <hr className="w-full h-px my-8 bg-zinc-800 border-0" />
+                  <span className="absolute pr-3 text-zinc-400 -translate-x-100 bg-zinc-950 left-0">
+                    Privacy
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-zinc-400 text-sm">Media visibility</span>
@@ -327,20 +332,18 @@ export const ChatContent = ({
                     <Icon icon="Lock" className="w-5 h-5" />
                   </button>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-zinc-400 text-sm">Export chat</span>
-                  <button
-                    className="flex items-center justify-center w-8 h-8 rounded-full text-zinc-100 font-medium"
-                  >
-                    <Icon icon="Download" className="w-5 h-5" />
-                  </button>
+                <div className="relative inline-flex items-center justify-center w-full">
+                  <hr className="w-full h-px my-8 bg-zinc-800 border-0" />
+                  <span className="absolute pr-3 text-zinc-400 -translate-x-100 bg-zinc-950 left-0">
+                    Chat
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-zinc-400 text-sm">Clear chat</span>
                   <button
                     className="flex items-center justify-center w-8 h-8 rounded-full text-zinc-100 font-medium"
                   >
-                    <Icon icon="Trash" className="w-5 h-5" />
+                    <Icon icon="ChatCircle" className="w-5 h-5" />
                   </button>
                 </div>
                 <div className="flex items-center justify-between">
