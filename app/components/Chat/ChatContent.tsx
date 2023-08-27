@@ -84,14 +84,14 @@ export const ChatContent = ({
   }, [messages]);
 
   useEffect(() => {
-    if (selectedChat) handleReadMessage(selectedChat);
-  }, [selectedChat]);
-
-  useEffect(() => {
     if (textareaRef.current) {
       handleChangeTextAreaHeight(textareaRef.current);
     }
   }, [typedMessage]);
+
+  useEffect(() => {
+    if (selectedChat) handleReadMessage(selectedChat);
+  }, []);
 
   return (
     <div className="flex flex-col flex-1 w-full h-screen">
