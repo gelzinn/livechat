@@ -19,6 +19,7 @@ export const ChatContent = ({
   const [typedMessage, setTypedMessage] = useState("");
 
   const bottomOfListRef = useRef<HTMLLIElement>(null);
+  const barActionRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const handleUnselectChat = () => onChatSelected(null);
@@ -191,6 +192,9 @@ export const ChatContent = ({
             <li
               ref={bottomOfListRef}
               className="h-0"
+              style={{
+                marginBottom: barActionRef.current ? barActionRef.current.clientHeight : 0
+              }}
             />
           </ul>
         ) : (
@@ -201,7 +205,10 @@ export const ChatContent = ({
         )}
       </main>
       {chat && (
-        <footer className="h-fit max-h-40">
+        <footer
+          className="max-lg:absolute max-lg:bottom-0 w-full h-fit max-h-40 z-10"
+          ref={barActionRef}
+        >
           <form
             className="flex items-center justify-between h-full max-h-40 px-4 py-4 gap-4 border-t border-zinc-800 bg-zinc-950"
             onSubmit={(e: FormEvent) => e.preventDefault()}
