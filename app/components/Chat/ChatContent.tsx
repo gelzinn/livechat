@@ -15,7 +15,7 @@ export const ChatContent = ({
   onChatSelected,
   selectedChat
 }: ChatContentProps) => {
-  const [messages, setMessages] = useState(chat?.messages);
+  const [messages, setMessages] = useState(chat ? chat.messages : []);
   const [typedMessage, setTypedMessage] = useState("");
 
   const bottomOfListRef = useRef<HTMLLIElement>(null);
@@ -88,6 +88,10 @@ export const ChatContent = ({
       handleChangeTextAreaHeight(textareaRef.current);
     }
   }, [typedMessage]);
+
+  useEffect(() => {
+    if (selectedChat) setMessages(selectedChat.messages);
+  }, [selectedChat]);
 
   useEffect(() => {
     if (selectedChat) handleReadMessage(selectedChat);
