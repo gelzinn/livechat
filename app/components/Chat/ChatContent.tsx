@@ -15,12 +15,47 @@ export const ChatContent = ({
   onChatSelected,
   selectedChat
 }: ChatContentProps) => {
+  const [messages, setMessages] = useState(chat?.messages);
   const [typedMessage, setTypedMessage] = useState("");
 
   const bottomOfListRef = useRef<HTMLLIElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const handleUnselectChat = () => onChatSelected(null);
+
+  const handleSendMessage = () => {
+    if (!typedMessage) return;
+
+    const newMessage = {
+      sender: "user",
+      content: typedMessage,
+      timestamp: new Date().toISOString(),
+      isReaded: false
+    };
+
+    setMessages((prevMessages: any) => [...prevMessages, newMessage]);
+
+    setTypedMessage("");
+    handleChangeTextAreaHeight(textareaRef.current!);
+
+    setTimeout(() => {
+      handleScrollToRecentMessage();
+    }, 100);
+  }
+
+  const handleReadMessage = (updatedChat: any) => {
+    if (updatedChat.messages.some((message: any) => !message.isReaded)) {
+      const newMessages = updatedChat.messages.map((message: any) => {
+        if (!message.isReaded && message.sender !== 'user') {
+          return { ...message, isReaded: true };
+        }
+        return message;
+      });
+
+      const chatWithReadMessages = { ...updatedChat, messages: newMessages };
+      onChatSelected(chatWithReadMessages);
+    }
+  }
 
   const handleChangeTextAreaHeight = (element: HTMLTextAreaElement) => {
     element.style.height = "auto";
@@ -32,11 +67,31 @@ export const ChatContent = ({
     }
   }
 
+  const handleScrollToRecentMessage = () => {
+    if (!bottomOfListRef.current) return;
+
+    bottomOfListRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+      inline: "nearest"
+    });
+  }
+
   useEffect(() => {
-    if (bottomOfListRef.current) {
-      bottomOfListRef.current.scrollIntoView({ behavior: "smooth" });
+    if (messages && messages.length > 0) {
+      handleScrollToRecentMessage();
     }
-  }, [chat]);
+  }, [messages]);
+
+  useEffect(() => {
+    if (selectedChat) handleReadMessage(selectedChat);
+  }, [selectedChat]);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      handleChangeTextAreaHeight(textareaRef.current);
+    }
+  }, [typedMessage]);
 
   return (
     <div className="flex flex-col flex-1 w-full h-screen">
@@ -77,14 +132,14 @@ export const ChatContent = ({
         </header>
       )}
       <main className="flex-1 overflow-y-auto bg-zinc-950">
-        {chat ? (
-          <ul className="flex flex-col gap-2 p-4">
-            {chat.messages.map((message: any, index: number) => {
+        {chat && messages ? (
+          <ul className="flex flex-col p-4">
+            {messages.map((message: any, index: number) => {
               const isUser = message.sender === 'user';
               const isReaded = message.isReaded;
 
-              const prevMessage = index > 0 ? chat.messages[index - 1] : null;
-              const nextMessage = index < chat.messages.length - 1 ? chat.messages[index + 1] : null;
+              const prevMessage = index > 0 ? messages[index - 1] : null;
+              const nextMessage = index < messages.length - 1 ? messages[index + 1] : null;
 
               const isSameAsPrevious = index > 0 && prevMessage && prevMessage.sender === message.sender;
               const isSameAsNext = nextMessage && nextMessage.sender === message.sender;
@@ -92,12 +147,12 @@ export const ChatContent = ({
               return (
                 <li
                   key={index}
-                  className={`flex flex-col gap-1 ${isUser ? "items-end" : "items-start"} ${!isSameAsPrevious && index != 0 ? "mt-4" : "mt-0"}`}
+                  className={`flex flex-col gap-1 ${isUser ? "items-end" : "items-start"} ${!isSameAsPrevious && index != 0 ? "mt-4" : "mt-2"}`}
                 >
                   <div className={`relative flex flex-col ${isUser ? "items-end" : "items-start"} justify-center w-auto  ${isUser ? "bg-pink-950" : "bg-zinc-900"} p-4 rounded-md gap-2 ${isUser ? "flex-row-reverse" : "flex-row"}`}>
                     {!isSameAsNext && (
                       <div
-                        className={`absolute ${isUser ? "right-0 rotate-180" : "left-0 -rotate-180"} -bottom-2 -scale-x-100 w-4 h-4 ${isUser ? "bg-pink-950" : "bg-zinc-900"} max-lg:hidden`}
+                        className={`absolute ${isUser ? "right-0 rotate-180 rounded-br-0" : "left-0 -rotate-180 rounded-bl-0"} -bottom-2 -scale-x-100 w-4 h-4 ${isUser ? "bg-pink-950" : "bg-zinc-900"} max-lg:hidden`}
                         style={{
                           clipPath: `polygon(${isUser ? "100% 0%, 0% 100%, 100% 100%" : "0% 0%, 100% 100%, 0% 100%"})`,
                           backgroundColor: isUser ? "bg-zinc-900" : "bg-zinc-950"
@@ -129,7 +184,10 @@ export const ChatContent = ({
                 </li>
               )
             })}
-            <li ref={bottomOfListRef} />
+            <li
+              ref={bottomOfListRef}
+              className="h-0"
+            />
           </ul>
         ) : (
           <div className="flex flex-col items-center justify-center w-full h-full gap-4">
@@ -141,7 +199,7 @@ export const ChatContent = ({
       {chat && (
         <footer className="h-fit max-h-40">
           <form
-            className="flex items-center justify-between h-full max-h-40 px-4 py-4 border-t border-zinc-800 bg-zinc-950"
+            className="flex items-center justify-between h-full max-h-40 px-4 py-4 gap-4 border-t border-zinc-800 bg-zinc-950"
             onSubmit={(e: FormEvent) => e.preventDefault()}
           >
             <textarea
@@ -161,6 +219,7 @@ export const ChatContent = ({
             <button
               type="submit"
               className="flex items-center justify-center w-12 h-12 rounded-full text-zinc-100 font-medium"
+              onClick={handleSendMessage}
             >
               <Icon icon="PaperPlane" className="w-5 h-5 rotate-45" />
             </button>
