@@ -251,6 +251,12 @@ export const ChatContent = ({
                   setTypedMessage(e.target.value);
                   handleChangeTextAreaHeight(e.target);
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }
+                }}
                 value={typedMessage}
                 style={{
                   maxHeight: "8rem"
