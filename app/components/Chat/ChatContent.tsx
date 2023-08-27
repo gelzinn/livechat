@@ -99,7 +99,7 @@ export const ChatContent = ({
         <header className="flex justify-between items-center text-2xl sm:p-4 px-2 py-4 h-20 sm:h-full max-h-24 border-b border-zinc-800 bg-zinc-950">
           <div className="flex items-center h-full">
             <button
-              className="flex items-center justify-center w-8 h-full rounded text-zinc-100 font-medium"
+              className="lg:hidden flex items-center justify-center w-8 h-full rounded text-zinc-100 font-medium"
               onClick={handleUnselectChat}
             >
               <Icon icon="ArrowLeft" className="w-5 h-5" />
