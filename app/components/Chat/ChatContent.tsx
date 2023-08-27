@@ -105,7 +105,9 @@ export const ChatContent = ({
     <div
       className="flex flex-col flex-1 w-full h-screen"
       style={{
-        height: "100dvh"
+        minHeight: "100svh",
+        height: "100%",
+        maxHeight: "100dvh"
       }}
     >
       {chat && (
