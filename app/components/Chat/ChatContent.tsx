@@ -164,7 +164,7 @@ export const ChatContent = ({
         >
           {chat && messages && messages.length > 0 ? (
             <>
-              <div className="flex items-center justify-center w-full h-12 bg-zinc-950">
+              <div className="flex items-center justify-center w-full pt-4 bg-zinc-950">
                 <span className="text-zinc-400 text-xs">
                   {format(new Date(messages[0].timestamp), 'MMMM dd, yyyy')}
                 </span>
