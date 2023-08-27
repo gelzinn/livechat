@@ -150,9 +150,9 @@ export const ChatContent = ({
       )}
       <main
         className="flex-1 overflow-y-auto bg-zinc-950"
-        // style={{
-        //   maxHeight: barActionRef.current && headerRef.current ? `calc(100vh - ${barActionRef.current.clientHeight}px - ${headerRef.current.clientHeight}px)` : "100%"
-        // }}
+        style={{
+          maxHeight: barActionRef.current && headerRef.current ? `calc(100dvh - ${barActionRef.current.clientHeight}px - ${headerRef.current.clientHeight}px)` : "100%"
+        }}
         ref={messageContainerRef}
       >
         {chat && messages ? (
