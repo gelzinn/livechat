@@ -18,6 +18,7 @@ export const ChatContent = ({
   const [messages, setMessages] = useState(chat ? chat.messages : []);
   const [typedMessage, setTypedMessage] = useState("");
 
+  const headerRef = useRef<HTMLHeadElement>(null);
   const bottomOfListRef = useRef<HTMLLIElement>(null);
   const barActionRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -71,10 +72,9 @@ export const ChatContent = ({
   const handleScrollToRecentMessage = () => {
     if (!bottomOfListRef.current) return;
 
-    bottomOfListRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-      inline: "nearest"
+    bottomOfListRef.current.scrollTo({
+      top: bottomOfListRef.current.scrollHeight,
+      behavior: "smooth"
     });
   }
 
@@ -99,9 +99,17 @@ export const ChatContent = ({
   }, []);
 
   return (
-    <div className="flex flex-col flex-1 w-full h-screen">
+    <div
+      className="flex flex-col flex-1 w-full h-screen"
+      style={{
+        height: "100dvh"
+      }}
+    >
       {chat && (
-        <header className="flex justify-between items-center text-2xl sm:p-4 px-2 py-4 h-20 sm:h-full max-h-24 border-b border-zinc-800 bg-zinc-950">
+        <header
+          className="flex justify-between items-center text-2xl sm:p-4 px-2 py-4 h-20 sm:h-full max-h-24 border-b border-zinc-800 bg-zinc-950"
+          ref={headerRef}
+        >
           <div className="flex items-center h-full">
             <button
               className="lg:hidden flex items-center justify-center w-8 h-full rounded text-zinc-100 font-medium"
@@ -136,7 +144,12 @@ export const ChatContent = ({
           </div>
         </header>
       )}
-      <main className="flex-1 overflow-y-auto bg-zinc-950">
+      <main
+        className="flex-1 overflow-y-auto bg-zinc-950"
+        style={{
+          maxHeight: barActionRef.current && headerRef.current ? `calc(100dvh - ${barActionRef.current.clientHeight}px - ${headerRef.current.clientHeight}px)` : "100%"
+        }}
+      >
         {chat && messages ? (
           <ul className="flex flex-col p-4">
             {messages.map((message: any, index: number) => {
@@ -192,9 +205,6 @@ export const ChatContent = ({
             <li
               ref={bottomOfListRef}
               className="h-0"
-              style={{
-                marginBottom: barActionRef.current ? barActionRef.current.clientHeight : 0
-              }}
             />
           </ul>
         ) : (
