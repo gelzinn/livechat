@@ -185,7 +185,7 @@ export const ChatContent = ({
                       key={index}
                       className={`flex flex-col gap-1 ${isUser ? "items-end" : "items-start"} ${!isSameAsPrevious && index != 0 ? "mt-4" : "mt-2"}`}
                     >
-                      <div className={`relative flex flex-col ${isUser ? "items-end" : "items-start"} justify-center w-auto  ${isUser ? "bg-pink-950" : "bg-zinc-900"} p-4 rounded-md gap-2 ${isUser ? "flex-row-reverse" : "flex-row"}`}>
+                      <div className={`relative flex flex-wrap ${isUser ? "items-end" : "items-start"} lg:justify-end w-auto ${isUser ? "bg-pink-950" : "bg-zinc-900"} px-4 py-3 rounded-md gap-2 ${isUser ? "flex-row" : "flex-row"} w-fit max-w-3xl`}>
                         {!isSameAsNext && (
                           <div
                             className={`absolute ${isUser ? "right-0 rotate-180 rounded-br-0" : "left-0 -rotate-180 rounded-bl-0"} -bottom-2 -scale-x-100 w-4 h-4 ${isUser ? "bg-pink-950" : "bg-zinc-900"} max-lg:hidden`}
@@ -195,8 +195,8 @@ export const ChatContent = ({
                             }}
                           />
                         )}
-                        <div className={`flex flex-col w-full z-10 overflow-hidden ${isUser ? "items-end" : "items-start"}`}>
-                          <span className="text-zinc-200 text-sm">{message.content}</span>
+                        <div className={`flex flex-col w-fit z-10 overflow-hidden ${isUser ? "items-end" : "items-start"}`}>
+                          <span className="text-zinc-200 text-sm whitespace-break-spaces w-fit leading-5">{message.content}</span>
                         </div>
                         <div className={`flex items-center gap-2 ${isUser ? "flex-row" : "flex-row-reverse"}`}>
                           <span
