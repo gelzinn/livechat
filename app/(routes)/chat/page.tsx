@@ -21,6 +21,8 @@ const ChatPage = () => {
         />
         <Chat.Content
           chat={selectedChat}
+          onChatSelected={handleSelectedChat}
+          selectedChat={selectedChat}
         />
       </Chat.Root>
     </main>

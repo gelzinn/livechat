@@ -6,16 +6,28 @@ import Icon from "../Icon";
 
 interface ChatContentProps {
   chat: any;
+  onChatSelected: (chat: any) => void;
+  selectedChat: any;
 }
 
 export const ChatContent = ({
-  chat
+  chat,
+  onChatSelected,
+  selectedChat
 }: ChatContentProps) => {
+  const handleUnselectChat = () => onChatSelected(null);
+
   return (
-    <div className="flex flex-col flex-1 w-full h-full">
+    <div className="flex flex-col flex-1 w-full h-screen">
       {chat && (
-        <span className="flex justify-between items-center text-2xl px-4 py-8 h-full max-h-24 border-b border-zinc-800 bg-zinc-950">
+        <span className="flex justify-between items-center text-2xl p-4 h-full max-h-24 border-b border-zinc-800 bg-zinc-950">
           <div className="flex items-center space-x-4">
+            <button
+              className="flex items-center justify-center w-8 h-full rounded text-zinc-100 font-medium"
+              onClick={handleUnselectChat}
+            >
+              <Icon icon="ArrowLeft" className="w-5 h-5" />
+            </button>
             <picture className="w-12 h-12 flex items-center justify-center border border-zinc-800 rounded-full overflow-hidden">
               <img
                 src={chat.contact.avatar ? chat.contact.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${chat.contact.name[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
@@ -43,7 +55,7 @@ export const ChatContent = ({
           </div>
         </span>
       )}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto bg-zinc-950">
         {chat ? (
           <ul className="flex flex-col gap-2 p-4">
             {chat.messages.map((message: any, index: number) => {

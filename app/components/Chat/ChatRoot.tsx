@@ -4,7 +4,7 @@ interface ChatRootProps {
 
 export const ChatRoot = ({ children }: ChatRootProps) => {
   return (
-    <main className="flex flex-row w-full h-screen">
+    <main className="relative flex flex-row w-full h-screen overflow-hidden">
       {children}
     </main>
   );
