@@ -18,6 +18,7 @@ export const ChatContent = ({
   const [messages, setMessages] = useState(chat ? chat.messages : []);
   const [typedMessage, setTypedMessage] = useState("");
 
+  const messageContainerRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLHeadElement>(null);
   const bottomOfListRef = useRef<HTMLLIElement>(null);
   const barActionRef = useRef<HTMLDivElement>(null);
@@ -70,12 +71,10 @@ export const ChatContent = ({
   }
 
   const handleScrollToRecentMessage = () => {
-    if (!bottomOfListRef.current) return;
-
-    bottomOfListRef.current.scrollTo({
-      top: bottomOfListRef.current.scrollHeight,
-      behavior: "smooth"
-    });
+    if (messageContainerRef.current) {
+      const targetPosition = messageContainerRef.current.scrollHeight - messageContainerRef.current.clientHeight + 20;
+      messageContainerRef.current.scrollTop = targetPosition;
+    }
   }
 
   useEffect(() => {
@@ -149,6 +148,7 @@ export const ChatContent = ({
         style={{
           maxHeight: barActionRef.current && headerRef.current ? `calc(100dvh - ${barActionRef.current.clientHeight}px - ${headerRef.current.clientHeight}px)` : "100%"
         }}
+        ref={messageContainerRef}
       >
         {chat && messages ? (
           <ul className="flex flex-col p-4">
