@@ -185,7 +185,7 @@ export const ChatContent = ({
                       key={index}
                       className={`flex flex-col gap-1 ${isUser ? "items-end" : "items-start"} ${!isSameAsPrevious && index != 0 ? "mt-4" : "mt-2"}`}
                     >
-                      <div className={`relative flex flex-wrap ${isUser ? "items-end" : "items-start"} lg:justify-end w-auto ${isUser ? "bg-pink-950" : "bg-zinc-900"} px-4 py-3 rounded-md gap-2 ${isUser ? "flex-row" : "flex-row"} w-fit max-w-3xl`}>
+                      <div className={`relative flex flex-wrap ${isUser ? "items-end max-lg:justify-end" : "items-start"} lg:justify-end w-auto ${isUser ? "bg-pink-950" : "bg-zinc-900"} px-4 py-3 rounded-md gap-2 ${isUser ? "flex-row" : "flex-row"} w-fit max-w-3xl`}>
                         {!isSameAsNext && (
                           <div
                             className={`absolute ${isUser ? "right-0 rotate-180 rounded-br-0" : "left-0 -rotate-180 rounded-bl-0"} -bottom-2 -scale-x-100 w-4 h-4 ${isUser ? "bg-pink-950" : "bg-zinc-900"} max-lg:hidden`}
