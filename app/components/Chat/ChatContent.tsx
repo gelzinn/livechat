@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { format } from 'date-fns';
+
 import Icon from "../Icon";
 
 interface ChatContentProps {
@@ -83,15 +84,11 @@ export const ChatContent = ({
   }
 
   useEffect(() => {
-    if (messages && messages.length > 0) {
-      handleScrollToRecentMessage();
-    }
+    if (messages && messages.length > 0) handleScrollToRecentMessage();
   }, [messages]);
 
   useEffect(() => {
-    if (textareaRef.current) {
-      handleChangeTextAreaHeight(textareaRef.current);
-    }
+    if (textareaRef.current) handleChangeTextAreaHeight(textareaRef.current);
   }, [typedMessage]);
 
   useEffect(() => {
@@ -185,7 +182,7 @@ export const ChatContent = ({
                       key={index}
                       className={`flex flex-col ${isUser ? "items-end" : "items-start"} gap-1 w-full ${!isSameAsPrevious && index != 0 ? "mt-4" : "mt-2"}`}
                     >
-                      <div className={`relative flex flex-wrap ${isUser ? "items-end max-lg:justify-end" : "items-start"} lg:justify-end ${isUser ? "bg-pink-950" : "bg-zinc-900"} px-4 py-3 rounded-md gap-2 ${isUser ? "flex-row" : "flex-row"} w-fit max-w-3xl`}>
+                      <div className={`relative flex max-sm:flex-col sm:flex-wrap ${isUser ? "items-end max-lg:justify-end" : "items-start"} ${isUser ? "bg-pink-950" : "bg-zinc-900"} px-4 py-3 rounded-md gap-2 ${isUser ? "flex-row" : "flex-row"} w-fit max-w-3xl`}>
                         {!isSameAsNext && (
                           <div
                             className={`absolute ${isUser ? "right-0 rotate-180 rounded-br-0" : "left-0 -rotate-180 rounded-bl-0"} -bottom-2 -scale-x-100 w-4 h-4 ${isUser ? "bg-pink-950" : "bg-zinc-900"} max-lg:hidden`}
@@ -196,9 +193,9 @@ export const ChatContent = ({
                           />
                         )}
                         <div className={`flex flex-col w-auto z-10 overflow-hidden ${isUser ? "items-end" : "items-start"}`}>
-                          <span className="text-zinc-200 text-sm whitespace-break-spaces break-all w-fit leading-5">{message.content}</span>
+                          <span className="text-zinc-200 text-sm break-words w-auto leading-5">{message.content}</span>
                         </div>
-                        <div className={`flex items-center gap-2 ${isUser ? "flex-row" : "flex-row-reverse"}`}>
+                        <div className={`flex flex-1 items-center gap-2 ${isUser ? "flex-row max-lg:flex-row" : "max-lg:flex-row"} w-auto h-5`}>
                           <span
                             className="text-zinc-400 text-xs"
                             title={format(new Date(message.timestamp), 'dd/MM/yyyy HH:mm')}
