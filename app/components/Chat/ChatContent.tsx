@@ -34,15 +34,17 @@ export const ChatContent = ({
 
     const newMessage = {
       sender: "user",
-      content: typedMessage,
+      content: typedMessage.trim(),
       timestamp: new Date().toISOString(),
       isReaded: false
     };
 
-    setMessages((prevMessages: any) => [...prevMessages, newMessage]);
+    if (textareaRef.current) {
+      handleChangeTextAreaHeight(textareaRef.current);
+      setTypedMessage("");
+    }
 
-    setTypedMessage("");
-    handleChangeTextAreaHeight(textareaRef.current!);
+    setMessages((prevMessages: any) => [...prevMessages, newMessage]);
 
     setTimeout(() => {
       handleScrollToRecentMessage();
@@ -69,6 +71,8 @@ export const ChatContent = ({
     if (textareaRef.current) {
       const lineCount = textareaRef.current.value.split('\n').length;
       textareaRef.current.rows = lineCount;
+
+      if (typedMessage === "") element.style.height = "auto";
     }
   }
 
@@ -177,6 +181,8 @@ export const ChatContent = ({
                   const isSameAsPrevious = index > 0 && prevMessage && prevMessage.sender === message.sender;
                   const isSameAsNext = nextMessage && nextMessage.sender === message.sender;
 
+                  console.log(message)
+
                   return (
                     <li
                       key={index}
@@ -193,7 +199,7 @@ export const ChatContent = ({
                           />
                         )}
                         <div className={`flex flex-col w-auto z-10 overflow-hidden ${isUser ? "items-end" : "items-start"}`}>
-                          <span className="text-zinc-200 text-sm break-words w-auto leading-5">{message.content}</span>
+                          <span className="text-zinc-200 text-sm break-words whitespace-pre-line w-auto leading-5">{message.content}</span>
                         </div>
                         <div className={`flex flex-1 items-center gap-2 ${isUser ? "flex-row max-lg:flex-row" : "max-lg:flex-row"} w-auto h-5`}>
                           <span
