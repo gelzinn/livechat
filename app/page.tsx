@@ -8,8 +8,11 @@ import { calculatePasswordStrength } from "./utils/calculatePasswordStrength";
 
 import Icon from "./components/Icon";
 import { GitHubLogo, GoogleLogo } from "./components/Logos/OtherBrands";
+import { useAuth } from "./hooks/useAuth";
 
 const Homepage = () => {
+  const { signInWithProvider } = useAuth();
+
   const [tab, setTab] = useState<"login" | "register">("register");
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [formData, setFormData] = useState<UserSignUp>({
@@ -91,6 +94,10 @@ const Homepage = () => {
     e.preventDefault();
 
     handleCheckInputs();
+
+    if (formStatus.isValid) {
+      signInWithProvider("email", formData.email, formData.password);
+    }
   }
 
   return (
