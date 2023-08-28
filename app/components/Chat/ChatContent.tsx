@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { format } from 'date-fns';
 
 import Icon from "../Icon";
+import { isValidUrl } from "app/helpers/validators/testers/isValidUrl";
 
 interface ChatContentProps {
   chat: any;
@@ -181,7 +182,17 @@ export const ChatContent = ({
                   const isSameAsPrevious = index > 0 && prevMessage && prevMessage.sender === message.sender;
                   const isSameAsNext = nextMessage && nextMessage.sender === message.sender;
 
-                  console.log(message)
+                  const hasUrl = (text: string) => {
+                    return text.replace(/(https?:\/\/[^\s]+|www\.[^\s]+)/g, (url: string) => {
+                      const fullUrl = url.startsWith("http") ? url : `http://${url}`;
+                      return `<a
+                        href="${fullUrl}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class='text-pink-400 hover:underline'
+                      >${url}</a>`;
+                    });
+                  }
 
                   return (
                     <li
@@ -199,7 +210,10 @@ export const ChatContent = ({
                           />
                         )}
                         <div className={`flex flex-col w-auto z-10 overflow-hidden ${isUser ? "items-end" : "items-start"}`}>
-                          <span className="text-zinc-200 text-sm break-words whitespace-pre-line w-auto leading-5">{message.content}</span>
+                          <p className="text-zinc-200 text-sm break-words whitespace-pre-line w-auto leading-5"
+                            dangerouslySetInnerHTML={{ __html: hasUrl(message.content) }}
+                            style={{}}
+                          />
                         </div>
                         <div className={`flex flex-1 items-center gap-2 ${isUser ? "flex-row max-lg:flex-row" : "max-lg:flex-row"} w-auto h-5`}>
                           <span
