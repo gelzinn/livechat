@@ -2,7 +2,8 @@
   {
     "contact": {
       "name": "Alice",
-      "avatar": "https://randomuser.me/api/portraits/women/63.jpg"
+      "avatar": "https://randomuser.me/api/portraits/women/63.jpg",
+      "username": "alice"
     },
     "messages": [
       {
@@ -40,7 +41,8 @@
   {
     "contact": {
       "name": "David",
-      "avatar": "https://randomuser.me/api/portraits/men/15.jpg"
+      "avatar": "https://randomuser.me/api/portraits/men/15.jpg",
+      "username": "david"
     },
     "messages": [
       {
@@ -114,7 +116,8 @@
   {
     "contact": {
       "name": "Sophia",
-      "avatar": "https://randomuser.me/api/portraits/women/82.jpg"
+      "avatar": "https://randomuser.me/api/portraits/women/82.jpg",
+      "username": "sophia"
     },
     "messages": [
       {
@@ -152,7 +155,8 @@
   {
     "contact": {
       "name": "Alex",
-      "avatar": "https://randomuser.me/api/portraits/men/25.jpg"
+      "avatar": "https://randomuser.me/api/portraits/men/25.jpg",
+      "username": "alex"
     },
     "messages": [
       {
@@ -190,7 +194,8 @@
   {
     "contact": {
       "name": "Emily",
-      "avatar": "https://randomuser.me/api/portraits/women/45.jpg"
+      "avatar": "https://randomuser.me/api/portraits/women/45.jpg",
+      "username": "emily"
     },
     "messages": [
       {
@@ -228,7 +233,8 @@
   {
     "contact": {
       "name": "Michael",
-      "avatar": "https://randomuser.me/api/portraits/men/98.jpg"
+      "avatar": "https://randomuser.me/api/portraits/men/98.jpg",
+      "username": "michael"
     },
     "messages": [
       {
@@ -266,7 +272,8 @@
   {
     "contact": {
       "name": "Olivia",
-      "avatar": "https://randomuser.me/api/portraits/women/18.jpg"
+      "avatar": "https://randomuser.me/api/portraits/women/18.jpg",
+      "username": "olivia"
     },
     "messages": [
       {

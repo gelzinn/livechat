@@ -131,13 +131,16 @@ export const ChatContent = ({
                 className="flex items-center gap-2"
                 onClick={() => setIsOpenChatInfo(!isOpenChatInfo)}
               >
-                <picture className="w-10 h-10 sm:w-12 sm:h-12 mx-2 flex items-center justify-center border border-zinc-800 rounded-full overflow-hidden">
+                <picture className="w-10 h-10 sm:w-12 sm:h-12 mx-2 flex items-center justify-center border-2 border-zinc-100 rounded-full overflow-hidden">
                   <img
                     src={chat.contact.avatar ? chat.contact.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${chat.contact.name[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
                     className="pointer-events-none select-none"
                   />
                 </picture>
-                <h1 className="font-medium text-lg">{chat.contact.name}</h1>
+                <span className="flex flex-col items-start justify-center">
+                  <h1 className="font-medium text-lg">{chat.contact.name}</h1>
+                  <p className="text-zinc-400 text-sm">@{chat.contact.username}</p>
+                </span>
               </button>
             </div>
             <div className="flex items-center">
