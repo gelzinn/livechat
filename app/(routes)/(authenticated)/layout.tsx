@@ -13,5 +13,7 @@ export default function AuthenticatedLayout({ children }: any) {
     if (!user) router.push("/");
   }, [user]);
 
+  if (!user) return null;
+
   return children;
 }

@@ -6,6 +6,7 @@ import { createContext, ReactNode, useEffect, useState } from "react";
 type AuthContextType = {
   user: any;
   signInWithProvider: (provider: "google" | "github" | "email", email?: string, password?: string) => Promise<void>;
+  signOut: () => Promise<void>;
 };
 
 type AuthContextProviderProps = {
@@ -87,9 +88,22 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
     }
   }
 
+  async function signOut() {
+    try {
+      await firebase.auth().signOut();
+      setUser(null);
+    } catch (error) {
+      console.error("Error during sign out:", error);
+    }
+  }
+
   return (
     <AuthContext.Provider
-      value={{ user, signInWithProvider }}
+      value={{
+        user,
+        signInWithProvider,
+        signOut
+      }}
     >
       {props.children}
     </AuthContext.Provider>
