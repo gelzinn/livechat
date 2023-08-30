@@ -19,9 +19,8 @@ export const ChatAside = ({
 
   const { signOut } = useAuth();
 
-  const handleSignOut = async () => {
+  const handleSignOut = async () =>
     confirm("Are you sure you want to sign out?") && await signOut();
-  }
 
   return (
     <aside

@@ -1,10 +1,9 @@
 'use client'
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, Fragment, useEffect, useRef, useState } from "react";
 import { format } from 'date-fns';
 
 import Icon from "../Icon";
-import { isValidUrl } from "app/helpers/validators/testers/isValidUrl";
 
 interface ChatContentProps {
   chat: any;
@@ -168,84 +167,113 @@ export const ChatContent = ({
           ref={messageContainerRef}
         >
           {chat && messages && messages.length > 0 ? (
-            <>
-              <div className="flex items-center justify-center w-full pt-4 bg-zinc-950">
-                <span className="text-zinc-400 text-xs">
-                  {format(new Date(messages[0].timestamp), 'MMMM dd, yyyy')}
-                </span>
-              </div>
-              <ul className="flex flex-col p-4">
-                {messages.map((message: any, index: number) => {
-                  const isUser = message.sender === 'user';
-                  const isReaded = message.isReaded;
+            <ul className="flex flex-1 flex-col p-4 pt-0">
+              {messages.map((message: any, index: number) => {
+                const isUser = message.sender === 'user';
+                const isReaded = message.isReaded;
 
-                  const prevMessage = index > 0 ? messages[index - 1] : null;
-                  const nextMessage = index < messages.length - 1 ? messages[index + 1] : null;
+                const prevMessage = index > 0 ? messages[index - 1] : null;
+                const nextMessage = index < messages.length - 1 ? messages[index + 1] : null;
 
-                  const isSameAsPrevious = index > 0 && prevMessage && prevMessage.sender === message.sender;
-                  const isSameAsNext = nextMessage && nextMessage.sender === message.sender;
+                const isSameAsPrevious = index > 0 && prevMessage && prevMessage.sender === message.sender;
+                const isSameAsNext = nextMessage && nextMessage.sender === message.sender;
 
-                  const hasUrl = (text: string) => {
-                    return text.replace(/(https?:\/\/[^\s]+|www\.[^\s]+)/g, (url: string) => {
-                      const fullUrl = url.startsWith("http") ? url : `http://${url}`;
-                      return `<a
+                const currentDate = new Date(message.timestamp);
+                const today = new Date();
+                const yesterday = new Date(today);
+                yesterday.setDate(today.getDate() - 1);
+
+                const currentDateString =
+                  currentDate.toDateString() === today.toDateString()
+                    ? 'Today'
+                    : currentDate.toDateString() === yesterday.toDateString()
+                      ? 'Yesterday'
+                      : format(currentDate, 'MMMM dd, yyyy');
+
+                const prevDate = prevMessage && new Date(prevMessage.timestamp);
+                const prevDateString = prevDate
+                  ? prevDate.toDateString() === today.toDateString()
+                    ? 'Today'
+                    : prevDate.toDateString() === yesterday.toDateString()
+                      ? 'Yesterday'
+                      : format(prevDate, 'MMMM dd, yyyy')
+                  : null;
+
+                const showDateDivider = prevDateString !== currentDateString;
+
+                const hasUrl = (text: string) => {
+                  return text.replace(/(https?:\/\/[^\s]+|www\.[^\s]+)/g, (url: string) => {
+                    const fullUrl = url.startsWith("http") ? url : `http://${url}`;
+                    return `<a
                         href="${fullUrl}"
                         target="_blank"
                         rel="noopener noreferrer"
                         class='text-pink-400 hover:underline'
                       >${url}</a>`;
-                    });
-                  }
+                  });
+                }
 
-                  return (
-                    <li
-                      key={index}
-                      className={`flex flex-col ${isUser ? "items-end" : "items-start"} gap-1 w-full ${!isSameAsPrevious && index != 0 ? "mt-4" : "mt-2"}`}
-                    >
-                      <div className={`relative flex max-sm:flex-col sm:flex-wrap ${isUser ? "items-end max-lg:justify-end" : "items-start"} ${isUser ? "bg-pink-950" : "bg-zinc-900"} px-4 py-3 rounded-md gap-2 ${isUser ? "flex-row" : "flex-row"} w-fit max-w-3xl`}>
-                        {!isSameAsNext && (
-                          <div
-                            className={`absolute ${isUser ? "right-0 rotate-180 rounded-br-0" : "left-0 -rotate-180 rounded-bl-0"} -bottom-2 -scale-x-100 w-4 h-4 ${isUser ? "bg-pink-950" : "bg-zinc-900"} max-lg:hidden`}
-                            style={{
-                              clipPath: `polygon(${isUser ? "100% 0%, 0% 100%, 100% 100%" : "0% 0%, 100% 100%, 0% 100%"})`,
-                              backgroundColor: isUser ? "bg-zinc-900" : "bg-zinc-950"
-                            }}
-                          />
-                        )}
-                        <div className={`flex flex-col w-auto z-10 overflow-hidden ${isUser ? "items-end" : "items-start"}`}>
-                          <p className="text-zinc-200 text-sm break-words whitespace-pre-line w-auto leading-5"
-                            dangerouslySetInnerHTML={{ __html: hasUrl(message.content) }}
-                            style={{}}
-                          />
-                        </div>
-                        <div className={`flex flex-1 items-center gap-2 ${isUser ? "flex-row max-lg:flex-row" : "max-lg:flex-row"} w-auto h-5`}>
-                          <span
-                            className="text-zinc-400 text-xs"
-                            title={format(new Date(message.timestamp), 'dd/MM/yyyy HH:mm')}
-                          >
-                            {format(new Date(message.timestamp), 'HH:mm')}
-                          </span>
-                          <span className={`relative flex items-center justify-center rounded-full text-zinc-100 font-medium`}>
-                            {isReaded ? (
-                              <>
-                                <Icon icon="Check" size={16} className={`mr-1 ${isReaded ? "text-green-600" : "text-zinc-400"}`} />
-                                <Icon icon="Check" size={16} className={`absolute left-[5px] top-0 bottom-0 ${isReaded ? "text-green-600" : "text-zinc-400"}`} />
-                              </>
-                            ) : (
-                              <Icon icon="Check" size={16} className={`${isReaded ? "text-green-600" : "text-zinc-400"}`} />
-                            )}
-                          </span>
-                        </div>
+                const messageItem = (
+                  <li
+                    key={index}
+                    className={`flex flex-col ${isUser ? "items-end" : "items-start"} gap-1 w-full ${!isSameAsPrevious && index != 0 ? "mt-4" : "mt-2"}`}
+                  >
+                    <div className={`relative flex max-sm:flex-col sm:flex-wrap ${isUser ? "items-end max-lg:justify-end" : "items-start"} ${isUser ? "bg-pink-950" : "bg-zinc-900"} px-4 py-3 rounded-md gap-2 ${isUser ? "flex-row" : "flex-row"} w-fit max-w-3xl`}>
+                      {!isSameAsNext && (
+                        <div
+                          className={`absolute ${isUser ? "right-0 rotate-180 rounded-br-0" : "left-0 -rotate-180 rounded-bl-0"} -bottom-2 -scale-x-100 w-4 h-4 ${isUser ? "bg-pink-950" : "bg-zinc-900"} max-lg:hidden`}
+                          style={{
+                            clipPath: `polygon(${isUser ? "100% 0%, 0% 100%, 100% 100%" : "0% 0%, 100% 100%, 0% 100%"})`,
+                            backgroundColor: isUser ? "bg-zinc-900" : "bg-zinc-950"
+                          }}
+                        />
+                      )}
+                      <div className={`flex flex-col w-auto z-10 overflow-hidden ${isUser ? "items-end" : "items-start"}`}>
+                        <p className="text-zinc-200 text-sm break-words whitespace-pre-line w-auto leading-5"
+                          dangerouslySetInnerHTML={{ __html: hasUrl(message.content) }}
+                          style={{}}
+                        />
                       </div>
-                    </li>
-                  )
-                })}
-                <li
-                  ref={bottomOfListRef}
-                  className="h-0"
-                />
-              </ul>
-            </>
+                      <div className={`flex flex-1 items-center gap-2 ${isUser ? "flex-row max-lg:flex-row" : "max-lg:flex-row"} w-auto h-5`}>
+                        <span
+                          className="text-zinc-400 text-xs"
+                          title={format(new Date(message.timestamp), 'dd/MM/yyyy HH:mm')}
+                        >
+                          {format(new Date(message.timestamp), 'HH:mm')}
+                        </span>
+                        <span className={`relative flex items-center justify-center rounded-full text-zinc-100 font-medium`}>
+                          {isReaded ? (
+                            <>
+                              <Icon icon="Check" size={16} className={`mr-1 ${isReaded ? "text-green-600" : "text-zinc-400"}`} />
+                              <Icon icon="Check" size={16} className={`absolute left-[5px] top-0 bottom-0 ${isReaded ? "text-green-600" : "text-zinc-400"}`} />
+                            </>
+                          ) : (
+                            <Icon icon="Check" size={16} className={`${isReaded ? "text-green-600" : "text-zinc-400"}`} />
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  </li>
+                )
+
+                return (
+                  <Fragment
+                    key={index}
+                  >
+                    {showDateDivider && (
+                      <div className="flex items-center justify-center w-full py-4 bg-zinc-950">
+                        <span className="text-zinc-400 text-xs">{currentDateString}</span>
+                      </div>
+                    )}
+                    {messageItem}
+                  </Fragment>
+                )
+              })}
+              <li
+                ref={bottomOfListRef}
+                className="h-0"
+              />
+            </ul>
           ) : (
             <div className="flex flex-col items-center justify-center w-full h-full gap-4">
               <Icon icon="Chat" weight="light" className="w-24 h-24 text-2xl text-zinc-400" />
