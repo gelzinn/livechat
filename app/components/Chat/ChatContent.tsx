@@ -300,7 +300,7 @@ export const ChatContent = ({
                   handleChangeTextAreaHeight(e.target);
                 }}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
+                  if (window.innerWidth > 768 && e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     handleSendMessage();
                   }
@@ -321,6 +321,7 @@ export const ChatContent = ({
           </footer>
         )}
       </div >
+
       {chat && chat.contact && (
         <aside
           className={`fixed inset-0 z-50 bg-black bg-opacity-80 ${isOpenChatInfo ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"} duration-300`}

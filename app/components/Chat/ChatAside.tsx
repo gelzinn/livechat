@@ -17,7 +17,9 @@ export const ChatAside = ({
   if (!chats)
     throw new Error("Chats not found at Chat Root Component.");
 
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
+
+  const firstName = user.name.split(" ")[0];
 
   const handleSignOut = async () =>
     confirm("Are you sure you want to sign out?") && await signOut();
@@ -26,8 +28,15 @@ export const ChatAside = ({
     <aside
       className={`flex flex-col min-w-96 w-full lg:max-w-[420px] h-screen bg-zinc-950 border-r border-zinc-900 ${selectedChat ? "max-lg:translate-x-full" : "max-lg:translate-x-0"} max-lg:absolute max-lg:left-0 max-lg:z-50`}
     >
-      <header className="flex justify-between items-center text-2xl p-4 h-20 sm:h-full max-h-24 border-b border-zinc-800 bg-zinc-950">
-        <h1 className="font-medium max-sm:text-xl">Chat</h1>
+      <header className="flex justify-start items-center text-2xl p-4 gap-4 h-20 sm:h-full max-h-24 border-b border-zinc-800 bg-zinc-950">
+        <picture className="w-12 h-12 flex items-center justify-center border border-zinc-800 rounded-full overflow-hidden">
+          <img
+            src={user ? user.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${firstName[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
+            alt={`${firstName} profile's picture`}
+            className="pointer-events-none select-none"
+          />
+        </picture>
+        <h1 className="font-medium text-xl">{user ? `Bem-vindo, ${firstName}!` : "Chat"}</h1>
       </header>
       <ul className="divide-y divide-zinc-800 overflow-y-auto h-full">
         {chats.map((chat: any, index: number) => {
@@ -57,11 +66,12 @@ export const ChatAside = ({
                   <strong className="text-zinc-200">{chat.contact.name}</strong>
                   <p className="text-zinc-400 truncate">{lastMessage}</p>
                 </div>
-                {isUnread && (
-                  <span className="flex flex-shrink-0 items-center justify-center w-8 h-8 rounded-full bg-pink-950 bg-opacity-25 border border-pink-950 text-sm text-zinc-100 font-medium">
-                    {chat.messages.filter((message: any) => !message.isReaded).length}
-                  </span>
-                )}
+                {selectedChat === chat ? null : (
+                  isUnread && (
+                    <span className="flex flex-shrink-0 items-center justify-center w-8 h-8 rounded-full bg-pink-950 bg-opacity-25 border border-pink-950 text-sm text-zinc-100 font-medium">
+                      {chat.messages.filter((message: any) => !message.isReaded).length}
+                    </span>
+                  ))}
               </div>
             </li>
           )
