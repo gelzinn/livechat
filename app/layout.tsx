@@ -1,6 +1,9 @@
+import { AuthContextProvider } from './contexts/AuthContext';
+
 import '../styles/globals.css';
 
 export default function RootLayout({ children }: any) {
+
   return (
     <html lang="pt-BR">
       <head>
@@ -10,9 +13,11 @@ export default function RootLayout({ children }: any) {
         <link rel="shortcut icon" href="../favicon.png" type="image/x-icon" />
       </head>
 
-      <body>
-        {children}
-      </body>
+      <AuthContextProvider>
+        <body>
+          {children}
+        </body>
+      </AuthContextProvider>
     </html>
   );
 }
