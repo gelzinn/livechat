@@ -1,7 +1,9 @@
-import '../styles/globals.css';
 import { AuthContextProvider } from './contexts/AuthContext';
 
+import '../styles/globals.css';
+
 export default function RootLayout({ children }: any) {
+
   return (
     <html lang="pt-BR">
       <head>
