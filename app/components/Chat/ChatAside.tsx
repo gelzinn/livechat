@@ -14,8 +14,14 @@ export const ChatAside = ({
   onChatSelected,
   selectedChat
 }: ChatAsideProps) => {
-  if (!chats) throw new Error("Chats not found at Chat Root Component.");
+  if (!chats)
+    throw new Error("Chats not found at Chat Root Component.");
+
   const { signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    confirm("Are you sure you want to sign out?") && await signOut();
+  }
 
   return (
     <aside
@@ -65,7 +71,7 @@ export const ChatAside = ({
       <footer className="flex justify-between items-center text-2xl p-4 h-20 sm:h-full max-h-[81px] border-t border-zinc-800 bg-zinc-950">
         <button
           className="flex items-center justify-center min-w-12 h-12 rounded bg-zinc-900 border border-zinc-800 text-base text-zinc-100"
-          onClick={signOut}
+          onClick={handleSignOut}
         >
           <i className="p-4 border-r border-zinc-800">
             <Icon icon="SignOut" className="-scale-x-100" size={16} />
