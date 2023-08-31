@@ -60,6 +60,22 @@ export const ChatAside = ({
         </div>
       </header>
       <ul className="divide-y divide-zinc-800 overflow-y-auto h-full">
+        {/* <li
+          className={`relative flex items-center gap-4 p-4 cursor-pointer bg-zinc-1000 w-full duration-75`}
+        >
+          <div className="flex-shrink-0 w-12 h-12">
+            <picture className="w-12 h-12 flex items-center justify-center border border-zinc-800 rounded-full overflow-hidden">
+              <Icon icon="LockSimple" className="w-5 h-5" />
+            </picture>
+          </div>
+          <div className="flex items-center justify-start overflow-hidden w-full gap-4">
+            <div className="flex flex-col items-start w-full overflow-hidden">
+              <strong className="text-zinc-200">Personal Chat</strong>
+              <p className="text-zinc-400 truncate">Your saved messages</p>
+            </div>
+          </div>
+        </li> */}
+
         {chats.map((chat: any, index: number) => {
           const lastMessage = chat.messages[chat.messages.length - 1].content;
           const isUnread = chat.messages.some((message: any) => !message.isReaded);
@@ -67,11 +83,11 @@ export const ChatAside = ({
           return (
             <li
               key={index}
-              className={`relative flex items-center gap-4 p-4 cursor-pointer ${selectedChat === chat ? "bg-pink-950 bg-opacity-25 hover:bg-pink-900 hover:bg-opacity-30" : "bg-zinc-950 hover:bg-zinc-900"} duration-75`}
+              className={`relative flex items-center gap-4 p-4 cursor-pointer ${selectedChat === chat ? "bg-rose-950 bg-opacity-25 hover:bg-rose-900 hover:bg-opacity-30" : "bg-zinc-950 hover:bg-zinc-900"} duration-75`}
               onClick={() => onChatSelected(chat)}
             >
               {selectedChat === chat && (
-                <div className="absolute left-0 w-1 h-full bg-pink-900" />
+                <div className="absolute left-0 w-1 h-full bg-rose-900" />
               )}
               <div className="flex-shrink-0 w-12 h-12">
                 <picture className="w-12 h-12 flex items-center justify-center border border-zinc-800 rounded-full overflow-hidden">
@@ -89,7 +105,7 @@ export const ChatAside = ({
                 </div>
                 {selectedChat === chat ? null : (
                   isUnread && (
-                    <span className="flex flex-shrink-0 items-center justify-center w-8 h-8 rounded-full bg-pink-950 bg-opacity-25 border border-pink-950 text-sm text-zinc-100 font-medium">
+                    <span className="flex flex-shrink-0 items-center justify-center w-8 h-8 rounded-full bg-rose-950 bg-opacity-25 border border-rose-950 text-sm text-zinc-100 font-medium">
                       {chat.messages.filter((message: any) => !message.isReaded).length}
                     </span>
                   ))}
