@@ -111,7 +111,9 @@ export const ChatContent = ({
       <div
         className="flex flex-col flex-1 w-full"
         style={{
-          height: "-webkit-fill-available"
+          height: "-webkit-fill-available",
+          // @ts-ignore
+          height: "100dvh", height: "100vh"
         }}
       >
         {chat && (

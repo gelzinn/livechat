@@ -26,17 +26,26 @@ export const ChatAside = ({
 
   return (
     <aside
-      className={`flex flex-col min-w-96 w-full lg:max-w-[420px] h-screen bg-zinc-950 border-r border-zinc-900 ${selectedChat ? "max-lg:translate-x-full" : "max-lg:translate-x-0"} max-lg:absolute max-lg:left-0 max-lg:z-50`}
+      className={`flex flex-col min-w-96 w-full lg:max-w-[420px] h-screen bg-zinc-950 border-r border-zinc-900 ${selectedChat ? "max-lg:-translate-x-full" : "max-lg:translate-x-0"} max-lg:absolute max-lg:left-0 max-lg:z-50`}
+      // @ts-ignore
+      style={{ height: "100dvh", height: "100vh" }}
     >
-      <header className="flex justify-start items-center text-2xl p-4 gap-4 h-20 sm:h-full max-h-24 border-b border-zinc-800 bg-zinc-950">
-        <picture className="w-12 h-12 flex items-center justify-center border border-zinc-800 rounded-full overflow-hidden">
-          <img
-            src={user ? user.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${firstName[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
-            alt={`${firstName} profile's picture`}
-            className="pointer-events-none select-none"
-          />
-        </picture>
-        <h1 className="font-medium text-xl">{user ? `Bem-vindo, ${firstName}!` : "Chat"}</h1>
+      <header className="flex justify-between items-center p-4 gap-4 h-20 sm:h-full max-h-24 border-b border-zinc-800 bg-zinc-950">
+        <div className="flex items-center gap-4">
+          <picture className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center border border-zinc-800 rounded-full overflow-hidden">
+            <img
+              src={user ? user.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${firstName[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
+              alt={`${firstName} profile's picture`}
+              className="pointer-events-none select-none"
+            />
+          </picture>
+          <div className="flex flex-col">
+            <strong className="text-zinc-100">{firstName}</strong>
+            <span className="text-zinc-500">
+              {user ? user.username : "Loading..."}
+            </span>
+          </div>
+        </div>
       </header>
       <ul className="divide-y divide-zinc-800 overflow-y-auto h-full">
         {chats.map((chat: any, index: number) => {
