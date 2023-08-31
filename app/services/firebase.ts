@@ -1,6 +1,7 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
+import "firebase/compat/database";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -15,6 +16,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
+const realtimeDb = firebase.database();
 
 const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
 const githubAuthProvider = new firebase.auth.GithubAuthProvider();
@@ -22,6 +24,7 @@ const githubAuthProvider = new firebase.auth.GithubAuthProvider();
 export {
   firebase,
   db,
+  realtimeDb,
   googleAuthProvider,
   githubAuthProvider,
 };

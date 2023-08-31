@@ -1,7 +1,9 @@
 'use client'
 
-import { firebase } from "../services/firebase";
+import { db, firebase, realtimeDb } from "../services/firebase";
 import { createContext, ReactNode, useEffect, useState } from "react";
+
+import { v4 as uuidv4 } from 'uuid';
 
 type AuthContextType = {
   user: any;
@@ -17,27 +19,64 @@ export const AuthContext = createContext({} as AuthContextType);
 
 export function AuthContextProvider(props: AuthContextProviderProps) {
   const [user, setUser] = useState<any>();
+  const [userUpdatedInDB, setUserUpdatedInDB] = useState(false);
+
+  const newId = uuidv4();
 
   useEffect(() => {
     const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        const { displayName, photoURL, email, metadata, uid } = user;
+        const {
+          uid,
+          displayName,
+          email,
+          photoURL,
+        } = user;
 
         setUser({
           id: uid,
           name: displayName,
-          avatar: photoURL,
           email: email,
-          metadata: metadata,
+          avatar: photoURL,
           admin: false,
         });
+
+        db.collection("users").doc(uid).get().then(async (doc) => {
+          if (doc.exists) {
+            setUser((prevUser: any) => {
+              return {
+                ...prevUser,
+                admin: doc.data()?.admin,
+                username: doc.data()?.username,
+              }
+            })
+          } else {
+            if (!userUpdatedInDB) {
+              createChat();
+              setUserUpdatedInDB(true);
+            }
+          }
+
+          if (!doc.exists && !userUpdatedInDB) {
+            db.collection("users").doc(uid).set({
+              id: uid,
+              name: displayName,
+              username: displayName?.toLowerCase().replace(/\s/g, ""),
+              avatar: photoURL,
+              email,
+              admin: false,
+            });
+
+            setUserUpdatedInDB(true);
+          }
+        })
       }
 
       return () => {
         unsubscribe();
       };
     });
-  }, []);
+  }, [userUpdatedInDB]);
 
   async function signInWithProvider(provider: "google" | "github" | "email", email?: string, password?: string) {
     try {
@@ -68,18 +107,52 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
       result = await firebase.auth().signInWithPopup(authProvider);
 
       if (result && result.user) {
-        const { displayName, photoURL, email, metadata, uid } = result.user;
+        const { displayName, photoURL, email, uid } = result.user;
 
-        if (!displayName || !email || !metadata) {
+        if (!displayName || !email || !uid)
           throw new Error("Missing information from Account.");
+
+        const userRef = db.collection("users").doc(uid);
+        const userDoc = await userRef.get();
+
+        if (!userDoc.exists) {
+          let username = displayName.toLowerCase().replace(/\s/g, "");
+
+          while (true) {
+            const availableUsername = await firebase.firestore().collection("users")
+              .where("username", "==", username)
+              .get();
+
+            if (availableUsername.empty) {
+              await userDoc.ref.set({
+                name: displayName,
+                avatar: photoURL,
+                email,
+                admin: false,
+                username: availableUsername,
+              });
+              break;
+            } else {
+              username = username + Math.floor(Math.random() * 1000)
+            }
+          }
+
+          userDoc.ref.set({
+            id: uid,
+            name: displayName,
+            username: displayName.toLowerCase().replace(/\s/g, ""),
+            avatar: photoURL,
+            email,
+            admin: false,
+          });
         }
 
         setUser({
           id: uid,
           name: displayName,
+          username: userDoc.data()?.username,
           avatar: photoURL,
           email,
-          metadata,
           admin: false,
         });
       }
@@ -94,6 +167,54 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
       setUser(null);
     } catch (error) {
       console.error("Error during sign out:", error);
+    }
+  }
+
+  async function createChat() {
+    try {
+      const uid = firebase.auth().currentUser!.uid;
+
+      const batch = db.batch();
+
+      const chatDocRef = db.collection("users").doc(uid)
+        .collection("chats")
+        .doc(newId);
+
+      const contactDocRef = db.collection("users").doc(uid)
+        .collection("contacts")
+        .doc("0sX8KqZMnURKhKalOARvyEITE6y1");
+
+      batch.set(chatDocRef, {
+        id: newId,
+        created_at: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+
+      realtimeDb.ref(`chats/${newId}`).set({
+        id: newId,
+        created_at: firebase.database.ServerValue.TIMESTAMP,
+        description: "",
+        picture: "",
+        messages: [],
+        media: [],
+        participants: [
+          {
+            id: "0sX8KqZMnURKhKalOARvyEITE6y1",
+            username: "gelzin",
+            added_at: firebase.database.ServerValue.TIMESTAMP,
+          },
+        ],
+      });
+
+      batch.set(contactDocRef, {
+        username: "gelzin",
+        id: "0sX8KqZMnURKhKalOARvyEITE6y1",
+        chat_id: newId,
+        added_at: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+
+      await batch.commit();
+    } catch (error) {
+      console.error("Error during creating chat:", error);
     }
   }
 

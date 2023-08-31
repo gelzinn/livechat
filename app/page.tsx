@@ -12,7 +12,6 @@ import Icon from "./components/Icon";
 import { GitHubLogo, GoogleLogo } from "./components/Logos/OtherBrands";
 
 import { useRouter } from "next/navigation";
-import router from "next/router";
 import { db } from "./services/firebase";
 
 const Homepage = () => {
