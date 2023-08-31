@@ -30,7 +30,7 @@ export const ChatAside = ({
       // @ts-ignore
       style={{ height: "100dvh", height: "100vh" }}
     >
-      <header className="flex justify-between items-center p-4 gap-4 h-20 sm:h-full max-h-24 border-b border-zinc-800 bg-zinc-950">
+      <header className="flex justify-between items-center p-4 gap-4 h-20 sm:h-full max-h-24 border-b border-zinc-800 bg-zinc-1000">
         <div className="flex items-center gap-4">
           <picture className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center border border-zinc-800 rounded-full overflow-hidden">
             <img
@@ -86,7 +86,7 @@ export const ChatAside = ({
           )
         })}
       </ul>
-      <footer className="flex justify-between items-center text-2xl p-4 h-20 sm:h-full max-h-[81px] border-t border-zinc-800 bg-zinc-950">
+      <footer className="flex justify-between items-center text-2xl p-4 h-20 sm:h-full max-h-[81px] border-t border-zinc-800 bg-zinc-1000">
         <button
           className="flex items-center justify-center min-w-12 h-12 rounded bg-zinc-900 border border-zinc-800 text-base text-zinc-100"
           onClick={handleSignOut}

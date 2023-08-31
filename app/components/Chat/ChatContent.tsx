@@ -118,7 +118,7 @@ export const ChatContent = ({
       >
         {chat && (
           <header
-            className="flex justify-between items-center text-2xl sm:p-4 px-2 py-4 h-20 sm:h-full max-h-24 border-b border-zinc-800 bg-zinc-950"
+            className="flex justify-between items-center text-2xl sm:p-4 px-2 py-4 h-20 sm:h-full max-h-24 border-b border-zinc-800 bg-zinc-1000"
             ref={headerRef}
           >
             <div className="flex items-center h-full">
@@ -289,7 +289,7 @@ export const ChatContent = ({
             ref={barActionRef}
           >
             <form
-              className="flex items-center justify-between h-full max-h-40 px-4 py-4 gap-4 border-t border-zinc-800 bg-zinc-950"
+              className="flex items-center justify-between h-full max-h-40 px-4 py-4 gap-4 border-t border-zinc-800 bg-zinc-1000"
               onSubmit={(e: FormEvent) => e.preventDefault()}
             >
               <textarea
@@ -333,7 +333,7 @@ export const ChatContent = ({
             className={`min-w-96 w-full lg:max-w-[420px] fixed top-0 right-0 z-50 h-full bg-zinc-950 border-l border-zinc-900 ${isOpenChatInfo ? "translate-x-0" : "translate-x-full"} duration-300`}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between w-full h-20 sm:h-full max-h-24 px-4 py-4 border-b border-zinc-800">
+            <div className="flex items-center justify-between w-full h-20 sm:h-full max-h-24 px-4 py-4 border-b border-zinc-800 bg-zinc-1000">
               <h1 className="text-zinc-100 text-lg font-medium">Chat Info</h1>
               <button
                 className="flex items-center justify-center w-8 h-8 rounded-full text-zinc-100 font-medium"
@@ -343,14 +343,17 @@ export const ChatContent = ({
               </button>
             </div>
             <main className="flex flex-col flex-1 w-full h-full overflow-y-auto py-4">
-              <div className="flex flex-col items-center justify-center gap-2 w-full h-40">
+              <div className="flex flex-col items-center justify-center gap-2 w-full min-h-40">
                 <picture className="w-24 h-24 sm:w-32 sm:h-32 mx-2 flex items-center justify-center border border-zinc-800 rounded-full overflow-hidden">
                   <img
                     src={chat.contact.avatar ? chat.contact.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${chat.contact.name[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
                     className="pointer-events-none select-none"
                   />
                 </picture>
-                <h1 className="text-zinc-100 text-lg font-medium">{chat.contact.name}</h1>
+                <div className="flex flex-col items-center justify-center">
+                  <h1 className="text-zinc-100 text-lg font-medium">{chat.contact.name}</h1>
+                  <p className="text-zinc-400 text-sm">@{chat.contact.username}</p>
+                </div>
               </div>
               <div className="flex flex-col gap-2 p-4">
                 <div className="relative inline-flex items-center justify-center w-full">
@@ -394,14 +397,6 @@ export const ChatContent = ({
                   <span className="absolute pr-3 text-zinc-400 -translate-x-100 bg-zinc-950 left-0">
                     Chat
                   </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-zinc-400 text-sm">Clear chat</span>
-                  <button
-                    className="flex items-center justify-center w-8 h-8 rounded-full text-zinc-100 font-medium"
-                  >
-                    <Icon icon="ChatCircle" className="w-5 h-5" />
-                  </button>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-zinc-400 text-sm">Delete chat</span>
