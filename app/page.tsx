@@ -12,6 +12,8 @@ import Icon from "./components/Icon";
 import { GitHubLogo, GoogleLogo } from "./components/Logos/OtherBrands";
 
 import { useRouter } from "next/navigation";
+import router from "next/router";
+import { db } from "./services/firebase";
 
 const Homepage = () => {
   const { signInWithProvider, user } = useAuth();
@@ -89,18 +91,29 @@ const Homepage = () => {
     }
   }
 
-  const handleSignIn = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const handleSignIn = async (provider: "email" | "google" | "github") => {
     try {
       setLoading(true);
 
-      handleCheckInputs();
+      switch (provider) {
+        default:
+        case "email":
+          handleCheckInputs();
 
-      if (formStatus.isValid) {
-        signInWithProvider("email", formData.email, formData.password).then(() => {
-          console.log("Sign In");
-        });
+          if (formStatus.isValid) {
+            await db.collection('users').get().then((snapshot: any) => {
+              snapshot.docs.map((doc: any) => doc.data()).find((user: any) => user.email === formData.email);
+            }).then((user: any) => {
+              if (user) signInWithProvider("email", formData.email, formData.password);
+            });
+          };
+          break;
+        case "google":
+          signInWithProvider("google");
+          break;
+        case "github":
+          signInWithProvider("github");
+          break;
       }
     } catch (error) {
       console.error("Error during authentication:", error);
@@ -271,6 +284,7 @@ const Homepage = () => {
                       handleSignUp(e);
                     }
                   }}
+                  disabled={loading || user}
                 >
                   {tab === "login" ?
                     "Sign In" :
@@ -295,8 +309,8 @@ const Homepage = () => {
               <div className="sm:grid sm:grid-cols-2 flex flex-col-reverse items-center justify-center gap-4 w-full">
                 <button
                   className="group w-full flex items-center justify-center gap-4 border border-red-600 hover:bg-red-600 text-red-600 hover:text-white p-4 rounded duration-300 cursor-pointer disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-red-600 disabled:cursor-not-allowed"
-                  onClick={() => signInWithProvider("google")}
-                  disabled={loading || !!user}
+                  onClick={() => handleSignIn("google")}
+                  disabled={loading || user}
                 >
                   <GoogleLogo
                     className="fill-red-600 group-hover:fill-white group-disabled:group-hover:fill-red-600 duration-300 w-6 h-6"
@@ -306,8 +320,8 @@ const Homepage = () => {
                 </button>
                 <button
                   className="group w-full flex items-center justify-center gap-4 border border-zinc-950 hover:bg-zinc-950 text-zinc-950 hover:text-white p-4 rounded duration-300 cursor-pointer disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-zinc-950 disabled:cursor-not-allowed"
-                  onClick={() => signInWithProvider("github")}
-                  disabled={loading || !!user}
+                  onClick={() => handleSignIn("github")}
+                  disabled={loading || user}
                 >
                   <GitHubLogo
                     className="fill-zinc-950 group-hover:fill-white group-disabled:group-hover:fill-zinc-950 duration-300 w-6 h-6"
