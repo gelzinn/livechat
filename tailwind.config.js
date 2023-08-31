@@ -18,6 +18,9 @@ module.exports = {
       colors: {
         'zinc-1000': '#080808',
       },
+      screens: {
+        'xs': '320px',
+      },
     },
   },
 };

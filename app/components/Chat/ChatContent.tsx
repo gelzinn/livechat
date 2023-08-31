@@ -123,7 +123,7 @@ export const ChatContent = ({
           >
             <div className="flex items-center h-full">
               <button
-                className="lg:hidden flex items-center justify-center w-8 h-full rounded text-zinc-100 font-medium"
+                className="md:hidden flex items-center justify-center w-8 h-full rounded text-zinc-100 font-medium"
                 onClick={handleUnselectChat}
               >
                 <Icon icon="ArrowLeft" className="w-5 h-5" />
@@ -132,7 +132,7 @@ export const ChatContent = ({
                 className="flex items-center gap-2"
                 onClick={() => setIsOpenChatInfo(!isOpenChatInfo)}
               >
-                <picture className="w-10 h-10 sm:w-12 sm:h-12 mx-2 flex items-center justify-center border-2 border-zinc-100 rounded-full overflow-hidden">
+                <picture className="w-10 h-10 sm:w-12 sm:h-12 mx-2 flex items-center justify-center border-2 border-zinc-800 rounded-full overflow-hidden">
                   <img
                     src={chat.contact.avatar ? chat.contact.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${chat.contact.name[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
                     className="pointer-events-none select-none"
@@ -218,12 +218,12 @@ export const ChatContent = ({
                 const messageItem = (
                   <li
                     key={index}
-                    className={`flex flex-col ${isUser ? "items-end" : "items-start"} gap-1 w-full ${!isSameAsPrevious && index != 0 ? "mt-4" : "mt-2"}`}
+                    className={`flex flex-col ${isUser ? "items-end" : "items-start"} gap-1 w-full ${!isSameAsPrevious && index != 0 ? "mt-6" : "mt-2"}`}
                   >
-                    <div className={`relative flex max-sm:flex-col sm:flex-wrap ${isUser ? "items-end max-lg:justify-end" : "items-start"} ${isUser ? "bg-pink-950" : "bg-zinc-900"} px-4 py-3 rounded-md gap-2 ${isUser ? "flex-row" : "flex-row"} w-fit max-w-3xl`}>
+                    <div className={`relative flex max-sm:flex-col sm:flex-wrap ${isUser ? "items-end max-md:justify-end" : "items-start"} ${isUser ? "bg-pink-950" : "bg-zinc-900"} px-4 py-3 rounded-md gap-2 ${isUser ? "flex-row" : "flex-row"} w-fit max-w-3xl`}>
                       {!isSameAsNext && (
                         <div
-                          className={`absolute ${isUser ? "right-0 rotate-180 rounded-br-0" : "left-0 -rotate-180 rounded-bl-0"} -bottom-2 -scale-x-100 w-4 h-4 ${isUser ? "bg-pink-950" : "bg-zinc-900"} max-lg:hidden`}
+                          className={`absolute ${isUser ? "right-0 rotate-180 rounded-br-0" : "left-0 -rotate-180 rounded-bl-0"} -bottom-2 -scale-x-100 w-4 h-4 ${isUser ? "bg-pink-950" : "bg-zinc-900"}`}
                           style={{
                             clipPath: `polygon(${isUser ? "100% 0%, 0% 100%, 100% 100%" : "0% 0%, 100% 100%, 0% 100%"})`,
                             backgroundColor: isUser ? "bg-zinc-900" : "bg-zinc-950"
@@ -231,12 +231,12 @@ export const ChatContent = ({
                         />
                       )}
                       <div className={`flex flex-col w-auto z-10 overflow-hidden ${isUser ? "items-end" : "items-start"}`}>
-                        <p className="text-zinc-200 text-sm break-words whitespace-pre-line w-auto leading-5"
+                        <p className="text-zinc-200 text-sm break-words whitespace-pre-line w-auto leading-6"
                           dangerouslySetInnerHTML={{ __html: hasUrl(message.content) }}
                           style={{}}
                         />
                       </div>
-                      <div className={`flex flex-1 items-center gap-2 ${isUser ? "flex-row max-lg:flex-row" : "max-lg:flex-row"} w-auto h-5`}>
+                      <div className={`flex flex-1 items-center gap-2 ${isUser ? "flex-row max-md:flex-row" : "max-md:flex-row"} w-auto h-5`}>
                         <span
                           className="text-zinc-400 text-xs"
                           title={format(new Date(message.timestamp), 'dd/MM/yyyy HH:mm')}
@@ -330,7 +330,7 @@ export const ChatContent = ({
           onClick={() => setIsOpenChatInfo(false)}
         >
           <div
-            className={`min-w-96 w-full lg:max-w-[420px] fixed top-0 right-0 z-50 h-full bg-zinc-950 border-l border-zinc-900 ${isOpenChatInfo ? "translate-x-0" : "translate-x-full"} duration-300`}
+            className={`min-w-96 w-full md:max-w-[420px] fixed top-0 right-0 z-50 h-full bg-zinc-950 border-l border-zinc-900 ${isOpenChatInfo ? "translate-x-0" : "translate-x-full"} duration-300`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between w-full h-20 sm:h-full max-h-24 px-4 py-4 border-b border-zinc-800 bg-zinc-1000">
