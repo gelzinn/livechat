@@ -8,8 +8,8 @@ import { useAuth } from "./hooks/useAuth";
 import { userValidationSchema } from "./helpers/validators/schemas/userValidationSchema";
 import { calculatePasswordStrength } from "./utils/calculatePasswordStrength";
 
-import Icon from "./components/Icon";
-import { GitHubLogo, GoogleLogo } from "./components/Logos/OtherBrands";
+import Icon from "@/components/Icon";
+import { GitHubLogo, GoogleLogo } from "@/components/Logos/OtherBrands";
 
 import { useRouter } from "next/navigation";
 import { db } from "./services/firebase";

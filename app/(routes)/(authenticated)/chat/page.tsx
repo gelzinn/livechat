@@ -1,6 +1,6 @@
 'use client'
 
-import { Chat } from "app/components/Chat";
+import { Chat } from "@/components/Chat";
 import chatData from "app/data/chatData.json";
 import { useState } from "react";
 
