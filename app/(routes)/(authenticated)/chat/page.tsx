@@ -2,8 +2,7 @@
 
 import { Chat } from "@/components/Chat";
 import chatData from "app/data/chatData.json";
-import { getUserContacts } from "app/helpers/importers/getUsers";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const ChatPage = () => {
   const [selectedChat, setSelectedChat] = useState(null);
@@ -11,16 +10,6 @@ const ChatPage = () => {
   const handleSelectedChat = (chat: any) => {
     setSelectedChat(chat);
   }
-
-  useEffect(() => {
-    const test = async () => {
-      const test = await getUserContacts('fvSJV04mvDZFrKzdQKQFakNu6nr1')
-
-      console.log(test);
-    };
-
-    test();
-  }, []);
 
   return (
     <main>
