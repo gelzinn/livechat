@@ -24,7 +24,7 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
   const newId = uuidv4();
 
   useEffect(() => {
-    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+    const unsubscribe = firebase.auth().onAuthStateChanged((user: any) => {
       if (user) {
         const {
           uid,
@@ -50,24 +50,44 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
                 username: doc.data()?.username,
               }
             })
-          } else {
-            if (!userUpdatedInDB) {
-              createChat();
+
+            const fetchedUsername = doc.data()?.username;
+
+            if (!userUpdatedInDB && !fetchedUsername && uid) {
+              const username = await createUniqueUsername(displayName!);
+
+              doc.ref.update({
+                username,
+              });
+
+              setUser((prevUser: any) => {
+                return {
+                  ...prevUser,
+                  username,
+                };
+              });
+
               setUserUpdatedInDB(true);
             }
-          }
+          } else {
+            if (!userUpdatedInDB && !userUpdatedInDB && !doc.exists && user) {
+              const uniqueUsername = await createUniqueUsername(displayName!);
 
-          if (!doc.exists && !userUpdatedInDB) {
-            db.collection("users").doc(uid).set({
-              id: uid,
-              name: displayName,
-              username: displayName?.toLowerCase().replace(/\s/g, ""),
-              avatar: photoURL,
-              email,
-              admin: false,
-            });
-
-            setUserUpdatedInDB(true);
+              await db.collection("users").doc(uid).set({
+                id: uid,
+                name: displayName,
+                username: uniqueUsername,
+                avatar: photoURL,
+                email,
+                admin: false,
+              }).then(() => {
+                createChat(uid, uniqueUsername);
+              }).catch((error) => {
+                console.error("Error during creating user:", error);
+              }).finally(() => {
+                setUserUpdatedInDB(true);
+              });
+            }
           }
         })
       }
@@ -170,10 +190,10 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
     }
   }
 
-  async function createChat() {
-    try {
-      const uid = firebase.auth().currentUser!.uid;
+  async function createChat(uid: any = null, username: string | null = null) {
+    if (!uid || !username) return;
 
+    try {
       const batch = db.batch();
 
       const chatDocRef = db.collection("users").doc(uid)
@@ -202,6 +222,11 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
             username: "gelzin",
             added_at: firebase.database.ServerValue.TIMESTAMP,
           },
+          {
+            id: uid,
+            username,
+            added_at: firebase.database.ServerValue.TIMESTAMP,
+          },
         ],
       });
 
@@ -216,6 +241,28 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
     } catch (error) {
       console.error("Error during creating chat:", error);
     }
+  }
+
+  async function createUniqueUsername(displayName: string): Promise<string> {
+    const baseUsername = displayName.toLowerCase().replace(/\s/g, "");
+    let username = baseUsername;
+    let usernameExists = true;
+    let counter = 1;
+
+    while (usernameExists) {
+      const usernameSnapshot = await db.collection("users")
+        .where("username", "==", username)
+        .get();
+
+      if (usernameSnapshot.empty) {
+        usernameExists = false;
+      } else {
+        username = `${baseUsername}${counter}`;
+        counter++;
+      }
+    }
+
+    return username;
   }
 
   return (
