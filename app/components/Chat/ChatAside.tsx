@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Icon from "../Icon";
 import { useAuth } from "app/hooks/useAuth";
-import { getUsers } from "app/helpers/importers/getUsers";
+import { getUserChats, getUsers } from "app/helpers/importers/getUsers";
+import { handleAddContact } from "app/hooks/handles/handleAddContact";
 
 interface ChatAsideProps {
   chats: any;
@@ -88,6 +89,21 @@ export const ChatAside = ({
         <div className="flex items-center h-full">
           <button
             className="flex items-center justify-center min-w-12 h-12 rounded text-base text-zinc-100 p-4"
+            onClick={async () => {
+              const contactInfo = prompt("Enter the username, ID, or email of the user you want to start a conversation with:");
+
+              if (contactInfo !== null) {
+                const userId = user.id;
+
+                try {
+                  const contact = await handleAddContact(userId, contactInfo);
+
+                  console.log(contact! && contact)
+                } catch (error) {
+                  alert(error);
+                }
+              }
+            }}
           >
             <Icon icon="Plus" size={20} />
           </button>

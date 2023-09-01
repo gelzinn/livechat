@@ -113,7 +113,7 @@ export const ChatContent = ({
   }, [selectedChat]);
 
   useEffect(() => {
-    console.log(selectedChat)
+    console.log(selectedChat && selectedChat)
 
     // if (selectedChat) handleReadMessage(selectedChat);
   }, []);
