@@ -1,4 +1,5 @@
 import { realtimeDb } from "app/services/firebase";
+import { getUsers } from "./getUsers";
 
 export const getChatContent = async (chatId: string, requestedContent?: string) => {
   try {
@@ -25,4 +26,18 @@ export const getChatContent = async (chatId: string, requestedContent?: string) 
     console.error('Error fetching chat content:', error);
     return null;
   }
+};
+
+export const getChatParticipantsInfo = async (participants: any, currentUserID: any) => {
+  const participantsWithInfo = await Promise.all(participants.map(async (participant: any) => {
+    if (participant.id !== currentUserID) {
+      const userInfo = await getUsers({ id: participant.id });
+      return {
+        ...participant,
+        userInfo,
+      };
+    }
+    return participant;
+  }));
+  return participantsWithInfo;
 };

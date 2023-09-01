@@ -1,7 +1,9 @@
 'use client'
 
+import { useEffect, useState } from "react";
 import Icon from "../Icon";
 import { useAuth } from "app/hooks/useAuth";
+import { getUsers } from "app/helpers/importers/getUsers";
 
 interface ChatAsideProps {
   chats: any;
@@ -19,10 +21,47 @@ export const ChatAside = ({
 
   const { user, signOut } = useAuth();
 
+  const [chatList, setChatList] = useState<any>([]);
+
   const firstName = user.name.split(" ")[0];
+
+  const getUserChatsInfos = async (userId: string) => {
+    const userInfo = await getUsers({ id: userId });
+    return userInfo;
+  }
 
   const handleSignOut = async () =>
     confirm("Are you sure you want to sign out?") && await signOut();
+
+  useEffect(() => {
+    if (!chats) return;
+
+    const fetchChatList = async () => {
+      const newChatList = [];
+
+      for (const chat of chats) {
+        if (!chat || !chat.content) continue;
+
+        const newParticipants = await Promise.all(
+          chat.content.participants
+            .filter((participant: any) => participant.id !== user.id)
+            .map(async (participant: any) => await getUserChatsInfos(participant.id))
+        );
+
+        newChatList.push({
+          ...chat,
+          content: {
+            ...chat.content,
+            participants: newParticipants[0],
+          },
+        });
+      }
+
+      setChatList(newChatList);
+    };
+
+    fetchChatList();
+  }, [chats, user]);
 
   return (
     <aside
@@ -76,15 +115,23 @@ export const ChatAside = ({
           </div>
         </li> */}
 
-        {chats.map((chat: any, index: number) => {
-          const lastMessage = chat.messages[chat.messages.length - 1].content;
-          const isUnread = chat.messages.some((message: any) => !message.isReaded);
+        {chats && chatList && chatList.map((chat: any, index: number) => {
+          if (!chat || !chat.content) return null;
+
+          const chatMessages = chat.content.messages ? chat.content.messages : null;
+
+          const lastMessage = chatMessages ? chatMessages[chat.messages.length - 1]?.content : null;
+          const isUnread = chatMessages && chatMessages.some((message: any) => !message.isReaded);
+
+          const contact = chat.content.participants.find((participant: any) => participant.id !== user.id);
+
+          if (!contact) return null;
 
           return (
             <li
               key={index}
               className={`relative flex items-center gap-4 p-4 cursor-pointer ${selectedChat === chat ? "bg-rose-950 bg-opacity-25 hover:bg-rose-900 hover:bg-opacity-30" : "bg-zinc-950 hover:bg-zinc-900"} duration-75`}
-              onClick={() => onChatSelected(chat)}
+              onClick={() => onChatSelected(chat.content)}
             >
               {selectedChat === chat && (
                 <div className="absolute left-0 w-1 h-full bg-rose-900" />
@@ -92,16 +139,16 @@ export const ChatAside = ({
               <div className="flex-shrink-0 w-12 h-12">
                 <picture className="w-12 h-12 flex items-center justify-center border border-zinc-800 rounded-full overflow-hidden">
                   <img
-                    src={chat.contact.avatar ? chat.contact.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${chat.contact.name[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
-                    alt={`${chat.contact.name} profile's picture`}
+                    src={contact.avatar ? contact.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${contact.username[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
+                    alt={`${contact.name} profile's picture`}
                     className="pointer-events-none select-none"
                   />
                 </picture>
               </div>
               <div className="flex items-center justify-center overflow-hidden w-full gap-4">
                 <div className="flex flex-col w-full overflow-hidden">
-                  <strong className="text-zinc-200">{chat.contact.name}</strong>
-                  <p className="text-zinc-400 truncate">{lastMessage}</p>
+                  <span className="text-zinc-200">{contact.name}</span>
+                  <p className="text-zinc-400 truncate">{lastMessage ? lastMessage : `Start a conversation with ${contact.name}.`}</p>
                 </div>
                 {selectedChat === chat ? null : (
                   isUnread && (
