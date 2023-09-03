@@ -56,8 +56,6 @@ export const ChatContent = ({
       }
 
       await handleSendMessage(chat.chat_info.id, user, messageContent);
-
-      setMessages((prevMessages: any) => [...prevMessages, messageContent]);
       setTypedMessage("");
 
       setTimeout(() => {
@@ -109,10 +107,6 @@ export const ChatContent = ({
   }
 
   useEffect(() => {
-    if (messages && messages.length > 0) handleScrollToRecentMessage();
-  }, [messages]);
-
-  useEffect(() => {
     if (textareaRef.current) handleChangeTextAreaHeight(textareaRef.current);
   }, [typedMessage]);
 
@@ -122,19 +116,24 @@ export const ChatContent = ({
     const chatId = selectedChat.chat_info.id;
     const messagesRef = realtimeDb.ref(`chats/${chatId}/messages`);
 
+    setMessages([]);
+
     const handleNewMessage = (snapshot: any) => {
       if (!snapshot.exists()) return;
 
-      const newMessages = Object.values(snapshot.val());
+      const allMessages = Object.values(snapshot.val());
 
-      setMessages((prevMessages: any) => [...prevMessages, ...newMessages]);
-      handleScrollToRecentMessage();
+      const uniqueMessages = new Set(allMessages);
+
+      const uniqueMessagesArray = Array.from(uniqueMessages);
+
+      setMessages((prevMessages: any) => [...prevMessages, ...uniqueMessagesArray]);
     };
 
     try {
-      setMessages([]);
-
       messagesRef.on('value', handleNewMessage);
+
+      handleScrollToRecentMessage();
     } catch (error) {
       throw error;
     } finally {
@@ -143,6 +142,10 @@ export const ChatContent = ({
       };
     }
   }, [selectedChat]);
+
+  useEffect(() => {
+    if (chat && messages) handleScrollToRecentMessage();
+  }, [messages]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -344,7 +347,7 @@ export const ChatContent = ({
               onSubmit={(e: FormEvent) => e.preventDefault()}
             >
               <textarea
-                className="flex-1 w-full bg-transparent text-zinc-100 placeholder-zinc-400 focus:outline-none h-[30px] resize-none"
+                className="flex-1 w-full bg-transparent text-zinc-100 placeholder-zinc-400 focus:outline-none h-[30px] resize-none disabled:opacity-50 disabled:cursor-not-allowed"
                 ref={textareaRef}
                 rows={1}
                 placeholder="Type a message"
@@ -358,6 +361,7 @@ export const ChatContent = ({
                     handleWriteMessage();
                   }
                 }}
+                disabled={!chat || !user}
                 value={typedMessage}
                 style={{
                   maxHeight: "8rem"
