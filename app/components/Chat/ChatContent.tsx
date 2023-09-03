@@ -115,7 +115,7 @@ export const ChatContent = ({
   }, [typedMessage]);
 
   useEffect(() => {
-    if (!selectedChat || !selectedChat.chat_info || selectedChat.chat_info.id) return;
+    if (!selectedChat || !selectedChat.chat_info || !selectedChat.chat_info.id) return;
 
     const chatId = selectedChat.chat_info.id;
     const messagesRef = realtimeDb.ref(`chats/${chatId}/messages`);
@@ -126,15 +126,20 @@ export const ChatContent = ({
       const newMessages = Object.values(snapshot.val());
 
       setMessages((prevMessages: any) => [...prevMessages, ...newMessages]);
-
       handleScrollToRecentMessage();
     };
 
-    messagesRef.on('value', handleNewMessage);
+    try {
+      setMessages([]);
 
-    return () => {
-      messagesRef.off('value', handleNewMessage);
-    };
+      messagesRef.on('value', handleNewMessage);
+    } catch (error) {
+      throw error;
+    } finally {
+      return () => {
+        messagesRef.off('value', handleNewMessage);
+      };
+    }
   }, [selectedChat]);
 
   return (
