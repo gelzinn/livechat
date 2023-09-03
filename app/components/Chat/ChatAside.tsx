@@ -170,9 +170,13 @@ export const ChatAside = ({
                 contact_info
               } = chat;
 
-              const chatMessages = chat_info.messages ? chat_info.messages : [];
+              const chatMessages: any = chat_info.messages ? Object.values(chat_info.messages) : [];
 
-              const lastMessage = chatMessages ? chatMessages[chatMessages.length - 1]?.content : null;
+              const lastMessage = {
+                ...chatMessages[chatMessages.length - 1],
+                message: chatMessages[chatMessages.length - 1]?.content,
+                sender: chatMessages[chatMessages.length - 1]?.sender,
+              }
 
               const chatMessagesArray = chatMessages ? Object.values(chatMessages) : [];
               const isUnread = chatMessagesArray.some((message: any) => !message.isReaded);
@@ -182,9 +186,9 @@ export const ChatAside = ({
               if (!contact) return null;
 
               return (
-                <li
+                <button
                   key={index}
-                  className={`relative flex items-center gap-4 p-4 cursor-pointer ${selectedChat === chat ? "bg-rose-950 bg-opacity-25 hover:bg-rose-900 hover:bg-opacity-30" : "bg-zinc-950 hover:bg-zinc-900"} duration-75`}
+                  className={`relative flex items-center w-full gap-4 p-4 cursor-pointer ${selectedChat === chat ? "bg-rose-950 bg-opacity-25 hover:bg-rose-900 hover:bg-opacity-30" : "bg-zinc-950 hover:bg-zinc-900"} duration-75`}
                   onClick={() => {
                     onChatSelected(chat);
                   }}
@@ -202,9 +206,9 @@ export const ChatAside = ({
                     </picture>
                   </div>
                   <div className="flex items-center justify-center overflow-hidden w-full gap-4">
-                    <div className="flex flex-col w-full overflow-hidden">
-                      <span className="text-zinc-200">{contact_info.name}</span>
-                      <p className="text-zinc-400 truncate">{lastMessage ? lastMessage : `Start a conversation with ${contact_info.name}.`}</p>
+                    <div className="flex flex-col w-full text-left overflow-hidden">
+                      <span className="text-zinc-200 =">{contact_info.name}</span>
+                      <p className="text-zinc-400 truncate">{lastMessage ? `${lastMessage.sender === user.username ? "You" : contact_info.username}: ${lastMessage.message}` : "No messages yet."}</p>
                     </div>
                     {selectedChat === chat ? null : (
                       isUnread && chat.messages && (
@@ -213,7 +217,7 @@ export const ChatAside = ({
                         </span>
                       ))}
                   </div>
-                </li>
+                </button>
               )
             })
           ) : (

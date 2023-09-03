@@ -7,6 +7,7 @@ import Icon from "../Icon";
 import { handleSendMessage } from "app/hooks/handles/handleSendMessage";
 import { useAuth } from "app/hooks/useAuth";
 import { handleRemoveContact } from "app/hooks/handles/handleRemoveContact";
+import { realtimeDb } from "app/services/firebase";
 
 interface ChatContentProps {
   chat: any;
@@ -49,14 +50,18 @@ export const ChatContent = ({
 
       if (textareaRef.current) {
         handleChangeTextAreaHeight(textareaRef.current);
-        setTypedMessage("");
+        textareaRef.current.disabled = true;
       }
 
       await handleSendMessage(chat.chat_info.id, user, messageContent);
+
       setMessages((prevMessages: any) => [...prevMessages, messageContent]);
+      setTypedMessage("");
 
       setTimeout(() => {
         handleScrollToRecentMessage();
+
+        if (textareaRef.current) textareaRef.current.disabled = false;
       }, 100);
 
       setTypedMessage("");
@@ -102,9 +107,7 @@ export const ChatContent = ({
   }
 
   useEffect(() => {
-    if (messages && messages.length > 0) {
-      handleScrollToRecentMessage();
-    };
+    if (messages && messages.length > 0) handleScrollToRecentMessage();
   }, [messages]);
 
   useEffect(() => {
@@ -112,9 +115,26 @@ export const ChatContent = ({
   }, [typedMessage]);
 
   useEffect(() => {
-    if (!selectedChat || !selectedChat.chat_info.messages) return setMessages([]);
+    if (!selectedChat || !selectedChat.chat_info || selectedChat.chat_info.id) return;
 
-    setMessages(Object.values(selectedChat.chat_info.messages));
+    const chatId = selectedChat.chat_info.id;
+    const messagesRef = realtimeDb.ref(`chats/${chatId}/messages`);
+
+    const handleNewMessage = (snapshot: any) => {
+      if (!snapshot.exists()) return;
+
+      const newMessages = Object.values(snapshot.val());
+
+      setMessages((prevMessages: any) => [...prevMessages, ...newMessages]);
+
+      handleScrollToRecentMessage();
+    };
+
+    messagesRef.on('value', handleNewMessage);
+
+    return () => {
+      messagesRef.off('value', handleNewMessage);
+    };
   }, [selectedChat]);
 
   return (

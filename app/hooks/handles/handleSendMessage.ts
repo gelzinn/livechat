@@ -4,9 +4,8 @@ export const handleSendMessage = async (chatId: string, user: any, message: any)
   if (!chatId || !user || !message) throw new Error('Missing parameters');
 
   try {
-
-    const chatRef = realtimeDb.ref(`chats/${chatId}`);
-    const newMessageRef = chatRef.child('messages').push();
+    const chatRef = realtimeDb.ref(`chats/${chatId}/messages`);
+    const newMessageRef = chatRef.push();
 
     await newMessageRef.set(message);
 
@@ -16,7 +15,7 @@ export const handleSendMessage = async (chatId: string, user: any, message: any)
       lastMessageBy: user.username,
     };
 
-    await chatRef.update({
+    await chatRef.parent!.update({
       metadata
     });
   } catch (error) {
