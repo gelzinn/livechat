@@ -43,6 +43,14 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
 
         db.collection("users").doc(uid).get().then(async (doc) => {
           if (doc.exists) {
+            doc.ref.update({
+              metadata: {
+                created_at: user.metadata.creationTime,
+                updated_at: user.metadata.creationTime,
+                last_login: user.metadata.lastSignInTime,
+              },
+            });
+
             setUser((prevUser: any) => {
               return {
                 ...prevUser,
@@ -58,6 +66,9 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
 
               doc.ref.update({
                 username,
+                metadata: {
+                  last_login: user.metadata.lastSignInTime,
+                },
               });
 
               setUser((prevUser: any) => {
@@ -80,13 +91,17 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
                 avatar: photoURL,
                 email,
                 admin: false,
-              }).then(() => {
-                createChat(uid, uniqueUsername);
-              }).catch((error) => {
-                console.error("Error during creating user:", error);
-              }).finally(() => {
-                setUserUpdatedInDB(true);
-              });
+                metadata: {
+                  created_at: firebase.firestore.FieldValue.serverTimestamp(),
+                  updated_at: firebase.firestore.FieldValue.serverTimestamp(),
+                  last_login: firebase.firestore.FieldValue.serverTimestamp(),
+                },
+              })
+                .catch((error) => {
+                  throw error;
+                }).finally(() => {
+                  setUserUpdatedInDB(true);
+                });
             }
           }
         })
