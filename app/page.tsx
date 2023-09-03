@@ -13,6 +13,8 @@ import { GitHubLogo, GoogleLogo } from "@/components/Logos/OtherBrands";
 
 import { useRouter } from "next/navigation";
 import { db } from "./services/firebase";
+import { checkUsernameExists } from "./helpers/validators/checkers/checkUsernameExists";
+import { checkEmailExists } from "./helpers/validators/checkers/checkEmailExists";
 
 const Homepage = () => {
   const { signUp, signInWithProvider, user } = useAuth();
@@ -121,7 +123,7 @@ const Homepage = () => {
     }
   }
 
-  const handleSignUp = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
@@ -131,9 +133,15 @@ const Homepage = () => {
 
       if (formStatus.errors.length > 0) return;
 
+      const isUsernameTaken = await checkUsernameExists(formData.username);
+      const isEmailTaken = await checkEmailExists(formData.email);
+
+      if (isUsernameTaken) throw new Error("Username is already taken.");
+      if (isEmailTaken) throw new Error("Email is already taken.");
+
       signUp(formData.username, formData.email, formData.password);
     } catch (error) {
-      console.error("Error during authentication:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
