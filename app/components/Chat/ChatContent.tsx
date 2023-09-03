@@ -61,7 +61,10 @@ export const ChatContent = ({
       setTimeout(() => {
         handleScrollToRecentMessage();
 
-        if (textareaRef.current) textareaRef.current.disabled = false;
+        if (textareaRef.current) {
+          textareaRef.current.disabled = false;
+          textareaRef.current.focus();
+        }
       }, 100);
 
       setTypedMessage("");
@@ -363,9 +366,7 @@ export const ChatContent = ({
                 }}
                 disabled={!chat || !user}
                 value={typedMessage}
-                style={{
-                  maxHeight: "8rem"
-                }}
+                style={{ maxHeight: "8rem" }}
               />
               <button
                 type="submit"
