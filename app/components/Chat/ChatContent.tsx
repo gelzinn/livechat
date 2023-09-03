@@ -33,7 +33,7 @@ export const ChatContent = ({
   const barActionRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const contact = chat ? chat.chat_info.participants.find((participant: any) => participant.id !== user.id) : null;
+  const contact = chat ? chat.contact_info : null;
 
   const handleUnselectChat = () => onChatSelected(null);
 
@@ -157,7 +157,7 @@ export const ChatContent = ({
             className="flex justify-between items-center text-2xl sm:p-4 px-2 py-4 h-20 sm:h-full max-h-24 border-b border-zinc-800 bg-zinc-1000"
             ref={headerRef}
           >
-            <div className="flex items-center h-full">
+            <div className="flex items-center h-full w-full">
               <button
                 className="md:hidden flex items-center justify-center w-8 h-full rounded text-zinc-100 font-medium"
                 onClick={handleUnselectChat}
@@ -165,19 +165,19 @@ export const ChatContent = ({
                 <Icon icon="ArrowLeft" className="w-5 h-5" />
               </button>
               <button
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 h-full"
                 onClick={() => setIsOpenChatInfo(!isOpenChatInfo)}
               >
                 <picture className="w-10 h-10 sm:w-12 sm:h-12 mx-2 flex items-center justify-center border-2 border-zinc-800 rounded-full overflow-hidden">
                   <img
-                    src={chat.contact_info.avatar ? chat.contact_info.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${chat.contact_info.username[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
-                    alt={`${chat.contact_info.name} profile's picture`}
+                    src={contact.avatar ? contact.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${contact.username[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
+                    alt={`${contact.name} profile's picture`}
                     className="pointer-events-none select-none"
                   />
                 </picture>
                 <span className="flex flex-col items-start justify-center">
-                  <h1 className="font-medium text-lg">{chat.contact_info.name}</h1>
-                  <p className="text-zinc-400 text-sm">@{chat.contact_info.username}</p>
+                  <h1 className="font-medium text-lg">{contact.name}</h1>
+                  <p className="text-zinc-400 text-sm">@{contact.username}</p>
                 </span>
               </button>
             </div>
@@ -373,7 +373,7 @@ export const ChatContent = ({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between w-full h-20 sm:h-full max-h-24 px-4 py-4 border-b border-zinc-800 bg-zinc-1000">
-              <h1 className="text-zinc-100 text-lg font-medium">Chat Info</h1>
+              <h1 className="text-zinc-100 text-lg font-medium">{contact.name}</h1>
               <button
                 className="flex items-center justify-center w-8 h-8 rounded-full text-zinc-100 font-medium"
                 onClick={() => setIsOpenChatInfo(false)}
@@ -383,10 +383,11 @@ export const ChatContent = ({
             </div>
             <main className="flex flex-col flex-1 w-full h-full overflow-y-auto py-4">
               <div className="flex flex-col items-center justify-center gap-2 w-full min-h-40">
-                <picture className="w-24 h-24 sm:w-32 sm:h-32 mx-2 flex items-center justify-center border border-zinc-800 rounded-full overflow-hidden">
+                <picture className="w-24 h-24 sm:w-32 sm:h-32 mx-2 flex items-center justify-center border border-zinc-800 rounded-full pointer-events-none select-none overflow-hidden">
                   <img
-                    src={`https://images.placeholders.dev/?width=320&height=320&text=M&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
-                    className="pointer-events-none select-none"
+                    src={contact.avatar ? contact.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${contact.username[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
+                    alt={`${contact.name} profile's picture`}
+                    className="pointer-events-none select-none w-24 h-24 sm:w-32 sm:h-32"
                   />
                 </picture>
                 <div className="flex flex-col items-center justify-center">

@@ -4,15 +4,23 @@ import { Chat } from "@/components/Chat";
 import { getUserChats, getUsers } from "app/helpers/importers/getUsers";
 import { useAuth } from "app/hooks/useAuth";
 import { realtimeDb } from "app/services/firebase";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const ChatPage = () => {
   const { user } = useAuth();
+  const params = useParams();
+
+  const [docHeight, setDocHeight] = useState(window.innerHeight);
 
   const [selectedChat, setSelectedChat] = useState(null);
   const [chats, setChats] = useState<any>([]);
 
   const [loading, setLoading] = useState<boolean>(false);
+
+  const handleResize = () => {
+    setDocHeight(window.innerHeight);
+  };
 
   const handleSelectedChat = (chat: any) => setSelectedChat(chat);
 
@@ -61,8 +69,23 @@ const ChatPage = () => {
     getChats();
   }, [user]);
 
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.style.setProperty("--doc-height", `${docHeight}px`);
+  }, [docHeight]);
+
   return (
-    <main>
+    <main
+      // @ts-ignore
+      style={{ height: "100dvh", height: "100vh" }}
+    >
       <Chat.Root>
         <Chat.Aside
           chats={chats}

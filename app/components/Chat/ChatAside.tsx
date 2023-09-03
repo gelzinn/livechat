@@ -37,11 +37,6 @@ export const ChatAside = ({
 
   const firstName = user.name.split(" ")[0];
 
-  const getUserChatsInfos = async (userId: string) => {
-    const userInfo = await getUsers({ id: userId });
-    return userInfo;
-  }
-
   const handleSignOut = async () =>
     confirm("Are you sure you want to sign out?") && await signOut();
 
@@ -63,7 +58,7 @@ export const ChatAside = ({
         const newParticipants = await Promise.all(
           chat.content.participants
             .filter((participant: any) => participant.id !== user.id)
-            .map(async () => await getUserChatsInfos(user.id))
+            .map(async () => await getUsers({ id: user.id }))
         );
 
         newChatList.push({
