@@ -22,6 +22,8 @@ export const ChatContent = ({
 }: ChatContentProps) => {
   const { user } = useAuth();
 
+  const [documentHeight, setDocumentHeight] = useState<number>(window.innerHeight);
+
   const [messages, setMessages] = useState(chat ? chat.messages : []);
   const [typedMessage, setTypedMessage] = useState("");
 
@@ -142,15 +144,25 @@ export const ChatContent = ({
     }
   }, [selectedChat]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleResize = () => {
+      setDocumentHeight(window.innerHeight);
+    }
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    }
+  }, [window.innerHeight, documentHeight]);
+
   return (
     <>
       <div
-        className="flex flex-col flex-1 w-full"
-        style={{
-          height: "-webkit-fill-available",
-          // @ts-ignore
-          height: "100dvh", height: "100vh"
-        }}
+        className="flex flex-col flex-grow w-full overflow-hidden"
+        style={{ height: documentHeight ? documentHeight : "100vh" }}
       >
         {chat && (
           <header

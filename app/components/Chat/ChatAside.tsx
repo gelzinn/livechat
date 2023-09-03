@@ -28,6 +28,8 @@ export const ChatAside = ({
   if (!chats)
     throw new Error("Chats not found at Chat Root Component.");
 
+  const [documentHeight, setDocumentHeight] = useState<number>(window.innerHeight);
+
   const { user, signOut } = useAuth();
 
   const router = useRouter();
@@ -98,11 +100,24 @@ export const ChatAside = ({
     if (pathname !== url) router.push(url);
   }, [selectedChat]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleResize = () => {
+      setDocumentHeight(window.innerHeight);
+    }
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    }
+  }, [window.innerHeight, documentHeight]);
+
   return (
     <aside
-      className={`flex flex-col min-w-96 w-full md:max-w-[420px] bg-zinc-950 border-r border-zinc-900 ${selectedChat ? "max-md:-translate-x-full" : "max-md:translate-x-0"} max-md:absolute max-md:left-0 max-md:z-50`}
-      // @ts-ignore
-      style={{ height: "100dvh", height: "100vh" }}
+      className={`flex flex-col flex-grow min-w-96 w-full overflow-hidden md:max-w-[420px] bg-zinc-950 border-r border-zinc-900 ${selectedChat ? "max-md:-translate-x-full" : "max-md:translate-x-0"} max-md:absolute max-md:left-0 max-md:z-50`}
+      style={{ height: documentHeight ? documentHeight : "100vh" }}
     >
       <header className="flex justify-between items-center p-4 gap-4 h-20 sm:h-full max-h-24 border-b border-zinc-800 bg-zinc-1000">
         <div className="flex items-center gap-4 h-full">
