@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 type AuthContextType = {
   user: any;
+  signUp: (username: string, email: string, password: string) => Promise<void>;
   signInWithProvider: (provider: "google" | "github" | "email", email?: string, password?: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
@@ -62,7 +63,7 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
             const fetchedUsername = doc.data()?.username;
 
             if (!userUpdatedInDB && !fetchedUsername && uid) {
-              const username = await createUniqueUsername(displayName!);
+              const username = await createUniqueUsername(email!);
 
               doc.ref.update({
                 username,
@@ -112,6 +113,40 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
       };
     });
   }, [userUpdatedInDB]);
+
+  async function signUp(username: string, email: string, password: string) {
+    try {
+      console.log(username, email, password);
+
+      await firebase.auth().createUserWithEmailAndPassword(email, password);
+
+      const user = firebase.auth().currentUser;
+
+      if (!user) return;
+
+      await db.collection("users").doc(user.uid).set({
+        id: user.uid,
+        username,
+        email: user.email,
+        admin: false,
+        metadata: {
+          created_at: firebase.firestore.FieldValue.serverTimestamp(),
+          updated_at: firebase.firestore.FieldValue.serverTimestamp(),
+          last_login: firebase.firestore.FieldValue.serverTimestamp(),
+        },
+      });
+
+      setUser({
+        id: user.uid,
+        username,
+        email: user.email,
+        admin: false,
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
 
   async function signInWithProvider(provider: "google" | "github" | "email", email?: string, password?: string) {
     try {
@@ -192,7 +227,7 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
         });
       }
     } catch (error) {
-      console.error("Error during authentication:", error);
+      throw error;
     }
   }
 
@@ -201,7 +236,7 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
       await firebase.auth().signOut();
       setUser(null);
     } catch (error) {
-      console.error("Error during sign out:", error);
+      throw error;
     }
   }
 
@@ -254,7 +289,7 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
 
       await batch.commit();
     } catch (error) {
-      console.error("Error during creating chat:", error);
+      throw error;
     }
   }
 
@@ -284,6 +319,7 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
     <AuthContext.Provider
       value={{
         user,
+        signUp,
         signInWithProvider,
         signOut
       }}

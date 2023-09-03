@@ -6,12 +6,14 @@ import { useContext } from "react";
 export const useAuth = () => {
   const {
     user,
+    signUp,
     signInWithProvider,
     signOut
   } = useContext(AuthContext);
 
   return {
     user,
+    signUp,
     signInWithProvider,
     signOut
   };

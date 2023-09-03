@@ -37,7 +37,7 @@ export const ChatAside = ({
 
   const [localChats, setLocalChats] = useState(chats);
 
-  const firstName = user.name.split(" ")[0];
+  const firstName = user.name && user.name.split(" ")[0];
 
   const handleSignOut = async () =>
     confirm("Are you sure you want to sign out?") && await signOut();
@@ -123,13 +123,18 @@ export const ChatAside = ({
         <div className="flex items-center gap-4 h-full">
           <picture className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center border border-zinc-800 rounded-full overflow-hidden">
             <img
-              src={user ? user.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${firstName[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
-              alt={`${firstName} profile's picture`}
+              src={
+                user && user.avatar
+                  ? user.avatar
+                  : `https://images.placeholders.dev/?width=320&height=320&text=${user?.username ? user.username[0] : ''
+                  }&bgColor=%2318181b&textColor=%23fff&fontSize=120`
+              }
+              alt={`${user?.username || ''} profile's picture`}
               className="pointer-events-none select-none"
             />
           </picture>
           <div className="hidden xs:flex flex-col">
-            <strong className="text-zinc-100">{firstName}</strong>
+            <strong className="text-zinc-100">{firstName ? firstName : "User"}</strong>
             <span className="text-zinc-500">
               {user ? user.username : "Loading..."}
             </span>

@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import { db } from "./services/firebase";
 
 const Homepage = () => {
-  const { signInWithProvider, user } = useAuth();
+  const { signUp, signInWithProvider, user } = useAuth();
   const router = useRouter();
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -129,9 +129,9 @@ const Homepage = () => {
 
       handleCheckInputs();
 
-      if (formStatus.isValid) {
-        console.log("Sign Up");
-      }
+      if (formStatus.errors.length > 0) return;
+
+      signUp(formData.username, formData.email, formData.password);
     } catch (error) {
       console.error("Error during authentication:", error);
     } finally {
