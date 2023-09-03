@@ -180,7 +180,7 @@ export const ChatContent = ({
                 <Icon icon="ArrowLeft" className="w-5 h-5" />
               </button>
               <button
-                className="flex items-center gap-2 h-full"
+                className="flex items-center gap-2 h-full w-full md:w-fit"
                 onClick={() => setIsOpenChatInfo(!isOpenChatInfo)}
               >
                 <picture className="w-10 h-10 sm:w-12 sm:h-12 mx-2 flex items-center justify-center border-2 border-zinc-800 rounded-full overflow-hidden">
@@ -381,14 +381,15 @@ export const ChatContent = ({
 
       {chat && contact && (
         <aside
-          className={`fixed inset-0 z-50 bg-black bg-opacity-80 ${isOpenChatInfo ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"} duration-300`}
+          className={`flex flex-grow w-full overflow-hidden fixed inset-0 z-50 bg-black bg-opacity-80 ${isOpenChatInfo ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"} duration-300`}
           onClick={() => setIsOpenChatInfo(false)}
+          style={{ height: documentHeight ? documentHeight : "100vh" }}
         >
           <div
-            className={`min-w-96 w-full md:max-w-[420px] fixed top-0 right-0 z-50 h-full bg-zinc-950 border-l border-zinc-900 ${isOpenChatInfo ? "translate-x-0" : "translate-x-full"} duration-300`}
+            className={`fixed top-0 right-0 z-50 min-w-96 w-full md:max-w-[420px] h-full bg-zinc-950 border-l border-transparent md:border-zinc-900 ${isOpenChatInfo ? "translate-x-0" : "translate-x-full"} duration-300 overflow-hidden`}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between w-full h-20 sm:h-full max-h-24 px-4 py-4 border-b border-zinc-800 bg-zinc-1000">
+            <div className="sticky top-0 flex items-center justify-between w-full h-20 sm:h-full max-h-24 px-4 py-4 border-b border-zinc-800 bg-zinc-1000">
               <h1 className="text-zinc-100 text-lg font-medium">{contact.name}</h1>
               <button
                 className="flex items-center justify-center w-8 h-8 rounded-full text-zinc-100 font-medium"
@@ -397,7 +398,7 @@ export const ChatContent = ({
                 <Icon icon="X" className="w-5 h-5" />
               </button>
             </div>
-            <main className="flex flex-col flex-1 w-full h-full overflow-y-auto py-4">
+            <main className="flex flex-col flex-grow w-full h-full mt-4">
               <div className="flex flex-col items-center justify-center gap-2 w-full min-h-40">
                 <picture className="w-24 h-24 sm:w-32 sm:h-32 mx-2 flex items-center justify-center border border-zinc-800 rounded-full pointer-events-none select-none overflow-hidden">
                   <img
@@ -411,7 +412,7 @@ export const ChatContent = ({
                   <p className="text-zinc-400 text-sm">@{contact.username}</p>
                 </div>
               </div>
-              <div className="flex flex-col gap-2 p-4">
+              <div className="flex flex-col flex-grow gap-2 p-4">
                 <div className="relative inline-flex items-center justify-center w-full">
                   <hr className="w-full h-px my-8 bg-zinc-800 border-0" />
                   <span className="absolute pr-3 text-zinc-400 -translate-x-100 bg-zinc-950 left-0">
@@ -429,35 +430,14 @@ export const ChatContent = ({
                 <div className="relative inline-flex items-center justify-center w-full">
                   <hr className="w-full h-px my-8 bg-zinc-800 border-0" />
                   <span className="absolute pr-3 text-zinc-400 -translate-x-100 bg-zinc-950 left-0">
-                    Privacy
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-zinc-400 text-sm">Media visibility</span>
-                  <button
-                    className="flex items-center justify-center w-8 h-8 rounded-full text-zinc-100 font-medium"
-                  >
-                    <Icon icon="Eye" className="w-5 h-5" />
-                  </button>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-zinc-400 text-sm">Encryption</span>
-                  <button
-                    className="flex items-center justify-center w-8 h-8 rounded-full text-zinc-100 font-medium"
-                  >
-                    <Icon icon="Lock" className="w-5 h-5" />
-                  </button>
-                </div>
-                <div className="relative inline-flex items-center justify-center w-full">
-                  <hr className="w-full h-px my-8 bg-zinc-800 border-0" />
-                  <span className="absolute pr-3 text-zinc-400 -translate-x-100 bg-zinc-950 left-0">
                     Chat
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-zinc-400 text-sm">Delete chat</span>
                   <button
-                    className="flex items-center justify-center w-8 h-8 rounded-full text-zinc-100 font-medium"
+                    className="flex items-center justify-center w-8 h-8 rounded-full text-zinc-100 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={!user || !contact || !chat || !messages || !(messages.length > 0)}
                     onClick={() => {
                       confirm("Are you sure you want to delete this chat?") && handleRemoveContact(user.id, contact.id);
                     }}
