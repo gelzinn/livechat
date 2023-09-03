@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import Icon from "../Icon";
 import { handleSendMessage } from "app/hooks/handles/handleSendMessage";
 import { useAuth } from "app/hooks/useAuth";
+import { handleRemoveContact } from "app/hooks/handles/handleRemoveContact";
 
 interface ChatContentProps {
   chat: any;
@@ -31,30 +32,37 @@ export const ChatContent = ({
   const barActionRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const contact = chat && chat.participants[0] ? chat.participants[0] : null;
+  const contact = chat ? chat.chat_info.participants.find((participant: any) => participant.id !== user.id) : null;
 
   const handleUnselectChat = () => onChatSelected(null);
 
-  const handleWriteMessage = () => {
-    if (!typedMessage) return;
+  const handleWriteMessage = async () => {
+    if (!user || !typedMessage) return;
 
-    const newMessage = {
-      sender: "user",
-      content: typedMessage.trim(),
-      timestamp: new Date().toISOString(),
-      isReaded: false
-    };
+    try {
+      const messageContent = {
+        sender: user.username,
+        content: typedMessage.trim(),
+        timestamp: new Date().toISOString(),
+        isReaded: false
+      };
 
-    if (textareaRef.current) {
-      handleChangeTextAreaHeight(textareaRef.current);
+      if (textareaRef.current) {
+        handleChangeTextAreaHeight(textareaRef.current);
+        setTypedMessage("");
+      }
+
+      await handleSendMessage(chat.chat_info.id, user, messageContent);
+      setMessages((prevMessages: any) => [...prevMessages, messageContent]);
+
+      setTimeout(() => {
+        handleScrollToRecentMessage();
+      }, 100);
+
       setTypedMessage("");
+    } catch (error) {
+      throw error;
     }
-
-    setMessages((prevMessages: any) => [...prevMessages, newMessage]);
-
-    setTimeout(() => {
-      handleScrollToRecentMessage();
-    }, 100);
   }
 
   // const handleReadMessage = (updatedChat: any) => {
@@ -96,9 +104,6 @@ export const ChatContent = ({
   useEffect(() => {
     if (messages && messages.length > 0) {
       handleScrollToRecentMessage();
-      // handleReadMessage(selectedChat);
-
-      // handleSendMessage(chat, messages[messages.length - 1]);
     };
   }, [messages]);
 
@@ -107,16 +112,10 @@ export const ChatContent = ({
   }, [typedMessage]);
 
   useEffect(() => {
-    if (!selectedChat) return;
+    if (!selectedChat || !selectedChat.chat_info.messages) return setMessages([]);
 
-    setMessages(selectedChat.messages ? selectedChat.messages : []);
+    setMessages(Object.values(selectedChat.chat_info.messages));
   }, [selectedChat]);
-
-  useEffect(() => {
-    console.log(selectedChat && selectedChat)
-
-    // if (selectedChat) handleReadMessage(selectedChat);
-  }, []);
 
   return (
     <>
@@ -146,13 +145,14 @@ export const ChatContent = ({
               >
                 <picture className="w-10 h-10 sm:w-12 sm:h-12 mx-2 flex items-center justify-center border-2 border-zinc-800 rounded-full overflow-hidden">
                   <img
-                    src={contact.avatar ? contact.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${contact.name[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
+                    src={chat.contact_info.avatar ? chat.contact_info.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${chat.contact_info.username[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
+                    alt={`${chat.contact_info.name} profile's picture`}
                     className="pointer-events-none select-none"
                   />
                 </picture>
                 <span className="flex flex-col items-start justify-center">
-                  <h1 className="font-medium text-lg">{contact.name}</h1>
-                  <p className="text-zinc-400 text-sm">@{contact.username}</p>
+                  <h1 className="font-medium text-lg">{chat.contact_info.name}</h1>
+                  <p className="text-zinc-400 text-sm">@{chat.contact_info.username}</p>
                 </span>
               </button>
             </div>
@@ -184,7 +184,7 @@ export const ChatContent = ({
             messages && messages.length > 0 && (
               <ul className="flex flex-1 flex-col p-4 pt-0">
                 {messages.map((message: any, index: number) => {
-                  const isUser = message.sender === 'user';
+                  const isUser = message.sender === user.username;
                   const isReaded = message.isReaded;
 
                   const prevMessage = index > 0 ? messages[index - 1] : null;
@@ -360,7 +360,7 @@ export const ChatContent = ({
               <div className="flex flex-col items-center justify-center gap-2 w-full min-h-40">
                 <picture className="w-24 h-24 sm:w-32 sm:h-32 mx-2 flex items-center justify-center border border-zinc-800 rounded-full overflow-hidden">
                   <img
-                    src={contact.avatar ? contact.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${contact.name[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
+                    src={`https://images.placeholders.dev/?width=320&height=320&text=M&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
                     className="pointer-events-none select-none"
                   />
                 </picture>
@@ -416,6 +416,9 @@ export const ChatContent = ({
                   <span className="text-zinc-400 text-sm">Delete chat</span>
                   <button
                     className="flex items-center justify-center w-8 h-8 rounded-full text-zinc-100 font-medium"
+                    onClick={() => {
+                      confirm("Are you sure you want to delete this chat?") && handleRemoveContact(user.id, contact.id);
+                    }}
                   >
                     <Icon icon="Trash" className="w-5 h-5" />
                   </button>

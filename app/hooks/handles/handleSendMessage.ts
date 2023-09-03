@@ -1,20 +1,25 @@
-import { firebase, realtimeDb } from "app/services/firebase";
+import { realtimeDb } from "app/services/firebase";
 
-export const handleSendMessage = async (chatId: string, senderId: string, messageContent: string) => {
+export const handleSendMessage = async (chatId: string, user: any, message: any) => {
+  if (!chatId || !user || !message) throw new Error('Missing parameters');
+
   try {
+
     const chatRef = realtimeDb.ref(`chats/${chatId}`);
     const newMessageRef = chatRef.child('messages').push();
 
-    const newMessage = {
-      senderId,
-      content: messageContent,
-      timestamp: firebase.database.ServerValue.TIMESTAMP,
+    await newMessageRef.set(message);
+
+    const metadata = {
+      lastMessage: message.content,
+      lastMessageAt: message.timestamp,
+      lastMessageBy: user.username,
     };
 
-    await newMessageRef.set(newMessage);
-
-    await chatRef.update({ lastMessageTime: firebase.database.ServerValue.TIMESTAMP });
+    await chatRef.update({
+      metadata
+    });
   } catch (error) {
-    console.error('Error sending message:', error);
+    throw error;
   }
 };

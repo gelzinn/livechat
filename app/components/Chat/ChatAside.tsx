@@ -1,28 +1,39 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import Icon from "../Icon";
+
+import { usePathname, useRouter } from "next/navigation";
+
 import { useAuth } from "app/hooks/useAuth";
-import { getUserChats, getUsers } from "app/helpers/importers/getUsers";
 import { handleAddContact } from "app/hooks/handles/handleAddContact";
+import { getUsers } from "app/helpers/importers/getUsers";
+import { getChatContent } from "app/helpers/importers/getChats";
+
+import Icon from "../Icon";
 
 interface ChatAsideProps {
   chats: any;
+  changeChats: any;
   onChatSelected: (chat: any) => void;
   selectedChat: any;
+  loading: boolean;
 }
 
 export const ChatAside = ({
   chats,
   onChatSelected,
-  selectedChat
+  selectedChat,
+  loading
 }: ChatAsideProps) => {
   if (!chats)
     throw new Error("Chats not found at Chat Root Component.");
 
   const { user, signOut } = useAuth();
 
-  const [chatList, setChatList] = useState<any>([]);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const [localChats, setLocalChats] = useState(chats);
 
   const firstName = user.name.split(" ")[0];
 
@@ -34,19 +45,25 @@ export const ChatAside = ({
   const handleSignOut = async () =>
     confirm("Are you sure you want to sign out?") && await signOut();
 
-  useEffect(() => {
-    if (!chats) return;
+  const handleAddContactAsync = async () => {
+    const contactInfo = prompt("Enter the username, ID, or email of the user you want to start a conversation with:");
 
-    const fetchChatList = async () => {
+    if (contactInfo === null) return;
+
+    if (!user || !user.id) return;
+
+    try {
+      await handleAddContact(user.id, contactInfo);
+
       const newChatList = [];
 
-      for (const chat of chats) {
+      for (const chat of localChats) {
         if (!chat || !chat.content) continue;
 
         const newParticipants = await Promise.all(
           chat.content.participants
             .filter((participant: any) => participant.id !== user.id)
-            .map(async (participant: any) => await getUserChatsInfos(participant.id))
+            .map(async () => await getUserChatsInfos(user.id))
         );
 
         newChatList.push({
@@ -58,11 +75,33 @@ export const ChatAside = ({
         });
       }
 
-      setChatList(newChatList);
-    };
+      setLocalChats(newChatList);
 
-    fetchChatList();
-  }, [chats, user]);
+      if (newChatList.length > 0) {
+        const newChat = await getChatContent(newChatList[newChatList.length - 1]?.id);
+
+        if (!newChat) return;
+
+        newChatList[newChatList.length - 1].content = newChat;
+        setLocalChats(newChatList);
+      }
+    } catch (error) {
+      alert(error);
+    }
+  };
+
+  useEffect(() => {
+    if (!chats) return;
+
+    setLocalChats(chats);
+  }, [chats]);
+
+  useEffect(() => {
+    if (!selectedChat) return;
+
+    const url = `${pathname}?id=${selectedChat.chat_info.id}`;
+    if (pathname !== url) router.push(url);
+  }, [selectedChat]);
 
   return (
     <aside
@@ -89,21 +128,7 @@ export const ChatAside = ({
         <div className="flex items-center h-full">
           <button
             className="flex items-center justify-center min-w-12 h-12 rounded text-base text-zinc-100 p-4"
-            onClick={async () => {
-              const contactInfo = prompt("Enter the username, ID, or email of the user you want to start a conversation with:");
-
-              if (contactInfo !== null) {
-                const userId = user.id;
-
-                try {
-                  const contact = await handleAddContact(userId, contactInfo);
-
-                  console.log(contact! && contact)
-                } catch (error) {
-                  alert(error);
-                }
-              }
-            }}
+            onClick={handleAddContactAsync}
           >
             <Icon icon="Plus" size={20} />
           </button>
@@ -115,7 +140,7 @@ export const ChatAside = ({
         </div>
       </header>
       <ul className="divide-y divide-zinc-800 overflow-y-auto h-full">
-        {/* <li
+        <li
           className={`relative flex items-center gap-4 p-4 cursor-pointer bg-zinc-1000 w-full duration-75`}
         >
           <div className="flex-shrink-0 w-12 h-12">
@@ -129,53 +154,75 @@ export const ChatAside = ({
               <p className="text-zinc-400 truncate">Your saved messages</p>
             </div>
           </div>
-        </li> */}
+        </li>
 
-        {chats && chatList && chatList.map((chat: any, index: number) => {
-          if (!chat || !chat.content) return null;
+        {loading ? (
+          <li className="flex items-center justify-center p-4">
+            <span className="text-zinc-400">Loading...</span>
+          </li>
+        ) : (
+          chats && chats.length > 0 && localChats ? (
+            localChats.map((chat: any, index: number) => {
+              if (!chat || !chat.chat_info) return null;
 
-          const chatMessages = chat.content.messages ? chat.content.messages : null;
+              const {
+                chat_info,
+                contact_info
+              } = chat;
 
-          const lastMessage = chatMessages ? chatMessages[chat.messages.length - 1]?.content : null;
-          const isUnread = chatMessages && chatMessages.some((message: any) => !message.isReaded);
+              const chatMessages = chat_info.messages ? chat_info.messages : [];
 
-          const contact = chat.content.participants.find((participant: any) => participant.id !== user.id);
+              const lastMessage = chatMessages ? chatMessages[chatMessages.length - 1]?.content : null;
 
-          if (!contact) return null;
+              const chatMessagesArray = chatMessages ? Object.values(chatMessages) : [];
+              const isUnread = chatMessagesArray.some((message: any) => !message.isReaded);
 
-          return (
-            <li
-              key={index}
-              className={`relative flex items-center gap-4 p-4 cursor-pointer ${selectedChat === chat ? "bg-rose-950 bg-opacity-25 hover:bg-rose-900 hover:bg-opacity-30" : "bg-zinc-950 hover:bg-zinc-900"} duration-75`}
-              onClick={() => onChatSelected(chat.content)}
-            >
-              {selectedChat === chat && (
-                <div className="absolute left-0 w-1 h-full bg-rose-900" />
-              )}
-              <div className="flex-shrink-0 w-12 h-12">
-                <picture className="w-12 h-12 flex items-center justify-center border border-zinc-800 rounded-full overflow-hidden">
-                  <img
-                    src={contact.avatar ? contact.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${contact.username[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
-                    alt={`${contact.name} profile's picture`}
-                    className="pointer-events-none select-none"
-                  />
-                </picture>
-              </div>
-              <div className="flex items-center justify-center overflow-hidden w-full gap-4">
-                <div className="flex flex-col w-full overflow-hidden">
-                  <span className="text-zinc-200">{contact.name}</span>
-                  <p className="text-zinc-400 truncate">{lastMessage ? lastMessage : `Start a conversation with ${contact.name}.`}</p>
-                </div>
-                {selectedChat === chat ? null : (
-                  isUnread && (
-                    <span className="flex flex-shrink-0 items-center justify-center w-8 h-8 rounded-full bg-rose-950 bg-opacity-25 border border-rose-950 text-sm text-zinc-100 font-medium">
-                      {chat.messages.filter((message: any) => !message.isReaded).length}
-                    </span>
-                  ))}
-              </div>
+              const contact = chat_info.participants.find((participant: any) => participant.id !== user.id);
+
+              if (!contact) return null;
+
+              return (
+                <li
+                  key={index}
+                  className={`relative flex items-center gap-4 p-4 cursor-pointer ${selectedChat === chat ? "bg-rose-950 bg-opacity-25 hover:bg-rose-900 hover:bg-opacity-30" : "bg-zinc-950 hover:bg-zinc-900"} duration-75`}
+                  onClick={() => {
+                    onChatSelected(chat);
+                  }}
+                >
+                  {selectedChat === chat && (
+                    <div className="absolute left-0 w-1 h-full bg-rose-900" />
+                  )}
+                  <div className="flex-shrink-0 w-12 h-12">
+                    <picture className="w-12 h-12 flex items-center justify-center border border-zinc-800 rounded-full overflow-hidden">
+                      <img
+                        src={contact_info.avatar ? contact_info.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${contact_info.username[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
+                        alt={`${contact_info.name} profile's picture`}
+                        className="pointer-events-none select-none"
+                      />
+                    </picture>
+                  </div>
+                  <div className="flex items-center justify-center overflow-hidden w-full gap-4">
+                    <div className="flex flex-col w-full overflow-hidden">
+                      <span className="text-zinc-200">{contact_info.name}</span>
+                      <p className="text-zinc-400 truncate">{lastMessage ? lastMessage : `Start a conversation with ${contact_info.name}.`}</p>
+                    </div>
+                    {selectedChat === chat ? null : (
+                      isUnread && chat.messages && (
+                        <span className="flex flex-shrink-0 items-center justify-center w-8 h-8 rounded-full bg-rose-950 bg-opacity-25 border border-rose-950 text-sm text-zinc-100 font-medium">
+                          {chat.messages.filter((message: any) => !message.isReaded).length}
+                        </span>
+                      ))}
+                  </div>
+                </li>
+              )
+            })
+          ) : (
+            <li className="flex items-center justify-center p-4">
+              <span className="text-zinc-400">No chats found.</span>
             </li>
           )
-        })}
+        )}
+
       </ul>
       <footer className="flex justify-between items-center text-2xl p-4 h-20 sm:h-full max-h-[81px] border-t border-zinc-800 bg-zinc-1000">
         <button

@@ -7,24 +7,17 @@ export const getChatContent = async (chatId: string, requestedContent?: string) 
     const chatSnapshot = await chatRef.once('value');
     const chatData = chatSnapshot.val();
 
-    if (chatData) {
-      if (requestedContent) {
-        if (chatData[requestedContent]) {
-          return chatData[requestedContent];
-        } else {
-          console.error(`Requested content "${requestedContent}" not found in the chat`);
-          return null;
-        }
-      } else {
-        return chatData;
-      }
+    if (!chatData) throw new Error('Chat not found.');
+
+    if (!requestedContent) return chatData;
+
+    if (chatData[requestedContent]) {
+      return chatData[requestedContent];
     } else {
-      console.error('Chat not found');
-      return null;
+      throw new Error('Chat content not found.');
     }
   } catch (error) {
-    console.error('Error fetching chat content:', error);
-    return null;
+    throw error;
   }
 };
 
