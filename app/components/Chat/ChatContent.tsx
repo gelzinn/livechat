@@ -445,11 +445,11 @@ export const ChatContent = ({
                 <div className="relative inline-flex items-center justify-center w-full">
                   <hr className="w-full h-px my-8 bg-zinc-800 border-0" />
                   <span className="absolute pr-3 text-zinc-400 -translate-x-100 bg-zinc-950 left-0">
-                    Chat
+                    Contact
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-zinc-400 text-sm">Delete chat</span>
+                  <span className="text-zinc-400 text-sm">Delete contact</span>
                   <button
                     className="flex items-center justify-center w-8 h-8 rounded-full text-zinc-100 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={!user || !contact || !chat || !messages || !(messages.length > 0)}
