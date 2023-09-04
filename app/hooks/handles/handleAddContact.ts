@@ -43,21 +43,15 @@ export const handleAddContact = async (userId: string, contactInfo: any) => {
     db.collection('users').doc(userId).get().then(async (doc) => {
       if (!contactId) throw new Error('The contact does not exist.');
 
-      // const contactContactsRef = await db.collection('users').doc(contactId).collection('chats').get();
-
       if (doc.exists) {
         const user = doc.data();
 
         if (!user || user.id === contactId) return;
 
-        const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+        const contactContactsRef = db.collection('users').doc(contactId).collection('contacts');
+        const contactChatsRef = db.collection('users').doc(contactId).collection('chats');
 
-        await userContactsRef.doc(contactId).set({
-          id: contactId!,
-          username: contactUsername!,
-          created_at: timestamp,
-          chat_id: newId,
-        });
+        const timestamp = firebase.firestore.FieldValue.serverTimestamp();
 
         await realtimeDb.ref(`chats/${newId}`).set({
           id: newId,
@@ -80,8 +74,21 @@ export const handleAddContact = async (userId: string, contactInfo: any) => {
           ],
         });
 
-        const newChatRef = userChatsRef.doc(newId);
-        await newChatRef.set({
+        await userContactsRef.doc(contactId).set({
+          id: contactId!,
+          username: contactUsername!,
+          created_at: timestamp,
+          chat_id: newId,
+        });
+
+        await contactContactsRef.doc(user.id).set({
+          id: user.id,
+          username: user.username,
+          created_at: timestamp,
+          chat_id: newId,
+        });
+
+        await userChatsRef.doc(newId).set({
           id: newId,
           created_at: timestamp,
           participants: [
@@ -95,6 +102,22 @@ export const handleAddContact = async (userId: string, contactInfo: any) => {
             },
           ],
         });
+
+        await contactChatsRef.doc(newId).set({
+          id: newId,
+          created_at: timestamp,
+          participants: [
+            {
+              id: user?.id,
+              username: user.username,
+            },
+            {
+              id: contactId,
+              username: contactUsername!,
+            },
+          ],
+        });
+
       }
     });
   } catch (error) {
