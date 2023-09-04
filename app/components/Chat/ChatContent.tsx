@@ -135,7 +135,7 @@ export const ChatContent = ({
 
       const uniqueMessagesArray = Array.from(uniqueMessages);
 
-      setMessages((prevMessages: any) => [...prevMessages, ...uniqueMessagesArray]);
+      setMessages(uniqueMessagesArray);
     };
 
     try {

@@ -6,9 +6,10 @@ export const handleSendMessage = async (chatId: string, user: any, message: any)
   try {
     const chatRef = realtimeDb.ref(`chats/${chatId}/messages`);
 
-    await chatRef.once('value', async (snapshot) => {
-      let messages = snapshot.val() || [];
+    let messages = [];
 
+    await chatRef.once('value', async (snapshot) => {
+      messages = snapshot.val();
       messages.push(message);
 
       await chatRef.set(messages);
