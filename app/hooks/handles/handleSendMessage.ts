@@ -9,7 +9,7 @@ export const handleSendMessage = async (chatId: string, user: any, message: any)
     let messages = [];
 
     await chatRef.once('value', async (snapshot) => {
-      messages = snapshot.val();
+      messages = snapshot.val() || [];
       messages.push(message);
 
       await chatRef.set(messages);
