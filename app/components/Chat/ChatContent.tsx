@@ -55,8 +55,6 @@ export const ChatContent = ({
         textareaRef.current.disabled = true;
       }
 
-      console.log(`Sending message to ${chat.contact_info.username}:\n\n${JSON.stringify(messageContent)}`);
-
       await handleSendMessage(chat.chat_info.id, user, messageContent);
       setTypedMessage("");
 
@@ -234,7 +232,7 @@ export const ChatContent = ({
           ref={messageContainerRef}
         >
           {chat && user ? (
-            messages && messages.length > 0 && (
+            messages && messages.length > 0 ? (
               <ul className="flex flex-1 flex-col p-4 pt-0">
                 {messages.map((message: any, index: number) => {
                   const isUser = message.sender === user.username;
@@ -342,11 +340,16 @@ export const ChatContent = ({
                   className="h-0"
                 />
               </ul>
+            ) : (
+              <div className="flex flex-col items-center justify-center w-full h-full gap-4">
+                <Icon icon="SmileyWink" weight="light" className="w-24 h-24 text-2xl text-zinc-400" />
+                <p className="text-zinc-400 text-xl text-center px-4">Your messages will appear here.</p>
+              </div>
             )
           ) : (
             <div className="flex flex-col items-center justify-center w-full h-full gap-4">
               <Icon icon="Chat" weight="light" className="w-24 h-24 text-2xl text-zinc-400" />
-              <h1 className="text-zinc-400 text-xl">Select a chat to start messaging.</h1>
+              <h1 className="text-zinc-400 text-xl text-center px-4">Select a chat to start messaging.</h1>
             </div>
           )}
         </main>
