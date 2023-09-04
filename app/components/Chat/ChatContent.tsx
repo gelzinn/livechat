@@ -73,18 +73,22 @@ export const ChatContent = ({
     }
   }
 
-  // const handleReadMessage = (updatedChat: any) => {
-  //   if (updatedChat.messages.some((message: any) => !message.isReaded)) {
-  //     const newMessages = updatedChat.messages.map((message: any) => {
-  //       if (!message.isReaded && message.sender !== 'user') {
-  //         return { ...message, isReaded: true };
-  //       }
-  //       return message;
-  //     });
+  const handleReadMessage = (chat: any, chatId: string) => {
+    if (!chat || !chat.messages) return;
 
-  //     setMessages(newMessages);
-  //   }
-  // }
+    const messages = Object.values(chat.messages);
+
+    if (messages.some((message: any) => !message.isReaded)) {
+      const updatedMessages = messages.map((message: any) => {
+        if (!message.isReaded && message.sender !== user.username) {
+          return { ...message, isReaded: true };
+        }
+        return message;
+      });
+
+      realtimeDb.ref(`chats/${chatId}/messages`).update(updatedMessages);
+    }
+  };
 
   const handleChangeTextAreaHeight = (element: HTMLTextAreaElement) => {
     element.style.height = "auto";
@@ -116,10 +120,12 @@ export const ChatContent = ({
   useEffect(() => {
     if (!selectedChat || !selectedChat.chat_info || !selectedChat.chat_info.id) return;
 
-    const chatId = selectedChat.chat_info.id;
+    const chat = selectedChat.chat_info;
+    const chatId = chat.id;
     const messagesRef = realtimeDb.ref(`chats/${chatId}/messages`);
 
     setMessages([]);
+    handleReadMessage(chat, chatId);
 
     const handleNewMessage = (snapshot: any) => {
       if (!snapshot.exists()) return;

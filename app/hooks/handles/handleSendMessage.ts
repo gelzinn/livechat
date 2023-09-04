@@ -5,19 +5,38 @@ export const handleSendMessage = async (chatId: string, user: any, message: any)
 
   try {
     const chatRef = realtimeDb.ref(`chats/${chatId}/messages`);
-    const newMessageRef = chatRef.push();
 
-    await newMessageRef.set(message);
+    await chatRef.once('value', async (snapshot) => {
+      let messages = snapshot.val();
 
-    const metadata = {
-      lastMessage: message.content,
-      lastMessageAt: message.timestamp,
-      lastMessageBy: user.username,
-    };
+      if (!messages) return;
 
-    await chatRef.parent!.update({
-      metadata
-    });
+      messages.push(message);
+
+      await chatRef.set(messages);
+
+      const metadata = {
+        lastMessage: message.content,
+        lastMessageAt: message.timestamp,
+        lastMessageBy: user.username,
+      };
+
+      // chatRef.parent!.update({
+      //   metadata
+      // });
+    })
+
+    // await chatRef.push(message);
+
+    // const metadata = {
+    //   lastMessage: message.content,
+    //   lastMessageAt: message.timestamp,
+    //   lastMessageBy: user.username,
+    // };
+
+    // await chatRef.parent!.update({
+    //   metadata
+    // });
   } catch (error) {
     throw error;
   }
