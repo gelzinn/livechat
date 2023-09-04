@@ -55,6 +55,8 @@ export const ChatContent = ({
         textareaRef.current.disabled = true;
       }
 
+      console.log(`Sending message to ${chat.contact_info.username}:\n\n${JSON.stringify(messageContent)}`);
+
       await handleSendMessage(chat.chat_info.id, user, messageContent);
       setTypedMessage("");
 
@@ -125,7 +127,6 @@ export const ChatContent = ({
     const messagesRef = realtimeDb.ref(`chats/${chatId}/messages`);
 
     setMessages([]);
-    handleReadMessage(chat, chatId);
 
     const handleNewMessage = (snapshot: any) => {
       if (!snapshot.exists()) return;
@@ -153,7 +154,10 @@ export const ChatContent = ({
   }, [selectedChat]);
 
   useEffect(() => {
-    if (chat && messages) handleScrollToRecentMessage();
+    if (chat && messages) {
+      handleScrollToRecentMessage();
+      handleReadMessage(chat, chat.id);
+    }
   }, [messages]);
 
   useEffect(() => {
@@ -354,6 +358,7 @@ export const ChatContent = ({
             <form
               className="flex items-center justify-between h-full max-h-40 px-4 py-4 gap-4 border-t border-zinc-800 bg-zinc-1000"
               onSubmit={(e: FormEvent) => e.preventDefault()}
+              onClick={() => textareaRef.current?.focus()}
             >
               <textarea
                 className="flex-1 w-full bg-transparent text-zinc-100 placeholder-zinc-400 focus:outline-none h-[30px] resize-none disabled:opacity-50 disabled:cursor-not-allowed"
