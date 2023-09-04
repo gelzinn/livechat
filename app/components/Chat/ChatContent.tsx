@@ -276,23 +276,14 @@ export const ChatContent = ({
                       key={index}
                       className={`flex flex-col ${isUser ? "items-end" : "items-start"} gap-1 w-full ${!isSameAsPrevious && index != 0 ? "mt-6" : "mt-2"}`}
                     >
-                      <div className={`relative flex max-sm:flex-col sm:flex-wrap ${isUser ? "items-end max-md:justify-end" : "items-start"} ${isUser ? "bg-rose-950" : "bg-zinc-900"} px-4 py-3 rounded-md gap-2 ${isUser ? "flex-row" : "flex-row"} w-fit max-w-3xl`}>
-                        {!isSameAsNext && (
-                          <div
-                            className={`absolute ${isUser ? "right-0 rotate-180 rounded-br-0" : "left-0 -rotate-180 rounded-bl-0"} -bottom-2 -scale-x-100 w-4 h-4 ${isUser ? "bg-rose-950" : "bg-zinc-900"}`}
-                            style={{
-                              clipPath: `polygon(${isUser ? "100% 0%, 0% 100%, 100% 100%" : "0% 0%, 100% 100%, 0% 100%"})`,
-                              backgroundColor: isUser ? "bg-zinc-900" : "bg-zinc-950"
-                            }}
-                          />
-                        )}
+                      <div className={`relative flex max-sm:flex-col sm:flex-wrap items-center ${isUser ? "max-sm:items-end max-md:justify-end bg-rose-950" : "max-sm:items-start bg-zinc-900"} px-4 py-3 rounded-md gap-2 ${isUser ? "flex-row" : "flex-row"} w-fit max-w-3xl`}>
                         <div className={`flex flex-col w-auto z-10 overflow-hidden ${isUser ? "items-end" : "items-start"}`}>
                           <p className="text-zinc-200 text-sm break-words whitespace-pre-line w-auto leading-6"
                             dangerouslySetInnerHTML={{ __html: hasUrl(message.content) }}
                             style={{}}
                           />
                         </div>
-                        <div className={`flex flex-1 items-center gap-2 ${isUser ? "flex-row max-md:flex-row" : "max-md:flex-row"} w-auto h-5`}>
+                        <div className={`flex flex-grow items-center gap-2 ${isUser ? "flex-row max-md:flex-row" : "max-md:flex-row"} w-auto h-full pointer-events-none select-none`}>
                           <span
                             className="text-zinc-400 text-xs"
                             title={format(new Date(message.timestamp), 'dd/MM/yyyy HH:mm')}
@@ -310,6 +301,15 @@ export const ChatContent = ({
                             )}
                           </span>
                         </div>
+                        {!isSameAsNext && (
+                          <div
+                            className={`absolute ${isUser ? "right-0 rotate-180 rounded-br-0" : "left-0 -rotate-180 rounded-bl-0"} -bottom-2 -scale-x-100 w-4 h-4 ${isUser ? "bg-rose-950" : "bg-zinc-900"}`}
+                            style={{
+                              clipPath: `polygon(${isUser ? "100% 0%, 0% 100%, 100% 100%" : "0% 0%, 100% 100%, 0% 100%"})`,
+                              backgroundColor: isUser ? "bg-zinc-900" : "bg-zinc-950"
+                            }}
+                          />
+                        )}
                       </div>
                     </li>
                   )

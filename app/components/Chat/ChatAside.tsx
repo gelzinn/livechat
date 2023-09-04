@@ -223,7 +223,17 @@ export const ChatAside = ({
                   <div className="flex items-center justify-center overflow-hidden w-full gap-4">
                     <div className="flex flex-col w-full text-left overflow-hidden">
                       <span className="text-zinc-200 =">{contact_info.name}</span>
-                      <p className="text-zinc-400 truncate">{lastMessage.message ? `${lastMessage.sender === user.username ? "You" : contact_info.username}: ${lastMessage.message}` : `Start a conversation with ${contact_info.name}.`}</p>
+                      <p className="text-zinc-400 truncate">
+                        {selectedChat === chat ? (
+                          `Chatting with ${contact_info.name}.`
+                        ) : (
+                          lastMessage.message
+                            ? lastMessage.sender === user.username
+                              ? `You: ${lastMessage.message}`
+                              : lastMessage.message
+                            : `Start a conversation with ${contact_info.name}.`
+                        )}
+                      </p>
                     </div>
                     {selectedChat === chat ? null : (
                       isUnread && chat.messages && (
