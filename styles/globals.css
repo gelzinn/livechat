@@ -11,15 +11,33 @@
 }
 
 ::-webkit-scrollbar {
-  width: 0.5rem;
+  width: .75rem;
+  height: .75rem;
+
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
 }
 
 ::-webkit-scrollbar-track {
-  background: #09090b;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #500724;
+  background-color: rgb(24 24 27);
+  border: 4px solid transparent;
+  border-radius: .5rem;
+  background-clip: padding-box;
+}
+
+.scrollbar-hide {
+  scrollbar-width: 0;
+  scrollbar-color: transparent;
+
+  -ms-overflow-style: none;
+  overflow: -moz-scrollbars-none;
 }
 
 body {

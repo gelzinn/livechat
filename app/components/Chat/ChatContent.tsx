@@ -8,6 +8,8 @@ import { handleSendMessage } from "app/hooks/handles/handleSendMessage";
 import { useAuth } from "app/hooks/useAuth";
 import { handleRemoveContact } from "app/hooks/handles/handleRemoveContact";
 import { realtimeDb } from "app/services/firebase";
+import { useDocumentSize } from "app/hooks/useDocumentSize";
+import { EmojiPicker } from "../Emoji/EmojiPicker";
 
 interface ChatContentProps {
   chat: any;
@@ -21,19 +23,20 @@ export const ChatContent = ({
   selectedChat
 }: ChatContentProps) => {
   const { user } = useAuth();
-
-  const [documentHeight, setDocumentHeight] = useState<number>(window.innerHeight);
+  const { documentHeight } = useDocumentSize();
 
   const [messages, setMessages] = useState(chat ? chat.messages : []);
   const [typedMessage, setTypedMessage] = useState("");
 
   const [isOpenChatInfo, setIsOpenChatInfo] = useState<boolean>(false);
+  const [isOpenEmojiPicker, setIsOpenEmojiPicker] = useState<boolean>(false);
 
   const messageContainerRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLHeadElement>(null);
   const bottomOfListRef = useRef<HTMLLIElement>(null);
-  const barActionRef = useRef<HTMLDivElement>(null);
+  const barActionRef = useRef<HTMLFormElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const contact = chat ? chat.contact_info : null;
 
@@ -57,6 +60,7 @@ export const ChatContent = ({
 
       await handleSendMessage(chat.chat_info.id, user, messageContent);
       setTypedMessage("");
+      setIsOpenEmojiPicker(false);
 
       setTimeout(() => {
         handleScrollToRecentMessage();
@@ -159,23 +163,22 @@ export const ChatContent = ({
   }, [messages]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (!messages || !barActionRef.current) return;
 
-    const handleResize = () => {
-      setDocumentHeight(window.innerHeight);
-    }
+    messageContainerRef.current!.style.maxHeight = `calc(100% - (calc(${barActionRef.current.clientHeight}px + 1px)) - calc(${headerRef.current!.clientHeight}px + 1px))`;
+  }, [messages, barActionRef.current?.clientWidth, window.innerWidth]);
 
-    window.addEventListener('resize', handleResize);
+  useEffect(() => {
+    if (!textareaRef.current) return;
 
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    }
-  }, [window.innerHeight, documentHeight]);
+    if (isOpenEmojiPicker) textareaRef.current.blur();
+
+  }, [document.activeElement, textareaRef.current, isOpenEmojiPicker]);
 
   return (
     <>
       <div
-        className="flex flex-col flex-grow w-full overflow-hidden"
+        className="relative flex flex-col flex-grow w-full overflow-hidden scrollbar-hide"
         style={{ height: documentHeight ? documentHeight : "100vh" }}
       >
         {chat && (
@@ -201,8 +204,8 @@ export const ChatContent = ({
                     className="pointer-events-none select-none"
                   />
                 </picture>
-                <span className="flex flex-col items-start justify-center">
-                  <h1 className="font-medium text-lg">{contact.name}</h1>
+                <span className="flex flex-col items-start justify-start text-left">
+                  <h1 className="font-medium text-sm sm:text-lg">{contact.name}</h1>
                   <p className="text-zinc-400 text-sm">@{contact.username}</p>
                 </span>
               </button>
@@ -228,12 +231,12 @@ export const ChatContent = ({
           </header>
         )}
         <main
-          className="flex-1 overflow-y-auto bg-zinc-950"
+          className="flex-1 overflow-y-auto bg-zinc-950 overflow-x-hidden"
           ref={messageContainerRef}
         >
           {chat && user ? (
             messages && messages.length > 0 ? (
-              <ul className="flex flex-1 flex-col p-4 pt-0">
+              <ul className="flex flex-1 flex-col px-2 py-4 sm:p-4 pt-0">
                 {messages.map((message: any, index: number) => {
                   const isUser = message.sender === user.username;
                   const isReaded = message.isReaded;
@@ -355,22 +358,58 @@ export const ChatContent = ({
         </main>
         {chat && (
           <footer
-            className="w-full h-fit max-h-40 z-10"
-            ref={barActionRef}
+            className="fixed bottom-0 z-10 w-full h-fit"
+            style={{ width: "-webkit-fill-available" }}
           >
+            <EmojiPicker
+              className={`absolute bottom-20 flex flex-col w-full h-[480px] gap-2 p-4 bg-zinc-1000 border-t border-zinc-800 ${isOpenEmojiPicker ? "" : " translate-y-full pointer-events-none"} transition-all duration-500`}
+              removeDefaultStyles
+              onClose={() => setIsOpenEmojiPicker(false)}
+              onEmojiSelect={({ character }: any) => setTypedMessage(typedMessage + character)}
+            />
             <form
-              className="flex items-center justify-between h-full max-h-40 px-4 py-4 gap-4 border-t border-zinc-800 bg-zinc-1000"
+              className={`fixed bottom-0 flex items-center justify-between h-fit max-h-40 w-full px-2 sm:px-4 py-4 border-t border-zinc-800 bg-zinc-1000 z-50 overflow-hidden`}
               onSubmit={(e: FormEvent) => e.preventDefault()}
               onClick={() => textareaRef.current?.focus()}
+              ref={barActionRef}
+              style={{ width: "-webkit-fill-available" }}
             >
+              <button
+                className={`flex items-center justify-center border border-transparent ${isOpenEmojiPicker ? "w-12 h-12 rounded bg-zinc-900 border-zinc-800 text-base text-zinc-100 p-3" : "h-12 rounded text-zinc-100 font-medium w-12"}${typedMessage ? " mr-4" : ""} transition duration-300`}
+                onClick={() => setIsOpenEmojiPicker(!isOpenEmojiPicker)}
+              >
+                <Icon icon="Smiley" className="w-5 h-5" />
+              </button>
+              <button
+                className={`flex items-center justify-center h-12 rounded text-zinc-100 font-medium ${typedMessage ? "invisible opacity-0 w-0 -translate-x-12" : "visible opacity-100 w-12 translate-x-0 mr-2 sm:mr-4"} transition-all duration-300`}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Icon icon="Paperclip" className="w-5 h-5" />
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/*, video/*, audio/*"
+                  multiple
+                  ref={fileInputRef}
+                  onChange={(e) => {
+                    const files = e.target.files;
+
+                    if (!files || files.length === 0) return;
+
+                    console.log(files);
+                  }}
+                />
+              </button>
               <textarea
-                className="flex-1 w-full bg-transparent text-zinc-100 placeholder-zinc-400 focus:outline-none h-[30px] resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 w-full bg-transparent text-zinc-100 placeholder-zinc-400 focus:outline-none h-[30px] resize-none disabled:opacity-50 disabled:cursor-not-allowed overflow-y-auto"
                 ref={textareaRef}
                 rows={1}
                 placeholder="Type a message"
                 onChange={(e) => {
                   setTypedMessage(e.target.value);
                   handleChangeTextAreaHeight(e.target);
+
+                  if (isOpenEmojiPicker) setIsOpenEmojiPicker(false);
                 }}
                 onKeyDown={(e) => {
                   if (window.innerWidth > 768 && e.key === 'Enter' && !e.shiftKey) {
@@ -378,16 +417,19 @@ export const ChatContent = ({
                     handleWriteMessage();
                   }
                 }}
+                onFocus={() => {
+                  if (isOpenEmojiPicker) setIsOpenEmojiPicker(false);
+                }}
                 disabled={!chat || !user}
                 value={typedMessage}
-                style={{ maxHeight: "8rem" }}
+                style={{ maxHeight: "8rem", width: "-webkit-fill-available" }}
               />
               <button
                 type="submit"
-                className="flex items-center justify-center w-12 h-12 rounded-full text-zinc-100 font-medium"
+                className={`flex items-center justify-center w-12 h-12 rounded text-zinc-100 font-medium ${!typedMessage ? "opacity-50" : "bg-rose-600 hover:bg-rose-700"} transition duration-300 ml-2 sm:ml-4`}
                 onClick={handleWriteMessage}
               >
-                <Icon icon="PaperPlane" className="w-5 h-5 rotate-45" />
+                <Icon icon="PaperPlane" className="w-5 h-5 rotate-90" />
               </button>
             </form>
           </footer>

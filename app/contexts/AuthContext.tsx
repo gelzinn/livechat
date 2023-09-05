@@ -18,7 +18,7 @@ type AuthContextProviderProps = {
 
 export const AuthContext = createContext({} as AuthContextType);
 
-export function AuthContextProvider(props: AuthContextProviderProps) {
+export function AuthContextProvider({ children }: AuthContextProviderProps) {
   const [user, setUser] = useState<any>();
   const [userUpdatedInDB, setUserUpdatedInDB] = useState(false);
 
@@ -146,7 +146,6 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
       throw error;
     }
   }
-
 
   async function signInWithProvider(provider: "google" | "github" | "email", email?: string, password?: string) {
     try {
@@ -324,7 +323,7 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
         signOut
       }}
     >
-      {props.children}
+      {children}
     </AuthContext.Provider>
   );
 }

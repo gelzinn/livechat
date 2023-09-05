@@ -10,6 +10,7 @@ import { getUsers } from "app/helpers/importers/getUsers";
 import { getChatContent } from "app/helpers/importers/getChats";
 
 import Icon from "../Icon";
+import { useDocumentSize } from "app/hooks/useDocumentSize";
 
 interface ChatAsideProps {
   chats: any;
@@ -28,9 +29,8 @@ export const ChatAside = ({
   if (!chats)
     throw new Error("Chats not found at Chat Root Component.");
 
-  const [documentHeight, setDocumentHeight] = useState<number>(window.innerHeight);
-
   const { user, signOut } = useAuth();
+  const { documentHeight } = useDocumentSize();
 
   const router = useRouter();
   const pathname = usePathname();
@@ -88,9 +88,7 @@ export const ChatAside = ({
   };
 
   useEffect(() => {
-    if (!chats) return;
-
-    setLocalChats(chats);
+    if (chats) setLocalChats(chats);
   }, [chats]);
 
   useEffect(() => {
@@ -99,20 +97,6 @@ export const ChatAside = ({
     const url = `${pathname}?id=${selectedChat.chat_info.id}`;
     if (pathname !== url) router.push(url);
   }, [selectedChat]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const handleResize = () => {
-      setDocumentHeight(window.innerHeight);
-    }
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    }
-  }, [window.innerHeight, documentHeight]);
 
   return (
     <aside
@@ -150,7 +134,7 @@ export const ChatAside = ({
           <button
             className="flex items-center justify-center min-w-12 h-12 rounded text-base text-zinc-100 p-4"
           >
-            <Icon icon="Gear" size={20} />
+            <Icon icon="Bell" size={20} />
           </button>
         </div>
       </header>
@@ -255,19 +239,19 @@ export const ChatAside = ({
       </ul>
       <footer className="flex justify-between items-center text-2xl p-4 h-20 sm:h-full max-h-[81px] border-t border-zinc-800 bg-zinc-1000">
         <button
-          className="flex items-center justify-center min-w-12 h-12 rounded bg-zinc-900 border border-zinc-800 text-base text-zinc-100 overflow-hidden"
+          className="flex items-center justify-center min-w-12 min-h-[48px] h-12 rounded bg-zinc-900 border border-zinc-800 text-base text-zinc-100 overflow-hidden"
           onClick={handleSignOut}
         >
-          <i className="p-4 border-r border-zinc-800">
+          <i className="p-4 border-r border-zinc-800 border">
             <Icon icon="SignOut" className="-scale-x-100" size={16} />
           </i>
           <span className="hidden xs:flex items-center justify-center p-4 h-full text-center">Sign Out</span>
         </button>
-        {/* <button
+        <button
           className="flex items-center justify-center min-w-12 h-12 rounded bg-zinc-900 border border-zinc-800 text-base text-zinc-100 p-4"
         >
           <Icon icon="Gear" size={16} />
-        </button> */}
+        </button>
       </footer>
     </aside>
   )
