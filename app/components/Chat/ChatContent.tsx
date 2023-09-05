@@ -8,6 +8,7 @@ import { handleSendMessage } from "app/hooks/handles/handleSendMessage";
 import { useAuth } from "app/hooks/useAuth";
 import { handleRemoveContact } from "app/hooks/handles/handleRemoveContact";
 import { realtimeDb } from "app/services/firebase";
+import { useDocumentSize } from "app/hooks/useDocumentSize";
 
 interface ChatContentProps {
   chat: any;
@@ -21,8 +22,7 @@ export const ChatContent = ({
   selectedChat
 }: ChatContentProps) => {
   const { user } = useAuth();
-
-  const [documentHeight, setDocumentHeight] = useState<number>(window.innerHeight);
+  const { documentHeight } = useDocumentSize();
 
   const [messages, setMessages] = useState(chat ? chat.messages : []);
   const [typedMessage, setTypedMessage] = useState("");
@@ -157,20 +157,6 @@ export const ChatContent = ({
       handleReadMessage(chat, chat.id);
     }
   }, [messages]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const handleResize = () => {
-      setDocumentHeight(window.innerHeight);
-    }
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    }
-  }, [window.innerHeight, documentHeight]);
 
   return (
     <>

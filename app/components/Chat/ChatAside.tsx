@@ -10,6 +10,7 @@ import { getUsers } from "app/helpers/importers/getUsers";
 import { getChatContent } from "app/helpers/importers/getChats";
 
 import Icon from "../Icon";
+import { useDocumentSize } from "app/hooks/useDocumentSize";
 
 interface ChatAsideProps {
   chats: any;
@@ -28,9 +29,8 @@ export const ChatAside = ({
   if (!chats)
     throw new Error("Chats not found at Chat Root Component.");
 
-  const [documentHeight, setDocumentHeight] = useState<number>(window.innerHeight);
-
   const { user, signOut } = useAuth();
+  const { documentHeight } = useDocumentSize();
 
   const router = useRouter();
   const pathname = usePathname();
@@ -99,20 +99,6 @@ export const ChatAside = ({
     const url = `${pathname}?id=${selectedChat.chat_info.id}`;
     if (pathname !== url) router.push(url);
   }, [selectedChat]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const handleResize = () => {
-      setDocumentHeight(window.innerHeight);
-    }
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    }
-  }, [window.innerHeight, documentHeight]);
 
   return (
     <aside

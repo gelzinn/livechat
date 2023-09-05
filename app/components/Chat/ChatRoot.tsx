@@ -1,5 +1,6 @@
 'use client'
 
+import { useDocumentSize } from "app/hooks/useDocumentSize";
 import { useEffect, useState } from "react";
 
 interface ChatRootProps {
@@ -7,21 +8,7 @@ interface ChatRootProps {
 }
 
 export const ChatRoot = ({ children }: ChatRootProps) => {
-  const [documentHeight, setDocumentHeight] = useState<number>(window.innerHeight);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const handleResize = () => {
-      setDocumentHeight(window.innerHeight);
-    }
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    }
-  }, [window.innerHeight, documentHeight]);
+  const { documentHeight } = useDocumentSize();
 
   return (
     <section
