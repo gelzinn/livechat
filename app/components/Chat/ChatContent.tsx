@@ -350,12 +350,14 @@ export const ChatContent = ({
         </main>
         {chat && (
           <footer
-            className="fixed bottom-0 z-10 w-[100vw] h-fit ho"
+            className="fixed bottom-0 z-10 w-full h-fit"
+            style={{ width: "-webkit-fill-available" }}
           >
             <EmojiPicker
-              className={`absolute bottom-20 flex flex-col w-[100vw] gap-2 p-4 bg-zinc-1000 border-t border-zinc-800 ${isOpenEmojiPicker ? "" : " translate-y-full pointer-events-none"} transition-all duration-700`}
+              className={`absolute bottom-20 flex flex-col w-full h-80 md:h-[480px] gap-2 p-4 bg-zinc-1000 border-t border-zinc-800 ${isOpenEmojiPicker ? "" : " translate-y-full pointer-events-none"} transition-all duration-700`}
               removeDefaultStyles
               onClose={() => setIsOpenEmojiPicker(false)}
+              onEmojiSelect={({ character }: any) => setTypedMessage(typedMessage + character)}
             />
             <form
               className={`fixed bottom-0 flex items-center justify-between h-fit max-h-40 w-full ${typedMessage ? "pl-4 pr-2" : "px-2"} sm:px-4 py-4 border-t border-zinc-800 bg-zinc-1000 z-50 overflow-hidden`}

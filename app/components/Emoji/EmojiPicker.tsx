@@ -68,7 +68,10 @@ export const EmojiPicker = ({
   }, [emojis]);
 
   return (
-    <div className={`${defaultStylesClass}${className}`}>
+    <div
+      className={`${defaultStylesClass}${className}`}
+      style={{ width: "-webkit-fill-available" }}
+    >
       <header className="flex items-center justify-between gap-2">
         <div
           className="flex items-center justify-between w-full bg-zinc-900 border border-zinc-800 rounded min-w-12 min-h-[48px] h-12 overflow-hidden"
@@ -100,11 +103,11 @@ export const EmojiPicker = ({
           <span className="text-zinc-500">
             Categories
           </span>
-          <label className="flex flex-shrink-0 gap-1 w-full h-14 overflow-x-auto overflow-y-hidden">
+          <label className="flex flex-shrink-0 flex-grow gap-1 w-full h-fit overflow-x-scroll overflow-y-hidden scroll-px-0">
             {Object.keys(emojisByGroup).map((group) => {
               return (
                 <button
-                  className={`w-14 h-14 flex-shrink-0 sm:flex-shrink text-xl font-semibold rounded p-2 ${selectedEmojiSection === group ? 'bg-zinc-800' : 'bg-zinc-900'}`}
+                  className={`w-14 h-14 flex-shrink-0 text-xl font-semibold rounded p-2 ${selectedEmojiSection === group ? 'bg-zinc-800' : 'bg-zinc-900'}`}
                   key={group}
                   onClick={() => setSelectedEmojiSection(group)}
                 >
@@ -124,8 +127,7 @@ export const EmojiPicker = ({
                 return (
                   <button
                     key={emoji.slug}
-                    className="text-center text-xl w-14 h-14 rounded p-2 select-none bg-zinc-900 hover:bg-zinc-800"
-                    title={emoji.unicodeName}
+                    className="flex flex-grow justify-center items-center text-center text-xl w-14 h-14 rounded p-2 select-none bg-zinc-900 hover:bg-zinc-800"
                     onClick={() => handleEmojiClick(emoji)}
                   >
                     {emoji.character}
