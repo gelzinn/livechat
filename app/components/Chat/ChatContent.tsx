@@ -364,7 +364,7 @@ export const ChatContent = ({
               ref={barActionRef}
             >
               <button
-                className={`flex items-center justify-center h-12 rounded text-zinc-100 font-medium ${typedMessage ? "invisible opacity-0 w-0 -translate-x-12" : "visible opacity-100 w-12 translate-x-0"} transition-all duration-300`}
+                className={`flex items-center justify-center h-12 rounded text-zinc-100 font-medium w-12 ${typedMessage ? "mr-4" : ""}`}
                 onClick={() => setIsOpenEmojiPicker(!isOpenEmojiPicker)}
               >
                 <Icon icon="Smiley" className="w-5 h-5" />
