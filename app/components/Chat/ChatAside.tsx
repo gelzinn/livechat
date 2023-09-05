@@ -88,9 +88,7 @@ export const ChatAside = ({
   };
 
   useEffect(() => {
-    if (!chats) return;
-
-    setLocalChats(chats);
+    if (chats) setLocalChats(chats);
   }, [chats]);
 
   useEffect(() => {
@@ -136,7 +134,7 @@ export const ChatAside = ({
           <button
             className="flex items-center justify-center min-w-12 h-12 rounded text-base text-zinc-100 p-4"
           >
-            <Icon icon="Gear" size={20} />
+            <Icon icon="Bell" size={20} />
           </button>
         </div>
       </header>
@@ -249,11 +247,11 @@ export const ChatAside = ({
           </i>
           <span className="hidden xs:flex items-center justify-center p-4 h-full text-center">Sign Out</span>
         </button>
-        {/* <button
+        <button
           className="flex items-center justify-center min-w-12 h-12 rounded bg-zinc-900 border border-zinc-800 text-base text-zinc-100 p-4"
         >
           <Icon icon="Gear" size={16} />
-        </button> */}
+        </button>
       </footer>
     </aside>
   )

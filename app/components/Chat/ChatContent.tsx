@@ -187,8 +187,8 @@ export const ChatContent = ({
                     className="pointer-events-none select-none"
                   />
                 </picture>
-                <span className="flex flex-col items-start justify-center">
-                  <h1 className="font-medium text-lg">{contact.name}</h1>
+                <span className="flex flex-col items-start justify-start text-left">
+                  <h1 className="font-medium text-sm sm:text-lg">{contact.name}</h1>
                   <p className="text-zinc-400 text-sm">@{contact.username}</p>
                 </span>
               </button>
@@ -345,12 +345,22 @@ export const ChatContent = ({
             ref={barActionRef}
           >
             <form
-              className="flex items-center justify-between h-full max-h-40 px-4 py-4 gap-4 border-t border-zinc-800 bg-zinc-1000"
+              className={`flex items-center justify-between h-full max-h-40 ${typedMessage ? "pl-4 pr-2" : "px-2"} sm:px-4 py-4 border-t border-zinc-800 bg-zinc-1000`}
               onSubmit={(e: FormEvent) => e.preventDefault()}
               onClick={() => textareaRef.current?.focus()}
             >
+              <button
+                className={`flex items-center justify-center h-12 rounded text-zinc-100 font-medium ${typedMessage ? "invisible opacity-0 w-0 -translate-x-12" : "visible opacity-100 w-12 translate-x-0"} transition-all duration-300`}
+              >
+                <Icon icon="Smiley" className="w-5 h-5" />
+              </button>
+              <button
+                className={`flex items-center justify-center h-12 rounded text-zinc-100 font-medium ${typedMessage ? "invisible opacity-0 w-0 -translate-x-12" : "visible opacity-100 w-12 translate-x-0 mr-4"} transition-all duration-300`}
+              >
+                <Icon icon="Paperclip" className="w-5 h-5" />
+              </button>
               <textarea
-                className="flex-1 w-full bg-transparent text-zinc-100 placeholder-zinc-400 focus:outline-none h-[30px] resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 w-full bg-transparent text-zinc-100 placeholder-zinc-400 focus:outline-none h-[30px] resize-none disabled:opacity-50 disabled:cursor-not-allowed overflow-y-auto"
                 ref={textareaRef}
                 rows={1}
                 placeholder="Type a message"
@@ -370,10 +380,10 @@ export const ChatContent = ({
               />
               <button
                 type="submit"
-                className="flex items-center justify-center w-12 h-12 rounded-full text-zinc-100 font-medium"
+                className={`flex items-center justify-center w-12 h-12 rounded text-zinc-100 font-medium ${!typedMessage ? "opacity-50" : "bg-rose-600 hover:bg-rose-700"} transition duration-300 ml-4`}
                 onClick={handleWriteMessage}
               >
-                <Icon icon="PaperPlane" className="w-5 h-5 rotate-45" />
+                <Icon icon="PaperPlane" className="w-5 h-5 rotate-90" />
               </button>
             </form>
           </footer>
