@@ -354,7 +354,7 @@ export const ChatContent = ({
             style={{ width: "-webkit-fill-available" }}
           >
             <EmojiPicker
-              className={`absolute bottom-20 flex flex-col w-full h-80 md:h-[480px] gap-2 p-4 bg-zinc-1000 border-t border-zinc-800 ${isOpenEmojiPicker ? "" : " translate-y-full pointer-events-none"} transition-all duration-700`}
+              className={`absolute bottom-20 flex flex-col w-full h-80 md:h-[480px] gap-2 p-4 bg-zinc-1000 border-t border-zinc-800 ${isOpenEmojiPicker ? "" : " translate-y-full pointer-events-none"} transition-all duration-500`}
               removeDefaultStyles
               onClose={() => setIsOpenEmojiPicker(false)}
               onEmojiSelect={({ character }: any) => setTypedMessage(typedMessage + character)}
@@ -367,7 +367,7 @@ export const ChatContent = ({
               style={{ width: "-webkit-fill-available" }}
             >
               <button
-                className={`flex items-center justify-center h-12 rounded text-zinc-100 font-medium w-12 ${typedMessage ? "mr-4" : ""}`}
+                className={`flex items-center justify-center border border-transparent ${isOpenEmojiPicker ? "w-12 h-12 rounded bg-zinc-900 border-zinc-800 text-base text-zinc-100 p-3" : "h-12 rounded text-zinc-100 font-medium w-12"} ${typedMessage ? "mr-4" : ""} transition duration-300`}
                 onClick={() => setIsOpenEmojiPicker(!isOpenEmojiPicker)}
               >
                 <Icon icon="Smiley" className="w-5 h-5" />

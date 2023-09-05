@@ -89,7 +89,7 @@ export const EmojiPicker = ({
         </div>
         {onClose && (
           <button
-            className="flex items-center justify-center min-w-12 h-12 bg-zinc-900 border border-zinc-800 rounded text-base text-zinc-100 p-4"
+            className="flex items-center justify-center min-w-12 h-12 rounded text-base text-zinc-100 p-4"
             onClick={() => {
               if (onClose) onClose();
             }}
