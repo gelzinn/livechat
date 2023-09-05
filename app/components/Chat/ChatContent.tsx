@@ -60,6 +60,7 @@ export const ChatContent = ({
 
       await handleSendMessage(chat.chat_info.id, user, messageContent);
       setTypedMessage("");
+      setIsOpenEmojiPicker(false);
 
       setTimeout(() => {
         handleScrollToRecentMessage();
