@@ -239,10 +239,10 @@ export const ChatAside = ({
       </ul>
       <footer className="flex justify-between items-center text-2xl p-4 h-20 sm:h-full max-h-[81px] border-t border-zinc-800 bg-zinc-1000">
         <button
-          className="flex items-center justify-center min-w-12 h-12 rounded bg-zinc-900 border border-zinc-800 text-base text-zinc-100 overflow-hidden"
+          className="flex items-center justify-center min-w-12 min-h-[48px] h-12 rounded bg-zinc-900 border border-zinc-800 text-base text-zinc-100 overflow-hidden"
           onClick={handleSignOut}
         >
-          <i className="p-4 border-r border-zinc-800">
+          <i className="p-4 border-r border-zinc-800 border">
             <Icon icon="SignOut" className="-scale-x-100" size={16} />
           </i>
           <span className="hidden xs:flex items-center justify-center p-4 h-full text-center">Sign Out</span>

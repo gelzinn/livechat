@@ -12,7 +12,7 @@ export const ChatRoot = ({ children }: ChatRootProps) => {
 
   return (
     <section
-      className="relative flex flex-grow h-full w-full overflow-hidden"
+      className="relative flex flex-grow h-full w-full overflow-hidden scrollbar-hide"
       style={{ height: documentHeight ? documentHeight : "100vh" }}
     >
       {children}
