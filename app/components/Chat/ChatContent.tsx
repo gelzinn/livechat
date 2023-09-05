@@ -34,6 +34,7 @@ export const ChatContent = ({
   const bottomOfListRef = useRef<HTMLLIElement>(null);
   const barActionRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const contact = chat ? chat.contact_info : null;
 
@@ -356,8 +357,23 @@ export const ChatContent = ({
               </button>
               <button
                 className={`flex items-center justify-center h-12 rounded text-zinc-100 font-medium ${typedMessage ? "invisible opacity-0 w-0 -translate-x-12" : "visible opacity-100 w-12 translate-x-0 mr-4"} transition-all duration-300`}
+                onClick={() => fileInputRef.current?.click()}
               >
                 <Icon icon="Paperclip" className="w-5 h-5" />
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/*, video/*, audio/*"
+                  multiple
+                  ref={fileInputRef}
+                  onChange={(e) => {
+                    const files = e.target.files;
+
+                    if (!files || files.length === 0) return;
+
+                    console.log(files);
+                  }}
+                />
               </button>
               <textarea
                 className="flex-1 w-full bg-transparent text-zinc-100 placeholder-zinc-400 focus:outline-none h-[30px] resize-none disabled:opacity-50 disabled:cursor-not-allowed overflow-y-auto"
