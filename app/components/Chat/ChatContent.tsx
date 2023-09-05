@@ -364,6 +364,7 @@ export const ChatContent = ({
               onSubmit={(e: FormEvent) => e.preventDefault()}
               onClick={() => textareaRef.current?.focus()}
               ref={barActionRef}
+              style={{ width: "-webkit-fill-available" }}
             >
               <button
                 className={`flex items-center justify-center h-12 rounded text-zinc-100 font-medium w-12 ${typedMessage ? "mr-4" : ""}`}
