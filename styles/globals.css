@@ -33,9 +33,11 @@
 }
 
 .scrollbar-hide {
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
-  overflow: hidden;
+  scrollbar-width: 0;
+  scrollbar-color: transparent;
+
+  -ms-overflow-style: none;
+  overflow: -moz-scrollbars-none;
 }
 
 body {

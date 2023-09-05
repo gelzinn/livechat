@@ -168,6 +168,13 @@ export const ChatContent = ({
     messageContainerRef.current!.style.maxHeight = `calc(100% - (calc(${barActionRef.current.clientHeight}px + 1px)) - calc(${headerRef.current!.clientHeight}px + 1px))`;
   }, [messages, barActionRef.current?.clientWidth, window.innerWidth]);
 
+  useEffect(() => {
+    if (!textareaRef.current) return;
+
+    if (isOpenEmojiPicker) textareaRef.current.blur();
+
+  }, [document.activeElement, textareaRef.current, isOpenEmojiPicker]);
+
   return (
     <>
       <div
@@ -355,26 +362,26 @@ export const ChatContent = ({
             style={{ width: "-webkit-fill-available" }}
           >
             <EmojiPicker
-              className={`absolute bottom-20 flex flex-col w-full h-80 md:h-[480px] gap-2 p-4 bg-zinc-1000 border-t border-zinc-800 ${isOpenEmojiPicker ? "" : " translate-y-full pointer-events-none"} transition-all duration-500`}
+              className={`absolute bottom-20 flex flex-col w-full h-[480px] gap-2 p-4 bg-zinc-1000 border-t border-zinc-800 ${isOpenEmojiPicker ? "" : " translate-y-full pointer-events-none"} transition-all duration-500`}
               removeDefaultStyles
               onClose={() => setIsOpenEmojiPicker(false)}
               onEmojiSelect={({ character }: any) => setTypedMessage(typedMessage + character)}
             />
             <form
-              className={`fixed bottom-0 flex items-center justify-between h-fit max-h-40 w-full ${typedMessage ? "pl-4 pr-2" : "px-2"} sm:px-4 py-4 border-t border-zinc-800 bg-zinc-1000 z-50 overflow-hidden`}
+              className={`fixed bottom-0 flex items-center justify-between h-fit max-h-40 w-full px-2 sm:px-4 py-4 border-t border-zinc-800 bg-zinc-1000 z-50 overflow-hidden`}
               onSubmit={(e: FormEvent) => e.preventDefault()}
               onClick={() => textareaRef.current?.focus()}
               ref={barActionRef}
               style={{ width: "-webkit-fill-available" }}
             >
               <button
-                className={`flex items-center justify-center border border-transparent ${isOpenEmojiPicker ? "w-12 h-12 rounded bg-zinc-900 border-zinc-800 text-base text-zinc-100 p-3" : "h-12 rounded text-zinc-100 font-medium w-12"} ${typedMessage ? "mr-4" : ""} transition duration-300`}
+                className={`flex items-center justify-center border border-transparent ${isOpenEmojiPicker ? "w-12 h-12 rounded bg-zinc-900 border-zinc-800 text-base text-zinc-100 p-3" : "h-12 rounded text-zinc-100 font-medium w-12"}${typedMessage ? " mr-4" : ""} transition duration-300`}
                 onClick={() => setIsOpenEmojiPicker(!isOpenEmojiPicker)}
               >
                 <Icon icon="Smiley" className="w-5 h-5" />
               </button>
               <button
-                className={`flex items-center justify-center h-12 rounded text-zinc-100 font-medium ${typedMessage ? "invisible opacity-0 w-0 -translate-x-12" : "visible opacity-100 w-12 translate-x-0 mr-4"} transition-all duration-300`}
+                className={`flex items-center justify-center h-12 rounded text-zinc-100 font-medium ${typedMessage ? "invisible opacity-0 w-0 -translate-x-12" : "visible opacity-100 w-12 translate-x-0 mr-2 sm:mr-4"} transition-all duration-300`}
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Icon icon="Paperclip" className="w-5 h-5" />
@@ -401,6 +408,8 @@ export const ChatContent = ({
                 onChange={(e) => {
                   setTypedMessage(e.target.value);
                   handleChangeTextAreaHeight(e.target);
+
+                  if (isOpenEmojiPicker) setIsOpenEmojiPicker(false);
                 }}
                 onKeyDown={(e) => {
                   if (window.innerWidth > 768 && e.key === 'Enter' && !e.shiftKey) {
@@ -408,13 +417,16 @@ export const ChatContent = ({
                     handleWriteMessage();
                   }
                 }}
+                onFocus={() => {
+                  if (isOpenEmojiPicker) setIsOpenEmojiPicker(false);
+                }}
                 disabled={!chat || !user}
                 value={typedMessage}
                 style={{ maxHeight: "8rem", width: "-webkit-fill-available" }}
               />
               <button
                 type="submit"
-                className={`flex items-center justify-center w-12 h-12 rounded text-zinc-100 font-medium ${!typedMessage ? "opacity-50" : "bg-rose-600 hover:bg-rose-700"} transition duration-300 ml-4`}
+                className={`flex items-center justify-center w-12 h-12 rounded text-zinc-100 font-medium ${!typedMessage ? "opacity-50" : "bg-rose-600 hover:bg-rose-700"} transition duration-300 ml-2 sm:ml-4`}
                 onClick={handleWriteMessage}
               >
                 <Icon icon="PaperPlane" className="w-5 h-5 rotate-90" />
