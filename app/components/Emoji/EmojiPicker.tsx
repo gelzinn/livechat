@@ -1,33 +1,35 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { HTMLAttributes, forwardRef, useEffect, useState } from "react";
 import Icon from "../Icon";
 
-interface EmojiPickerProps {
+interface EmojiPickerProps extends HTMLAttributes<HTMLDivElement> {
   onEmojiSelect?: (emoji: any) => void;
   onClose?: () => void;
   className?: string;
   removeDefaultStyles?: boolean;
+  ref?: React.RefObject<HTMLDivElement>;
 }
 
-async function getEmojis() {
+async function getEmojis(search?: string) {
   const emojiApiKey = process.env.NEXT_PUBLIC_EMOJI_API_KEY || '';
   const basePath = `https://emoji-api.com/emojis?access_key=${emojiApiKey}`;
 
-  const res = await fetch(basePath);
+  let res = search ? await fetch(`${basePath}&search=${search}`) : await fetch(basePath);
 
   if (!res.ok) throw new Error('Failed to fetch data');
 
   return res.json();
 }
 
-export const EmojiPicker = ({
+export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(({
   onEmojiSelect,
   onClose,
   className,
   removeDefaultStyles = false,
-}: EmojiPickerProps) => {
+}, ref) => {
   const [emojis, setEmojis] = useState([]);
+  const [filteredEmojis, setFilteredEmojis] = useState<any>(null);
   const [emojisByGroup, setEmojisByGroup] = useState<any>([]);
   const [selectedEmojiSection, setSelectedEmojiSection] = useState<string | null>(null);
 
@@ -67,43 +69,59 @@ export const EmojiPicker = ({
     setSelectedEmojiSection(Object.keys(grouped)[0]);
   }, [emojis]);
 
+  useEffect(() => {
+    if (!search) return;
+
+    async function getEmojisFilter() {
+      if (!search) return;
+
+      const filteredEmojiData = await getEmojis(search);
+
+      if (filteredEmojiData) setFilteredEmojis(filteredEmojiData);
+    }
+
+    getEmojisFilter();
+  }, [search]);
+
   return (
-    <div
+    <section
       className={`${defaultStylesClass}${className}`}
       style={{ width: "-webkit-fill-available" }}
+      ref={ref}
     >
-      <header className="flex items-center justify-between gap-2">
-        <div
-          className="flex items-center justify-between w-full bg-zinc-900 border border-zinc-800 rounded min-w-12 min-h-[48px] h-12 overflow-hidden"
-        >
-          <button className="hidden sm:flex items-center justify-center min-w-12 h-12 bg-zinc-900 border-r border-zinc-800 text-base text-zinc-100 p-4">
-            <Icon icon="MagnifyingGlass" className="h-12 text-zinc-100" />
-          </button>
-          <input
-            type="text"
-            onChange={(e) => setSearch(e.target.value)}
-            value={search === null ? '' : search}
-            className="w-full bg-zinc-900 outline-none p-4 h-12"
-            placeholder="Search emojis..."
-          />
-        </div>
-        {onClose && (
-          <button
-            className="hidden sm:flex items-center justify-center min-w-12 h-12 rounded text-base text-zinc-100 p-4"
-            onClick={() => {
-              if (onClose) onClose();
-            }}
-          >
-            <Icon icon="X" className="h-12 text-zinc-100" />
-          </button>
-        )}
-      </header>
-      {emojis && emojis.length > 0 ? (
+      {search && filteredEmojis ? (
+        filteredEmojis.length > 0 ? (
+          <>
+            <span className="text-zinc-500">
+              Results
+            </span>
+            <ul
+              className="flex flex-wrap gap-1 w-full h-full overflow-y-auto overflow-x-hidden shadow-inner rounded"
+            >
+              {filteredEmojis.map((emoji: any) => {
+                return (
+                  <button
+                    key={emoji.slug}
+                    className="flex basis-14 justify-center items-center text-center text-xl w-14 h-14 rounded p-2 select-none bg-zinc-900 hover:bg-zinc-800"
+                    onClick={() => handleEmojiClick(emoji)}
+                  >
+                    {emoji.character}
+                  </button>
+                )
+              })}
+            </ul>
+          </>
+        ) : (
+          <span className="text-zinc-500">
+            No results found.
+          </span>
+        )
+      ) : emojis && emojis.length > 0 ? (
         <>
           <span className="text-zinc-500">
             Categories
           </span>
-          <label className="flex flex-shrink-0 flex-grow gap-1 w-full h-fit overflow-x-scroll overflow-y-hidden scroll-px-0">
+          <label className="flex flex-shrink-0 flex-grow gap-1 w-full h-fit overflow-x-auto overflow-y-hidden scroll-px-0">
             {Object.keys(emojisByGroup).map((group) => {
               return (
                 <button
@@ -121,13 +139,13 @@ export const EmojiPicker = ({
           </span>
           {selectedEmojiSection && (
             <ul
-              className="flex flex-wrap gap-1 w-full h-80 max-h-80 overflow-y-scroll overflow-x-hidden shadow-inner rounded"
+              className="flex flex-wrap gap-1 w-full h-80 max-h-80 overflow-y-auto overflow-x-hidden shadow-inner rounded"
             >
               {emojisByGroup[selectedEmojiSection].map((emoji: any) => {
                 return (
                   <button
                     key={emoji.slug}
-                    className="flex flex-grow justify-center items-center text-center text-xl w-14 h-14 rounded p-2 select-none bg-zinc-900 hover:bg-zinc-800"
+                    className="flex justify-center items-center text-center text-xl w-14 h-14 rounded p-2 select-none bg-zinc-900 hover:bg-zinc-800"
                     onClick={() => handleEmojiClick(emoji)}
                   >
                     {emoji.character}
@@ -142,6 +160,34 @@ export const EmojiPicker = ({
           Loading...
         </span>
       )}
-    </div>
+      <footer className="flex items-center justify-between gap-2 mt-4">
+        <div
+          className="flex items-center justify-between w-full bg-zinc-900 border border-zinc-800 rounded min-w-12 min-h-[48px] h-12 overflow-hidden"
+        >
+          <button className="hidden sm:flex items-center justify-center min-w-12 h-12 bg-zinc-900 border-r border-zinc-800 text-base text-zinc-100 p-4">
+            <Icon icon="MagnifyingGlass" className="h-12 text-zinc-100" />
+          </button>
+          <input
+            type="text"
+            onChange={(e) => setSearch(e.target.value)}
+            value={search === null ? '' : search}
+            className="w-full bg-zinc-900 outline-none p-4 h-12"
+            placeholder="Search emojis..."
+          />
+        </div>
+        <button
+          className={`hidden sm:flex items-center justify-center min-w-12 h-12 rounded text-base text-zinc-100 p-4`}
+          onClick={() => {
+            if (onClose) {
+              onClose();
+            } else {
+              setSearch(null);
+            }
+          }}
+        >
+          <Icon icon="X" className="h-12 text-zinc-100" />
+        </button>
+      </footer>
+    </section>
   );
-}
+});
