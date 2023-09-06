@@ -1,7 +1,6 @@
 'use client'
 
 import { useDocumentSize } from "app/hooks/useDocumentSize";
-import { useEffect, useState } from "react";
 
 interface ChatRootProps {
   children: React.ReactNode;
