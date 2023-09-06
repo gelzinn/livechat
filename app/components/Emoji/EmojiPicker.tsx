@@ -160,9 +160,10 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(({
           Loading...
         </span>
       )}
-      <footer className="flex items-center justify-between gap-2 mt-4">
+      <footer className="relative flex items-center justify-between mt-4">
         <div
-          className="flex items-center justify-between w-full bg-zinc-900 border border-zinc-800 rounded min-w-12 min-h-[48px] h-12 overflow-hidden"
+          className="flex items-center justify-between w-full bg-zinc-900 border border-zinc-800 rounded min-w-12 min-h-[48px] h-12 overflow-hidden transition-all duration-300"
+          style={{ width: search ? 'calc(100% - 48px)' : '100%' }}
         >
           <button className="hidden sm:flex items-center justify-center min-w-12 h-12 bg-zinc-900 border-r border-zinc-800 text-base text-zinc-100 p-4">
             <Icon icon="MagnifyingGlass" className="h-12 text-zinc-100" />
@@ -176,7 +177,7 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(({
           />
         </div>
         <button
-          className={`hidden sm:flex items-center justify-center min-w-12 h-12 rounded text-base text-zinc-100 p-4`}
+          className={`absolute right-0 flex items-center justify-center w-12 h-12 rounded text-base text-zinc-100 p-4 ${search ? 'visible opacity-100 translate-x-0' : 'invisible opacity-0 translate-x-12 ml-2'} transition-all duration-500`}
           onClick={() => {
             if (onClose) {
               onClose();

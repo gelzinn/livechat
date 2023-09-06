@@ -168,15 +168,13 @@ export const ChatContent = ({
     if (!emojiPickerRef.current || !isOpenEmojiPicker || !messageDivContainerRef.current) return;
 
     messageDivContainerRef.current.style.height = `${emojiPickerRef.current.clientHeight}px`;
-
-    console.log(messageDivContainerRef.current)
   }, [emojiPickerRef, emojiPickerRef.current?.clientHeight, isOpenEmojiPicker]);
 
   useEffect(() => {
-    if (!messages || !barActionRef.current) return;
+    if (!messages || !barActionRef.current || !textareaRef.current) return;
 
     messageContainerRef.current!.style.maxHeight = `calc(100% - (calc(${barActionRef.current.clientHeight}px + 1px)) - calc(${headerRef.current!.clientHeight}px + 1px))`;
-  }, [messages, barActionRef.current?.clientWidth, window.innerWidth]);
+  }, [messages, barActionRef.current?.clientHeight, textareaRef.current?.clientHeight, window.innerWidth]);
 
   useEffect(() => {
     if (!textareaRef.current) return;
@@ -392,13 +390,13 @@ export const ChatContent = ({
               style={{ width: "-webkit-fill-available" }}
             >
               <button
-                className={`flex items-center justify-center border border-transparent ${isOpenEmojiPicker ? "w-12 h-12 rounded bg-zinc-900 border-zinc-800 text-base text-zinc-100 p-3" : "h-12 rounded text-zinc-100 font-medium w-12"}${typedMessage ? " mr-4" : ""} transition duration-300`}
+                className={`flex items-center justify-center border border-transparent ${isOpenEmojiPicker ? "w-12 h-12 rounded bg-zinc-900 border-zinc-800 text-base text-zinc-100 p-3" : "h-12 rounded text-zinc-100 font-medium w-12"}${typedMessage ? " mr-2 md:mr-4" : ""} transition duration-300`}
                 onClick={() => setIsOpenEmojiPicker(!isOpenEmojiPicker)}
               >
                 <Icon icon="Smiley" className="w-5 h-5" />
               </button>
               <button
-                className={`flex items-center justify-center h-12 rounded text-zinc-100 font-medium ${typedMessage ? "invisible opacity-0 w-0 -translate-x-12" : "visible opacity-100 w-12 translate-x-0 mr-2 sm:mr-4"} transition-all duration-300`}
+                className={`flex items-center justify-center h-12 rounded text-zinc-100 font-medium ${typedMessage ? "invisible opacity-0 w-0 -translate-x-12" : "visible opacity-100 w-12 translate-x-0 mr-2 md:mr-4"} transition-all duration-300`}
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Icon icon="Paperclip" className="w-5 h-5" />
