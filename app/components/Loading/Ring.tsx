@@ -21,7 +21,15 @@ export const RingLoading = ({
         preserveAspectRatio="xMidYMid"
         className={`animate-spin ${className ? `${className}` : "w-24 h-24 text-zinc-500"}`}
       >
-        <circle cx="50" cy="50" fill="none" stroke="currentColor" stroke-width="4" r="16" stroke-dasharray="75 25" />
+        <circle
+          r="16"
+          cx="50"
+          cy="50"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="4"
+          strokeDasharray="75 25"
+        />
       </svg>
     </div>
   )
