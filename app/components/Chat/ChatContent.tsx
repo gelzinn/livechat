@@ -168,7 +168,7 @@ export const ChatContent = ({
     if (!emojiPickerRef.current || !isOpenEmojiPicker || !messageDivContainerRef.current) return;
 
     messageDivContainerRef.current.style.height = `${emojiPickerRef.current.clientHeight}px`;
-  }, [emojiPickerRef, emojiPickerRef.current?.clientHeight, isOpenEmojiPicker]);
+  }, [emojiPickerRef, emojiPickerRef.current?.clientHeight, messageDivContainerRef, isOpenEmojiPicker]);
 
   useEffect(() => {
     if (!messages || !barActionRef.current || !textareaRef.current) return;
