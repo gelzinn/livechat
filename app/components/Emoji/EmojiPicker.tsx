@@ -11,7 +11,7 @@ interface EmojiPickerProps extends HTMLAttributes<HTMLDivElement> {
   ref?: React.RefObject<HTMLDivElement>;
 }
 
-async function getEmojis(search?: string) {
+async function getEmojis() {
   const emojiApiKey = process.env.NEXT_PUBLIC_EMOJI_API_KEY || '';
   const basePath = `https://emoji-api.com/emojis?access_key=${emojiApiKey}`;
 
@@ -27,9 +27,7 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
     const [emojis, setEmojis] = useState([]);
     const [filteredEmojis, setFilteredEmojis] = useState<any>(null);
     const [emojisByGroup, setEmojisByGroup] = useState<any>([]);
-    const [selectedEmojiSection, setSelectedEmojiSection] = useState<
-      string | null
-    >(null);
+    const [selectedEmojiSection, setSelectedEmojiSection] = useState<string | null>(null);
 
     const [search, setSearch] = useState<string | null>(null);
 
@@ -92,8 +90,8 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
         {search && filteredEmojis ? (
           filteredEmojis.length > 0 ? (
             <>
-              <span className="text-zinc-500">Results</span>
-              <ul className="flex flex-wrap gap-1 w-full h-full overflow-y-auto overflow-x-hidden shadow-inner rounded">
+              <span className="text-zinc-500">Results to "{search}" search</span>
+              <ul className="flex flex-wrap gap-1 w-full h-fit overflow-y-auto overflow-x-hidden shadow-inner rounded">
                 {filteredEmojis.map((emoji: any) => {
                   return (
                     <button
@@ -121,11 +119,10 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
               {Object.keys(emojisByGroup).map((group) => {
                 return (
                   <button
-                    className={`w-14 h-14 flex-shrink-0 text-xl font-semibold rounded p-2 ${
-                      selectedEmojiSection === group
-                        ? 'bg-zinc-800'
-                        : 'bg-zinc-900'
-                    }`}
+                    className={`w-14 h-14 flex-shrink-0 text-xl font-semibold rounded p-2 ${selectedEmojiSection === group
+                      ? 'bg-zinc-800'
+                      : 'bg-zinc-900'
+                      }`}
                     key={group}
                     title={group.replace('-', ' ')}
                     onClick={() => setSelectedEmojiSection(group)}
@@ -176,11 +173,10 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
             />
           </div>
           <button
-            className={`absolute right-0 flex items-center justify-center w-12 h-12 rounded text-base text-zinc-100 p-4 ${
-              search
-                ? 'visible opacity-100 translate-x-0'
-                : 'invisible opacity-0 translate-x-12 ml-2'
-            } transition-all duration-500`}
+            className={`absolute right-0 flex items-center justify-center w-12 h-12 rounded text-base text-zinc-100 p-4 ${search
+              ? 'visible opacity-100 translate-x-0'
+              : 'invisible opacity-0 translate-x-12 ml-2'
+              } transition-all duration-500`}
             onClick={() => {
               if (onClose) {
                 onClose();

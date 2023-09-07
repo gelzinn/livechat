@@ -362,7 +362,7 @@ export const ChatContent = ({
             style={{ width: "-webkit-fill-available" }}
           >
             <EmojiPicker
-              className={`absolute bottom-20 flex flex-col w-full h-[480px] gap-2 p-4 bg-zinc-1000 border-t border-zinc-800 ${isOpenEmojiPicker ? "" : " translate-y-full pointer-events-none"} transition-all duration-500`}
+              className={`absolute bottom-20 flex flex-col w-full h-fit max-h-[480px] gap-2 p-4 bg-zinc-1000 border-t border-zinc-800 ${isOpenEmojiPicker ? "" : " translate-y-full pointer-events-none"} transition-all duration-500`}
               removeDefaultStyles
               onClose={() => setIsOpenEmojiPicker(false)}
               onEmojiSelect={({ character }: any) => setTypedMessage(typedMessage + character)}
