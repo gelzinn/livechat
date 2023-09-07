@@ -284,16 +284,30 @@ export const ChatContent = ({
                     const showDateDivider = prevDateString !== currentDateString;
 
                     const hasUrl = (text: string) => {
-                      return text.replace(/(https?:\/\/[^\s]+|www\.[^\s]+)/g, (url: string) => {
-                        const fullUrl = url.startsWith("http") ? url : `http://${url}`;
-                        return `<a
-                        href="${fullUrl}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class='text-rose-400 hover:underline'
-                      >${url}</a>`;
+                      const urlRegex = /((https?:\/\/[^\s]+)|(www\.[^\s]+)|(?!www\.[^\s]+\.[^\s])[^\s]+\.[^\s]{2,})/g;
+
+                      const parts = text.split(urlRegex);
+
+                      return parts.map((part, index) => {
+                        if (!urlRegex.test(part)) return part;
+
+                        let fullUrl = part;
+
+                        if (!/^https?:\/\//i.test(part) && !/^www\./i.test(part)) fullUrl = `http://${part}`;
+
+                        return (
+                          <a
+                            key={index}
+                            href={fullUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-rose-400 hover:underline"
+                          >
+                            {part}
+                          </a>
+                        );
                       });
-                    }
+                    };
 
                     const messageItem = (
                       <li
@@ -301,7 +315,7 @@ export const ChatContent = ({
                         className={`flex flex-col ${isUser ? "items-end" : "items-start"} gap-1 w-full ${!isSameAsPrevious && index !== 0 ? "mt-4" : "mt-1"}`}
                       >
                         <div
-                          className={`relative block sm:flex flex-wrap ${isUser ? "flex-row-reverse justify-end" : "flex-row justify-start"} max-w-2xl ${isUser ? "bg-rose-950" : "bg-zinc-900"} px-4 ${participants && participants.length > 2 && !isUser ? "pt-6 pb-3" : "py-3"} rounded-md ${isSameAsNext ? "mb-0" : "mb-2"}`}
+                          className={`relative sm:flex flex-wrap ${isUser ? "flex-row-reverse justify-end" : "flex-row justify-start"} max-w-2xl ${isUser ? "bg-rose-950" : "bg-zinc-900"} px-4 ${participants && participants.length > 2 && !isUser ? "pt-6 pb-3" : "py-3"} rounded-md ${isSameAsNext ? "mb-0" : "mb-2"}`}
                           style={{
                             direction: isUser ? "rtl" : "ltr"
                           }}
@@ -316,9 +330,10 @@ export const ChatContent = ({
                             style={{
                               overflowWrap: containsLongWord ? "normal" : "break-word",
                               wordBreak: containsLongWord ? "break-all" : "normal",
+                              width: containsLongWord ? "-webkit-fill-available" : "auto"
                             }}
                           >
-                            {message.content}
+                            {hasUrl(message.content)}
                           </p>
                           <div className={`flex ${isUser ? "basis-8" : "basis-7"} items-center gap-2 w-fit h-full pointer-events-none select-none mt-2`}>
                             {isUser && (
