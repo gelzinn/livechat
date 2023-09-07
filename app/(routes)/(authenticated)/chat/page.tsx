@@ -8,9 +8,11 @@ import { getUserChats, getUsers } from "app/helpers/importers/getUsers";
 import { useAuth } from "app/hooks/useAuth";
 import { realtimeDb } from "app/services/firebase";
 import { RingLoading } from "@/components/Loading/Ring";
+import { useDocumentSize } from "app/hooks/useDocumentSize";
 
 const ChatPage = () => {
   const { user } = useAuth();
+  const { documentHeight } = useDocumentSize();
 
   const [selectedChat, setSelectedChat] = useState(null);
   const [chats, setChats] = useState<any>(null);
@@ -64,29 +66,24 @@ const ChatPage = () => {
 
   return (
     <main
-      className="flex flex-col flex-1 h-screen overflow-hidden bg-zinc-950"
+      className="flex flex-col flex-1 overflow-hidden bg-zinc-950"
+      style={{ height: documentHeight ? documentHeight : "100vh" }}
     >
       {chats ? (
-        chats.length > 0 ? (
-          <Chat.Root>
-            <Chat.Aside
-              chats={chats}
-              changeChats={setChats}
-              onChatSelected={handleSelectedChat}
-              selectedChat={selectedChat}
-              loading={loading}
-            />
-            <Chat.Content
-              chat={selectedChat}
-              onChatSelected={handleSelectedChat}
-              selectedChat={selectedChat}
-            />
-          </Chat.Root>
-        ) : (
-          <div className="flex flex-col items-center justify-center flex-grow">
-            <p className="text-xl font-bold text-zinc-500">No chats found.</p>
-          </div>
-        )
+        <Chat.Root>
+          <Chat.Aside
+            chats={chats}
+            changeChats={setChats}
+            onChatSelected={handleSelectedChat}
+            selectedChat={selectedChat}
+            loading={loading}
+          />
+          <Chat.Content
+            chat={selectedChat}
+            onChatSelected={handleSelectedChat}
+            selectedChat={selectedChat}
+          />
+        </Chat.Root>
       ) : (
         <div className="flex flex-col items-center justify-center flex-grow">
           <RingLoading />

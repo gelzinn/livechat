@@ -353,7 +353,6 @@ export const ChatContent = ({
                       </li>
                     );
 
-
                     return (
                       <Fragment
                         key={index}
