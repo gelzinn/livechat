@@ -45,8 +45,6 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
       async function fetchData() {
         const emojiData = await getEmojis();
 
-        console.log(emojiData, 'emojiData');
-
         if (emojiData) setEmojis(emojiData);
       }
 
