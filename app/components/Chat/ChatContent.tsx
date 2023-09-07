@@ -239,16 +239,20 @@ export const ChatContent = ({
           </header>
         )}
         <main
-          className="flex-1 overflow-y-auto bg-zinc-950 overflow-x-hidden"
+          className="flex-1 bg-zinc-950 overflow-y-auto"
           ref={messageContainerRef}
         >
           {chat && user ? (
             messages && messages.length > 0 ? (
               <>
-                <ul className="flex flex-1 flex-col px-2 py-4 sm:p-4 pt-0">
+                <ul className="flex flex-1 flex-col w-full pl-2 py-2 overflow-x-hidden">
                   {messages.map((message: any, index: number) => {
+                    const participants = chat.chat_info.participants;
+
                     const isUser = message.sender === user.username;
                     const isReaded = message.isReaded;
+
+                    const containsLongWord = message.content.split(" ").some((word: string) => word.length > 20);
 
                     const prevMessage = index > 0 ? messages[index - 1] : null;
                     const nextMessage = index < messages.length - 1 ? messages[index + 1] : null;
@@ -294,31 +298,46 @@ export const ChatContent = ({
                     const messageItem = (
                       <li
                         key={index}
-                        className={`flex flex-col ${isUser ? "items-end" : "items-start"} gap-1 w-full ${!isSameAsPrevious && index != 0 ? "mt-6" : "mt-2"}`}
+                        className={`flex flex-col ${isUser ? "items-end" : "items-start"} gap-1 w-full ${!isSameAsPrevious && index !== 0 ? "mt-4" : "mt-1"}`}
                       >
-                        <div className={`relative flex max-sm:flex-col sm:flex-wrap items-center ${isUser ? "max-sm:items-end max-md:justify-end bg-rose-950" : "max-sm:items-start bg-zinc-900"} px-4 py-3 rounded-md gap-2 ${isUser ? "flex-row" : "flex-row"} w-fit max-w-3xl`}>
-                          <div className={`flex flex-col w-auto z-10 overflow-hidden ${isUser ? "items-end" : "items-start"}`}>
-                            <p className="text-zinc-200 text-sm break-words whitespace-pre-line w-auto leading-6"
-                              dangerouslySetInnerHTML={{ __html: hasUrl(message.content) }}
-                              style={{}}
-                            />
-                          </div>
-                          <div className={`flex flex-grow items-center gap-2 ${isUser ? "flex-row max-md:flex-row" : "max-md:flex-row"} w-auto h-full pointer-events-none select-none`}>
+                        <div
+                          className={`relative block sm:flex flex-wrap ${isUser ? "flex-row-reverse justify-end" : "flex-row justify-start"} max-w-2xl ${isUser ? "bg-rose-950" : "bg-zinc-900"} px-4 ${participants && participants.length > 2 && !isUser ? "pt-6 pb-3" : "py-3"} rounded-md ${isSameAsNext ? "mb-0" : "mb-2"}`}
+                          style={{
+                            direction: isUser ? "rtl" : "ltr"
+                          }}
+                        >
+                          {participants && participants.length > 2 && !isUser && (
+                            <strong className="absolute top-2 text-xs text-zinc-400 font-medium mr-2">
+                              {message.sender}
+                            </strong>
+                          )}
+                          <p
+                            className={`text-sm ${isUser ? "text-end" : "text-start"} whitespace-pre-wrap leading-6 text-white pr-3`}
+                            style={{
+                              overflowWrap: containsLongWord ? "normal" : "break-word",
+                              wordBreak: containsLongWord ? "break-all" : "normal",
+                            }}
+                          >
+                            {message.content}
+                          </p>
+                          <div className={`flex ${isUser ? "basis-8" : "basis-7"} items-center gap-2 w-fit h-full pointer-events-none select-none mt-2`}>
+                            {isUser && (
+                              <span className={`relative flex items-center justify-center rounded-full ${isReaded ? "text-green-600" : "text-zinc-400"} font-medium`}>
+                                {isReaded ? (
+                                  <>
+                                    <Icon icon="Check" size={16} className={`mr-1`} />
+                                    <Icon icon="Check" size={16} className={`absolute left-[5px] top-0 bottom-0`} />
+                                  </>
+                                ) : (
+                                  <Icon icon="Check" size={16} />
+                                )}
+                              </span>
+                            )}
                             <span
-                              className="text-zinc-400 text-xs"
-                              title={format(new Date(message.timestamp), 'dd/MM/yyyy HH:mm')}
+                              className={`text-xs text-zinc-400`}
+                              title={format(new Date(message.timestamp), "dd/MM/yyyy HH:mm")}
                             >
-                              {format(new Date(message.timestamp), 'HH:mm')}
-                            </span>
-                            <span className={`relative flex items-center justify-center rounded-full text-zinc-100 font-medium`}>
-                              {isReaded ? (
-                                <>
-                                  <Icon icon="Check" size={16} className={`mr-1 ${isReaded ? "text-green-600" : "text-zinc-400"}`} />
-                                  <Icon icon="Check" size={16} className={`absolute left-[5px] top-0 bottom-0 ${isReaded ? "text-green-600" : "text-zinc-400"}`} />
-                                </>
-                              ) : (
-                                <Icon icon="Check" size={16} className={`${isReaded ? "text-green-600" : "text-zinc-400"}`} />
-                              )}
+                              {format(new Date(message.timestamp), "HH:mm")}
                             </span>
                           </div>
                           {!isSameAsNext && (
@@ -332,7 +351,8 @@ export const ChatContent = ({
                           )}
                         </div>
                       </li>
-                    )
+                    );
+
 
                     return (
                       <Fragment
