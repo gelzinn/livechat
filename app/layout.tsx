@@ -15,7 +15,7 @@ export default function RootLayout({ children }: any) {
 
       <DocumentSizeContextProvider>
         <AuthContextProvider>
-          <body>
+          <body className="bg-zinc-950">
             {children}
           </body>
         </AuthContextProvider>

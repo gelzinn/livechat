@@ -32,11 +32,13 @@ export const ChatContent = ({
   const [isOpenEmojiPicker, setIsOpenEmojiPicker] = useState<boolean>(false);
 
   const messageContainerRef = useRef<HTMLDivElement>(null);
+  const messageDivContainerRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLHeadElement>(null);
   const bottomOfListRef = useRef<HTMLLIElement>(null);
   const barActionRef = useRef<HTMLFormElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const emojiPickerRef = useRef<HTMLDivElement | null>(null);
 
   const contact = chat ? chat.contact_info : null;
 
@@ -163,10 +165,16 @@ export const ChatContent = ({
   }, [messages]);
 
   useEffect(() => {
-    if (!messages || !barActionRef.current) return;
+    if (!emojiPickerRef.current || !isOpenEmojiPicker || !messageDivContainerRef.current) return;
+
+    messageDivContainerRef.current.style.height = `${emojiPickerRef.current.clientHeight}px`;
+  }, [emojiPickerRef, emojiPickerRef.current?.clientHeight, messageDivContainerRef, isOpenEmojiPicker]);
+
+  useEffect(() => {
+    if (!messages || !barActionRef.current || !textareaRef.current) return;
 
     messageContainerRef.current!.style.maxHeight = `calc(100% - (calc(${barActionRef.current.clientHeight}px + 1px)) - calc(${headerRef.current!.clientHeight}px + 1px))`;
-  }, [messages, barActionRef.current?.clientWidth, window.innerWidth]);
+  }, [messages, barActionRef.current?.clientHeight, textareaRef.current?.clientHeight, window.innerWidth]);
 
   useEffect(() => {
     if (!textareaRef.current) return;
@@ -231,118 +239,145 @@ export const ChatContent = ({
           </header>
         )}
         <main
-          className="flex-1 overflow-y-auto bg-zinc-950 overflow-x-hidden"
+          className="flex-1 bg-zinc-950 overflow-y-auto"
           ref={messageContainerRef}
         >
           {chat && user ? (
             messages && messages.length > 0 ? (
-              <ul className="flex flex-1 flex-col px-2 py-4 sm:p-4 pt-0">
-                {messages.map((message: any, index: number) => {
-                  const isUser = message.sender === user.username;
-                  const isReaded = message.isReaded;
+              <>
+                <ul className="flex flex-1 flex-col w-full pl-2 py-2 overflow-x-hidden">
+                  {messages.map((message: any, index: number) => {
+                    const participants = chat.chat_info.participants;
 
-                  const prevMessage = index > 0 ? messages[index - 1] : null;
-                  const nextMessage = index < messages.length - 1 ? messages[index + 1] : null;
+                    const isUser = message.sender === user.username;
+                    const isReaded = message.isReaded;
 
-                  const isSameAsPrevious = index > 0 && prevMessage && prevMessage.sender === message.sender;
-                  const isSameAsNext = nextMessage && nextMessage.sender === message.sender;
+                    const containsLongWord = message.content.split(" ").some((word: string) => word.length > 20);
 
-                  const currentDate = new Date(message.timestamp);
-                  const today = new Date();
-                  const yesterday = new Date(today);
-                  yesterday.setDate(today.getDate() - 1);
+                    const prevMessage = index > 0 ? messages[index - 1] : null;
+                    const nextMessage = index < messages.length - 1 ? messages[index + 1] : null;
 
-                  const currentDateString =
-                    currentDate.toDateString() === today.toDateString()
-                      ? 'Today'
-                      : currentDate.toDateString() === yesterday.toDateString()
-                        ? 'Yesterday'
-                        : format(currentDate, 'MMMM dd, yyyy');
+                    const isSameAsPrevious = index > 0 && prevMessage && prevMessage.sender === message.sender;
+                    const isSameAsNext = nextMessage && nextMessage.sender === message.sender;
 
-                  const prevDate = prevMessage && new Date(prevMessage.timestamp);
-                  const prevDateString = prevDate
-                    ? prevDate.toDateString() === today.toDateString()
-                      ? 'Today'
-                      : prevDate.toDateString() === yesterday.toDateString()
-                        ? 'Yesterday'
-                        : format(prevDate, 'MMMM dd, yyyy')
-                    : null;
+                    const currentDate = new Date(message.timestamp);
+                    const today = new Date();
+                    const yesterday = new Date(today);
+                    yesterday.setDate(today.getDate() - 1);
 
-                  const showDateDivider = prevDateString !== currentDateString;
+                    const currentDateString =
+                      currentDate.toDateString() === today.toDateString()
+                        ? 'Today'
+                        : currentDate.toDateString() === yesterday.toDateString()
+                          ? 'Yesterday'
+                          : format(currentDate, 'MMMM dd, yyyy');
 
-                  const hasUrl = (text: string) => {
-                    return text.replace(/(https?:\/\/[^\s]+|www\.[^\s]+)/g, (url: string) => {
-                      const fullUrl = url.startsWith("http") ? url : `http://${url}`;
-                      return `<a
+                    const prevDate = prevMessage && new Date(prevMessage.timestamp);
+                    const prevDateString = prevDate
+                      ? prevDate.toDateString() === today.toDateString()
+                        ? 'Today'
+                        : prevDate.toDateString() === yesterday.toDateString()
+                          ? 'Yesterday'
+                          : format(prevDate, 'MMMM dd, yyyy')
+                      : null;
+
+                    const showDateDivider = prevDateString !== currentDateString;
+
+                    const hasUrl = (text: string) => {
+                      return text.replace(/(https?:\/\/[^\s]+|www\.[^\s]+)/g, (url: string) => {
+                        const fullUrl = url.startsWith("http") ? url : `http://${url}`;
+                        return `<a
                         href="${fullUrl}"
                         target="_blank"
                         rel="noopener noreferrer"
                         class='text-rose-400 hover:underline'
                       >${url}</a>`;
-                    });
-                  }
+                      });
+                    }
 
-                  const messageItem = (
-                    <li
-                      key={index}
-                      className={`flex flex-col ${isUser ? "items-end" : "items-start"} gap-1 w-full ${!isSameAsPrevious && index != 0 ? "mt-6" : "mt-2"}`}
-                    >
-                      <div className={`relative flex max-sm:flex-col sm:flex-wrap items-center ${isUser ? "max-sm:items-end max-md:justify-end bg-rose-950" : "max-sm:items-start bg-zinc-900"} px-4 py-3 rounded-md gap-2 ${isUser ? "flex-row" : "flex-row"} w-fit max-w-3xl`}>
-                        <div className={`flex flex-col w-auto z-10 overflow-hidden ${isUser ? "items-end" : "items-start"}`}>
-                          <p className="text-zinc-200 text-sm break-words whitespace-pre-line w-auto leading-6"
-                            dangerouslySetInnerHTML={{ __html: hasUrl(message.content) }}
-                            style={{}}
-                          />
-                        </div>
-                        <div className={`flex flex-grow items-center gap-2 ${isUser ? "flex-row max-md:flex-row" : "max-md:flex-row"} w-auto h-full pointer-events-none select-none`}>
-                          <span
-                            className="text-zinc-400 text-xs"
-                            title={format(new Date(message.timestamp), 'dd/MM/yyyy HH:mm')}
-                          >
-                            {format(new Date(message.timestamp), 'HH:mm')}
-                          </span>
-                          <span className={`relative flex items-center justify-center rounded-full text-zinc-100 font-medium`}>
-                            {isReaded ? (
-                              <>
-                                <Icon icon="Check" size={16} className={`mr-1 ${isReaded ? "text-green-600" : "text-zinc-400"}`} />
-                                <Icon icon="Check" size={16} className={`absolute left-[5px] top-0 bottom-0 ${isReaded ? "text-green-600" : "text-zinc-400"}`} />
-                              </>
-                            ) : (
-                              <Icon icon="Check" size={16} className={`${isReaded ? "text-green-600" : "text-zinc-400"}`} />
-                            )}
-                          </span>
-                        </div>
-                        {!isSameAsNext && (
-                          <div
-                            className={`absolute ${isUser ? "right-0 rotate-180 rounded-br-0" : "left-0 -rotate-180 rounded-bl-0"} -bottom-2 -scale-x-100 w-4 h-4 ${isUser ? "bg-rose-950" : "bg-zinc-900"}`}
+                    const messageItem = (
+                      <li
+                        key={index}
+                        className={`flex flex-col ${isUser ? "items-end" : "items-start"} gap-1 w-full ${!isSameAsPrevious && index !== 0 ? "mt-4" : "mt-1"}`}
+                      >
+                        <div
+                          className={`relative block sm:flex flex-wrap ${isUser ? "flex-row-reverse justify-end" : "flex-row justify-start"} max-w-2xl ${isUser ? "bg-rose-950" : "bg-zinc-900"} px-4 ${participants && participants.length > 2 && !isUser ? "pt-6 pb-3" : "py-3"} rounded-md ${isSameAsNext ? "mb-0" : "mb-2"}`}
+                          style={{
+                            direction: isUser ? "rtl" : "ltr"
+                          }}
+                        >
+                          {participants && participants.length > 2 && !isUser && (
+                            <strong className="absolute top-2 text-xs text-zinc-400 font-medium mr-2">
+                              {message.sender}
+                            </strong>
+                          )}
+                          <p
+                            className={`text-sm ${isUser ? "text-end" : "text-start"} whitespace-pre-wrap leading-6 text-white pr-3`}
                             style={{
-                              clipPath: `polygon(${isUser ? "100% 0%, 0% 100%, 100% 100%" : "0% 0%, 100% 100%, 0% 100%"})`,
-                              backgroundColor: isUser ? "bg-zinc-900" : "bg-zinc-950"
+                              overflowWrap: containsLongWord ? "normal" : "break-word",
+                              wordBreak: containsLongWord ? "break-all" : "normal",
                             }}
-                          />
-                        )}
-                      </div>
-                    </li>
-                  )
-
-                  return (
-                    <Fragment
-                      key={index}
-                    >
-                      {showDateDivider && (
-                        <div className="flex items-center justify-center w-full py-4 bg-zinc-950">
-                          <span className="text-zinc-400 text-xs">{currentDateString}</span>
+                          >
+                            {message.content}
+                          </p>
+                          <div className={`flex ${isUser ? "basis-8" : "basis-7"} items-center gap-2 w-fit h-full pointer-events-none select-none mt-2`}>
+                            {isUser && (
+                              <span className={`relative flex items-center justify-center rounded-full ${isReaded ? "text-green-600" : "text-zinc-400"} font-medium`}>
+                                {isReaded ? (
+                                  <>
+                                    <Icon icon="Check" size={16} className={`mr-1`} />
+                                    <Icon icon="Check" size={16} className={`absolute left-[5px] top-0 bottom-0`} />
+                                  </>
+                                ) : (
+                                  <Icon icon="Check" size={16} />
+                                )}
+                              </span>
+                            )}
+                            <span
+                              className={`text-xs text-zinc-400`}
+                              title={format(new Date(message.timestamp), "dd/MM/yyyy HH:mm")}
+                            >
+                              {format(new Date(message.timestamp), "HH:mm")}
+                            </span>
+                          </div>
+                          {!isSameAsNext && (
+                            <div
+                              className={`absolute ${isUser ? "right-0 rotate-180 rounded-br-0" : "left-0 -rotate-180 rounded-bl-0"} -bottom-2 -scale-x-100 w-4 h-4 ${isUser ? "bg-rose-950" : "bg-zinc-900"}`}
+                              style={{
+                                clipPath: `polygon(${isUser ? "100% 0%, 0% 100%, 100% 100%" : "0% 0%, 100% 100%, 0% 100%"})`,
+                                backgroundColor: isUser ? "bg-zinc-900" : "bg-zinc-950"
+                              }}
+                            />
+                          )}
                         </div>
-                      )}
-                      {messageItem}
-                    </Fragment>
-                  )
-                })}
-                <li
-                  ref={bottomOfListRef}
-                  className="h-0"
+                      </li>
+                    );
+
+
+                    return (
+                      <Fragment
+                        key={index}
+                      >
+                        {showDateDivider && (
+                          <div className="flex items-center justify-center w-full py-4 bg-zinc-950">
+                            <span className="text-zinc-400 text-xs">{currentDateString}</span>
+                          </div>
+                        )}
+                        {messageItem}
+                      </Fragment>
+                    )
+                  })}
+                  <li
+                    ref={bottomOfListRef}
+                    className="h-0"
+                  />
+                </ul>
+                <section
+                  className="w-full transition-all duration-500"
+                  ref={messageDivContainerRef}
+                  style={{ height: isOpenEmojiPicker && emojiPickerRef.current ? `calc(${emojiPickerRef.current.clientHeight}px + 0px)` : "0px" }}
                 />
-              </ul>
+              </>
             ) : (
               <div className="flex flex-col items-center justify-center w-full h-full gap-4">
                 <Icon icon="SmileyWink" weight="light" className="w-24 h-24 text-2xl text-zinc-400" />
@@ -364,8 +399,8 @@ export const ChatContent = ({
             <EmojiPicker
               className={`absolute bottom-20 flex flex-col w-full h-fit max-h-[480px] gap-2 p-4 bg-zinc-1000 border-t border-zinc-800 ${isOpenEmojiPicker ? "" : " translate-y-full pointer-events-none"} transition-all duration-500`}
               removeDefaultStyles
-              onClose={() => setIsOpenEmojiPicker(false)}
               onEmojiSelect={({ character }: any) => setTypedMessage(typedMessage + character)}
+              ref={emojiPickerRef}
             />
             <form
               className={`fixed bottom-0 flex items-center justify-between h-fit max-h-40 w-full px-2 sm:px-4 py-4 border-t border-zinc-800 bg-zinc-1000 z-50 overflow-hidden`}
@@ -375,13 +410,13 @@ export const ChatContent = ({
               style={{ width: "-webkit-fill-available" }}
             >
               <button
-                className={`flex items-center justify-center border border-transparent ${isOpenEmojiPicker ? "w-12 h-12 rounded bg-zinc-900 border-zinc-800 text-base text-zinc-100 p-3" : "h-12 rounded text-zinc-100 font-medium w-12"}${typedMessage ? " mr-4" : ""} transition duration-300`}
+                className={`flex items-center justify-center border border-transparent ${isOpenEmojiPicker ? "w-12 h-12 rounded bg-zinc-900 border-zinc-800 text-base text-zinc-100 p-3" : "h-12 rounded text-zinc-100 font-medium w-12"}${typedMessage ? " mr-2 md:mr-4" : ""} transition duration-300`}
                 onClick={() => setIsOpenEmojiPicker(!isOpenEmojiPicker)}
               >
                 <Icon icon="Smiley" className="w-5 h-5" />
               </button>
               <button
-                className={`flex items-center justify-center h-12 rounded text-zinc-100 font-medium ${typedMessage ? "invisible opacity-0 w-0 -translate-x-12" : "visible opacity-100 w-12 translate-x-0 mr-2 sm:mr-4"} transition-all duration-300`}
+                className={`flex items-center justify-center h-12 rounded text-zinc-100 font-medium ${typedMessage ? "invisible opacity-0 w-0 -translate-x-12" : "visible opacity-100 w-12 translate-x-0 mr-2 md:mr-4"} transition-all duration-300`}
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Icon icon="Paperclip" className="w-5 h-5" />

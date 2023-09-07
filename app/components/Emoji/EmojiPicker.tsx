@@ -1,7 +1,7 @@
 'use client';
 
-import { HTMLAttributes, forwardRef, useEffect, useState } from 'react';
-import Icon from '../Icon';
+import { HTMLAttributes, forwardRef, useEffect, useState } from "react";
+import Icon from "../Icon";
 
 interface EmojiPickerProps extends HTMLAttributes<HTMLDivElement> {
   onEmojiSelect?: (emoji: any) => void;
@@ -11,7 +11,7 @@ interface EmojiPickerProps extends HTMLAttributes<HTMLDivElement> {
   ref?: React.RefObject<HTMLDivElement>;
 }
 
-async function getEmojis() {
+async function getEmojis(search?: string) {
   const emojiApiKey = process.env.NEXT_PUBLIC_EMOJI_API_KEY || '';
   const basePath = `https://emoji-api.com/emojis?access_key=${emojiApiKey}`;
 
@@ -22,12 +22,16 @@ async function getEmojis() {
   return res.json();
 }
 
-export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
-  ({ onEmojiSelect, onClose, className, removeDefaultStyles = false }, ref) => {
-    const [emojis, setEmojis] = useState([]);
-    const [filteredEmojis, setFilteredEmojis] = useState<any>(null);
-    const [emojisByGroup, setEmojisByGroup] = useState<any>([]);
-    const [selectedEmojiSection, setSelectedEmojiSection] = useState<string | null>(null);
+export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(({
+  onEmojiSelect,
+  onClose,
+  className,
+  removeDefaultStyles = false,
+}, ref) => {
+  const [emojis, setEmojis] = useState([]);
+  const [filteredEmojis, setFilteredEmojis] = useState<any>(null);
+  const [emojisByGroup, setEmojisByGroup] = useState<any>([]);
+  const [selectedEmojiSection, setSelectedEmojiSection] = useState<string | null>(null);
 
     const [search, setSearch] = useState<string | null>(null);
 

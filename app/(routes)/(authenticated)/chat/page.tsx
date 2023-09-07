@@ -7,12 +7,13 @@ import { Chat } from "@/components/Chat";
 import { getUserChats, getUsers } from "app/helpers/importers/getUsers";
 import { useAuth } from "app/hooks/useAuth";
 import { realtimeDb } from "app/services/firebase";
+import { RingLoading } from "@/components/Loading/Ring";
 
 const ChatPage = () => {
   const { user } = useAuth();
 
   const [selectedChat, setSelectedChat] = useState(null);
-  const [chats, setChats] = useState<any>([]);
+  const [chats, setChats] = useState<any>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -58,29 +59,39 @@ const ChatPage = () => {
   }
 
   useEffect(() => {
-    if (!user) return;
-
-    getChats();
+    if (user) getChats();
   }, [user]);
 
   return (
     <main
-      className="flex flex-col flex-grow h-full overflow-hidden"
+      className="flex flex-col flex-1 h-screen overflow-hidden bg-zinc-950"
     >
-      <Chat.Root>
-        <Chat.Aside
-          chats={chats}
-          changeChats={setChats}
-          onChatSelected={handleSelectedChat}
-          selectedChat={selectedChat}
-          loading={loading}
-        />
-        <Chat.Content
-          chat={selectedChat}
-          onChatSelected={handleSelectedChat}
-          selectedChat={selectedChat}
-        />
-      </Chat.Root>
+      {chats ? (
+        chats.length > 0 ? (
+          <Chat.Root>
+            <Chat.Aside
+              chats={chats}
+              changeChats={setChats}
+              onChatSelected={handleSelectedChat}
+              selectedChat={selectedChat}
+              loading={loading}
+            />
+            <Chat.Content
+              chat={selectedChat}
+              onChatSelected={handleSelectedChat}
+              selectedChat={selectedChat}
+            />
+          </Chat.Root>
+        ) : (
+          <div className="flex flex-col items-center justify-center flex-grow">
+            <p className="text-xl font-bold text-zinc-500">No chats found.</p>
+          </div>
+        )
+      ) : (
+        <div className="flex flex-col items-center justify-center flex-grow">
+          <RingLoading />
+        </div>
+      )}
     </main>
   )
 }
