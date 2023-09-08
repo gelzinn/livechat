@@ -245,11 +245,11 @@ export const ChatContent = ({
           {chat && user ? (
             messages && messages.length > 0 ? (
               <>
-                <ul className="flex flex-1 flex-col w-full pl-2 py-2 overflow-x-hidden">
+                <ul className="flex flex-1 flex-col w-full p-2 overflow-x-hidden">
                   {messages.map((message: any, index: number) => {
                     const participants = chat.chat_info.participants;
 
-                    const isUser = message.sender === user.username;
+                    const isUser = message.sender === user.username || message.sender === user.id;
                     const isReaded = message.isReaded;
 
                     const containsLongWord = message.content.split(" ").some((word: string) => word.length > 20);
@@ -351,7 +351,6 @@ export const ChatContent = ({
                             style={{
                               overflowWrap: containsLongWord ? "normal" : "break-word",
                               wordBreak: containsLongWord ? "break-all" : "normal",
-                              // width: containsLongWord ? "-webkit-fill-available" : "auto",
                               direction: "ltr",
                             }}
                           >
