@@ -336,13 +336,13 @@ export const ChatContent = ({
                         className={`flex flex-col ${isUser ? "items-end" : "items-start"} gap-1 w-full ${!isSameAsPrevious && index !== 0 ? "mt-4" : "mt-1"}`}
                       >
                         <div
-                          className={`relative sm:flex flex-wrap ${isUser ? "flex-row-reverse justify-end" : "flex-row justify-start"} max-w-3xl ${isUser ? "bg-rose-950" : "bg-zinc-900"} px-4 ${participants && participants.length > 2 && !isUser ? "pt-6 pb-3" : "py-3"} rounded-md ${isSameAsNext ? "mb-0" : "mb-2"}`}
+                          className={`relative sm:flex flex-wrap ${isUser ? "flex-row-reverse justify-end" : "flex-row justify-start"} max-w-3xl ${isUser ? "bg-rose-950" : "bg-zinc-900"} px-4 ${participants && participants.length > 2 && !isUser ? "pt-8 pb-3" : "py-3"} rounded-md ${isSameAsNext ? "mb-0" : "mb-2"}`}
                           style={{
                             direction: isUser ? "rtl" : "ltr"
                           }}
                         >
                           {participants && participants.length > 2 && !isUser && (
-                            <strong className="absolute top-2 text-xs text-zinc-400 font-medium mr-2">
+                            <strong className="absolute top-3 text-xs text-zinc-400 font-medium mr-2">
                               {message.sender}
                             </strong>
                           )}
