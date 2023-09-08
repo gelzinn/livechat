@@ -333,14 +333,22 @@ export const ChatContent = ({
                     const messageItem = (
                       <li
                         key={index}
-                        className={`flex flex-col ${isUser ? "items-end" : "items-start"} gap-1 w-full ${!isSameAsPrevious && index !== 0 ? "mt-4" : "mt-1"}`}
+                        className={`group flex flex-col ${isUser ? "items-end" : "items-start"} gap-1 w-full ${!isSameAsPrevious && index !== 0 ? "mt-4" : "mt-1"}`}
                       >
                         <div
-                          className={`relative sm:flex flex-wrap ${isUser ? "flex-row-reverse justify-end" : "flex-row justify-start"} max-w-3xl ${isUser ? "bg-rose-950" : "bg-zinc-900"} px-4 ${participants && participants.length > 2 && !isUser ? "pt-8 pb-3" : "py-3"} rounded-md ${isSameAsNext ? "mb-0" : "mb-2"}`}
+                          className={`relative sm:flex flex-wrap items-center ${isUser ? "flex-row-reverse justify-end" : "flex-row justify-start"} max-w-3xl ${isUser ? "bg-rose-950" : "bg-zinc-900"} px-4 ${participants && participants.length > 2 && !isUser ? "pt-8 pb-3" : "py-3"} rounded-md ${isSameAsNext ? "mb-0" : "mb-2"}`}
                           style={{
                             direction: isUser ? "rtl" : "ltr"
                           }}
                         >
+                          <div className={`opacity-0 group-hover:opacity-100 flex items-center justify-center m-auto absolute translate-x-0 ${isUser ? "-left-3 -translate-x-full" : "-right-3 translate-x-full"} transition-all duration-300`}>
+                            <button
+                              className="flex items-center justify-center w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 text-sm"
+                              onClick={() => alert("Not implemented yet.")}
+                            >
+                              <Icon icon="Smiley" size={16} />
+                            </button>
+                          </div>
                           {participants && participants.length > 2 && !isUser && (
                             <strong className="absolute top-3 text-xs text-zinc-400 font-medium mr-2">
                               {message.sender}
