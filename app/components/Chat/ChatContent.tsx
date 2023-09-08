@@ -30,6 +30,7 @@ export const ChatContent = ({
 
   const [isOpenChatInfo, setIsOpenChatInfo] = useState<boolean>(false);
   const [isOpenEmojiPicker, setIsOpenEmojiPicker] = useState<boolean>(false);
+  const [isOpenReactToMessage, setIsOpenReactToMessage] = useState<any>(false);
 
   const messageContainerRef = useRef<HTMLDivElement>(null);
   const messageDivContainerRef = useRef<HTMLDivElement>(null);
@@ -39,6 +40,7 @@ export const ChatContent = ({
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const emojiPickerRef = useRef<HTMLDivElement | null>(null);
+  const reactionsContainerRef = useRef<HTMLDivElement | null>(null);
 
   const contact = chat ? chat.contact_info : null;
 
@@ -96,6 +98,35 @@ export const ChatContent = ({
     }
   };
 
+  const handleReactToMessage = (message: any, reaction: string) => {
+    if (!user || !message || !isOpenReactToMessage) return;
+
+    const { sender, content, timestamp, isReaded } = message;
+
+    const messageContent = {
+      sender,
+      content,
+      timestamp,
+      isReaded,
+      reactions: [
+        {
+          type: reaction,
+          reactedBy: [
+            {
+              id: user.id,
+              username: user.username,
+              timestamp: new Date().toISOString()
+            }
+          ]
+        }
+      ]
+    };
+
+    console.log(messageContent);
+
+    alert(`Reacted to message with ${reaction}.`);
+  }
+
   const handleChangeTextAreaHeight = (element: HTMLTextAreaElement) => {
     element.style.height = "auto";
     element.style.height = `${element.scrollHeight}px`;
@@ -118,6 +149,10 @@ export const ChatContent = ({
       behavior: "smooth"
     });
   }
+
+  useEffect(() => {
+    if (isOpenReactToMessage) return console.log(isOpenReactToMessage);
+  }, [isOpenReactToMessage]);
 
   useEffect(() => {
     if (textareaRef.current) handleChangeTextAreaHeight(textareaRef.current);
@@ -174,7 +209,7 @@ export const ChatContent = ({
     if (!messages || !barActionRef.current || !textareaRef.current) return;
 
     messageContainerRef.current!.style.maxHeight = `calc(100% - (calc(${barActionRef.current.clientHeight}px + 1px)) - calc(${headerRef.current!.clientHeight}px + 1px))`;
-  }, [messages, barActionRef.current?.clientHeight, textareaRef.current?.clientHeight, window.innerWidth]);
+  }, [messages, typedMessage, barActionRef.current?.clientHeight, textareaRef.current?.clientHeight, window.innerWidth]);
 
   useEffect(() => {
     if (!textareaRef.current) return;
@@ -282,6 +317,40 @@ export const ChatContent = ({
                       : null;
 
                     const showDateDivider = prevDateString !== currentDateString;
+                    const messageWidth = message.content.length * 8;
+
+                    const availableReactions = [
+                      {
+                        type: "like",
+                        icon: "👍",
+                        title: "Like"
+                      },
+                      {
+                        type: "love",
+                        icon: "❤️",
+                        title: "Love"
+                      },
+                      {
+                        type: "haha",
+                        icon: "😂",
+                        title: "Haha"
+                      },
+                      {
+                        type: "wow",
+                        icon: "😮",
+                        title: "Wow"
+                      },
+                      {
+                        type: "sad",
+                        icon: "😢",
+                        title: "Sad"
+                      },
+                      {
+                        type: "angry",
+                        icon: "😡",
+                        title: "Angry"
+                      }
+                    ];
 
                     const hasUrl = (text: string) => {
                       const urlRegex = /((https?:\/\/[^\s<>"]+)|(www\.[^\s<>"]+)|(ftp:\/\/[^\s<>"]+)|([^\s<>"]+\.[^\s<>"]{2,}))/g;
@@ -330,10 +399,20 @@ export const ChatContent = ({
                       return elements;
                     };
 
+                    const handleOpenReactToMessage = (message: any) => {
+                      if (!isUser && message !== isOpenReactToMessage) setIsOpenReactToMessage(message);
+                    }
+
                     const messageItem = (
                       <li
                         key={index}
                         className={`group flex flex-col ${isUser ? "items-end" : "items-start"} gap-1 w-full ${!isSameAsPrevious && index !== 0 ? "mt-4" : "mt-1"}`}
+                        onClick={(event: any) => {
+                          if (
+                            reactionsContainerRef.current &&
+                            !reactionsContainerRef.current.contains(event.target)
+                          ) setIsOpenReactToMessage(false);
+                        }}
                       >
                         <div
                           className={`relative sm:flex flex-wrap items-center ${isUser ? "flex-row-reverse justify-end" : "flex-row justify-start"} max-w-3xl ${isUser ? "bg-rose-950" : "bg-zinc-900"} px-4 ${participants && participants.length > 2 && !isUser ? "pt-8 pb-3" : "py-3"} rounded-md ${isSameAsNext ? "mb-0" : "mb-2"}`}
@@ -341,12 +420,47 @@ export const ChatContent = ({
                             direction: isUser ? "rtl" : "ltr"
                           }}
                         >
-                          <div className={`opacity-0 group-hover:opacity-100 flex items-center justify-center m-auto absolute translate-x-0 ${isUser ? "-left-3 -translate-x-full" : "-right-3 translate-x-full"} transition-all duration-300`}>
+                          {availableReactions && isOpenReactToMessage && isOpenReactToMessage === message && (
+                            <section className={`absolute top-0 bottom-0 left-0 right-0 flex items-center justify-center w-full h-full z-10`}>
+                              <div className={`absolute top-0 bottom-0 left-0 right-0 flex items-center justify-end w-full h-full bg-black bg-opacity-50 z-10`}>
+                                <div
+                                  className={`flex items-center justify-center gap-2 p-4 w-fit h-16 bg-zinc-1000 border border-zinc-800 rounded-md`}
+                                  style={{
+                                    transform: `${messageWidth > 100 ? `translateX(calc(50% + 25px))` : `translateX(70%)`} translateY(-90%)`
+                                  }}
+                                  ref={reactionsContainerRef}
+                                >
+                                  {availableReactions.length > 0 && availableReactions.map((reaction, index) => (
+                                    <button
+                                      key={index}
+                                      className={`flex items-center justify-center w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 text-sm`}
+                                      onClick={() => {
+                                        handleReactToMessage(message, reaction.type);
+                                        setIsOpenReactToMessage(false);
+                                      }}
+                                      title={`Reacts with ${reaction.title}`}
+                                    >
+                                      {reaction.icon}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            </section>
+                          )}
+                          <div className={`${isOpenReactToMessage === message ? "opacity-100" : "opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto"} flex items-center justify-center gap-1 m-auto absolute translate-x-0 ${isUser ? "-left-10 -translate-x-full" : "-right-2 translate-x-full"} transition-all duration-300 mt-2 sm:mt-0`}>
+                            {!isUser && (
+                              <button
+                                className="flex items-center justify-center w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 text-sm"
+                                onClick={() => handleOpenReactToMessage(message)}
+                              >
+                                <Icon icon="Smiley" size={16} />
+                              </button>
+                            )}
                             <button
-                              className="flex items-center justify-center w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 text-sm"
-                              onClick={() => alert("Not implemented yet.")}
+                              className="opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto flex items-center justify-center w-8 h-8 rounded-full text-zinc-400 text-sm transition-all duration-300"
+                              onClick={() => alert("Favorited this message.")}
                             >
-                              <Icon icon="Smiley" size={16} />
+                              <Icon icon="Star" size={16} />
                             </button>
                           </div>
                           {participants && participants.length > 2 && !isUser && (
@@ -359,7 +473,6 @@ export const ChatContent = ({
                             style={{
                               overflowWrap: containsLongWord ? "normal" : "break-word",
                               wordBreak: containsLongWord ? "break-all" : "normal",
-                              // width: containsLongWord ? "-webkit-fill-available" : "auto",
                               direction: "ltr",
                             }}
                           >
