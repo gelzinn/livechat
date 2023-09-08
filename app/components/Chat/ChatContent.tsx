@@ -284,18 +284,30 @@ export const ChatContent = ({
                     const showDateDivider = prevDateString !== currentDateString;
 
                     const hasUrl = (text: string) => {
-                      const urlRegex = /((https?:\/\/[^\s]+)|(www\.[^\s]+)|(?!www\.[^\s]+\.[^\s])[^\s]+\.[^\s]{2,})/g;
+                      const urlRegex = /((https?:\/\/[^\s<>"]+)|(www\.[^\s<>"]+)|(ftp:\/\/[^\s<>"]+)|([^\s<>"]+\.[^\s<>"]{2,}))/g;
 
-                      const parts = text.split(urlRegex);
+                      const matches = text.match(urlRegex);
 
-                      return parts.map((part, index) => {
-                        if (!urlRegex.test(part)) return part;
+                      if (!matches) return text;
 
-                        let fullUrl = part;
+                      let lastIndex = 0;
+                      const elements = [];
 
-                        if (!/^https?:\/\//i.test(part) && !/^www\./i.test(part)) fullUrl = `http://${part}`;
+                      matches.forEach((match, index) => {
+                        const startIndex = text.indexOf(match, lastIndex);
+                        const nonUrlPart = text.substring(lastIndex, startIndex);
 
-                        return (
+                        if (nonUrlPart) {
+                          elements.push(nonUrlPart);
+                        }
+
+                        let fullUrl = match;
+
+                        if (!/^https?:\/\//i.test(fullUrl) && !/^www\./i.test(fullUrl)) {
+                          fullUrl = `http://${fullUrl}`;
+                        }
+
+                        elements.push(
                           <a
                             key={index}
                             href={fullUrl}
@@ -303,10 +315,19 @@ export const ChatContent = ({
                             rel="noopener noreferrer"
                             className="text-rose-400 hover:underline"
                           >
-                            {part}
+                            {match}
                           </a>
                         );
+
+                        lastIndex = startIndex + match.length;
                       });
+
+                      if (lastIndex < text.length) {
+                        const remainingText = text.substring(lastIndex);
+                        elements.push(remainingText);
+                      }
+
+                      return elements;
                     };
 
                     const messageItem = (
@@ -315,7 +336,7 @@ export const ChatContent = ({
                         className={`flex flex-col ${isUser ? "items-end" : "items-start"} gap-1 w-full ${!isSameAsPrevious && index !== 0 ? "mt-4" : "mt-1"}`}
                       >
                         <div
-                          className={`relative sm:flex flex-wrap ${isUser ? "flex-row-reverse justify-end" : "flex-row justify-start"} max-w-2xl ${isUser ? "bg-rose-950" : "bg-zinc-900"} px-4 ${participants && participants.length > 2 && !isUser ? "pt-6 pb-3" : "py-3"} rounded-md ${isSameAsNext ? "mb-0" : "mb-2"}`}
+                          className={`relative sm:flex flex-wrap ${isUser ? "flex-row-reverse justify-end" : "flex-row justify-start"} max-w-3xl ${isUser ? "bg-rose-950" : "bg-zinc-900"} px-4 ${participants && participants.length > 2 && !isUser ? "pt-6 pb-3" : "py-3"} rounded-md ${isSameAsNext ? "mb-0" : "mb-2"}`}
                           style={{
                             direction: isUser ? "rtl" : "ltr"
                           }}
@@ -326,11 +347,12 @@ export const ChatContent = ({
                             </strong>
                           )}
                           <p
-                            className={`text-sm ${isUser ? "text-end" : "text-start"} whitespace-pre-wrap leading-6 text-white pr-3`}
+                            className={`w-fit text-sm text-start whitespace-pre-wrap leading-6 text-white pr-3`}
                             style={{
                               overflowWrap: containsLongWord ? "normal" : "break-word",
                               wordBreak: containsLongWord ? "break-all" : "normal",
-                              width: containsLongWord ? "-webkit-fill-available" : "auto"
+                              // width: containsLongWord ? "-webkit-fill-available" : "auto",
+                              direction: "ltr",
                             }}
                           >
                             {hasUrl(message.content)}
