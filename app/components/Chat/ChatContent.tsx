@@ -30,7 +30,7 @@ export const ChatContent = ({
 
   const [isOpenChatInfo, setIsOpenChatInfo] = useState<boolean>(false);
   const [isOpenEmojiPicker, setIsOpenEmojiPicker] = useState<boolean>(false);
-  const [isOpenReactToMessage, setIsOpenReactToMessage] = useState<any>(false);
+  const [openReactToMessage, setOpenReactToMessage] = useState<any>(false);
 
   const messageContainerRef = useRef<HTMLDivElement>(null);
   const messageDivContainerRef = useRef<HTMLDivElement>(null);
@@ -51,10 +51,11 @@ export const ChatContent = ({
 
     try {
       const messageContent = {
-        sender: user.username,
+        sender: user.id,
         content: typedMessage.trim(),
         timestamp: new Date().toISOString(),
-        isReaded: false
+        isReaded: false,
+        reactions: [],
       };
 
       if (textareaRef.current) {
@@ -99,9 +100,11 @@ export const ChatContent = ({
   };
 
   const handleReactToMessage = (message: any, reaction: string) => {
-    if (!user || !message || !isOpenReactToMessage) return;
+    if (!user || !message || !openReactToMessage) return;
 
-    const { sender, content, timestamp, isReaded } = message;
+    const { sender, content, timestamp, isReaded, reactions } = message;
+
+    const actualReactions = reactions ? [...reactions] : [];
 
     const messageContent = {
       sender,
@@ -109,6 +112,7 @@ export const ChatContent = ({
       timestamp,
       isReaded,
       reactions: [
+        ...actualReactions,
         {
           type: reaction,
           reactedBy: [
@@ -124,7 +128,7 @@ export const ChatContent = ({
 
     console.log(messageContent);
 
-    alert(`Reacted to message with ${reaction}.`);
+    // realtimeDb.ref(`chats/${chat.chat_info.id}/messages/${message.timestamp}`).set(messageContent);
   }
 
   const handleChangeTextAreaHeight = (element: HTMLTextAreaElement) => {
@@ -149,10 +153,6 @@ export const ChatContent = ({
       behavior: "smooth"
     });
   }
-
-  useEffect(() => {
-    if (isOpenReactToMessage) return console.log(isOpenReactToMessage);
-  }, [isOpenReactToMessage]);
 
   useEffect(() => {
     if (textareaRef.current) handleChangeTextAreaHeight(textareaRef.current);
@@ -280,11 +280,11 @@ export const ChatContent = ({
           {chat && user ? (
             messages && messages.length > 0 ? (
               <>
-                <ul className="flex flex-1 flex-col w-full pl-2 py-2 overflow-x-hidden">
+                <ul className="flex flex-1 flex-col w-full p-2 overflow-x-hidden">
                   {messages.map((message: any, index: number) => {
                     const participants = chat.chat_info.participants;
 
-                    const isUser = message.sender === user.username;
+                    const isUser = message.sender === user.username || message.sender === user.id;
                     const isReaded = message.isReaded;
 
                     const containsLongWord = message.content.split(" ").some((word: string) => word.length > 20);
@@ -317,6 +317,7 @@ export const ChatContent = ({
                       : null;
 
                     const showDateDivider = prevDateString !== currentDateString;
+
                     const messageWidth = message.content.length * 8;
 
                     const availableReactions = [
@@ -400,18 +401,20 @@ export const ChatContent = ({
                     };
 
                     const handleOpenReactToMessage = (message: any) => {
-                      if (!isUser && message !== isOpenReactToMessage) setIsOpenReactToMessage(message);
+                      if (!isUser && message !== openReactToMessage) setOpenReactToMessage(message);
                     }
 
                     const messageItem = (
                       <li
                         key={index}
                         className={`group flex flex-col ${isUser ? "items-end" : "items-start"} gap-1 w-full ${!isSameAsPrevious && index !== 0 ? "mt-4" : "mt-1"}`}
-                        onClick={(event: any) => {
+                        onClick={(event: React.MouseEvent<HTMLElement>) => {
+                          if (event.target instanceof HTMLButtonElement) return;
+
                           if (
                             reactionsContainerRef.current &&
-                            !reactionsContainerRef.current.contains(event.target)
-                          ) setIsOpenReactToMessage(false);
+                            !reactionsContainerRef.current.contains(event.target as HTMLElement)
+                          ) setOpenReactToMessage(null);
                         }}
                       >
                         <div
@@ -420,13 +423,13 @@ export const ChatContent = ({
                             direction: isUser ? "rtl" : "ltr"
                           }}
                         >
-                          {availableReactions && isOpenReactToMessage && isOpenReactToMessage === message && (
-                            <section className={`absolute top-0 bottom-0 left-0 right-0 flex items-center justify-center w-full h-full z-10`}>
-                              <div className={`absolute top-0 bottom-0 left-0 right-0 flex items-center justify-end w-full h-full bg-black bg-opacity-50 z-10`}>
+                          {availableReactions && (
+                            <section className={`absolute top-0 bottom-0 left-0 right-0 flex items-center justify-center w-full h-full z-10 ${openReactToMessage === message ? "opacity-100" : "opacity-0 pointer-events-none"} transition-all duration-150`}>
+                              <div className={`absolute top-0 bottom-0 left-0 right-0 flex items-center justify-end w-full h-full bg-black bg-opacity-50 z-10 rounded-md`}>
                                 <div
-                                  className={`flex items-center justify-center gap-2 p-4 w-fit h-16 bg-zinc-1000 border border-zinc-800 rounded-md`}
+                                  className={`relative flex items-center justify-center gap-2 p-4 w-fit h-16 bg-zinc-1000 border border-zinc-800 rounded-md`}
                                   style={{
-                                    transform: `${messageWidth > 100 ? `translateX(calc(50% + 25px))` : `translateX(70%)`} translateY(-90%)`
+                                    transform: `${messageWidth > 100 ? `translateX(calc(50% + 23px))` : `translateX(70%)`} translateY(-90%)`
                                   }}
                                   ref={reactionsContainerRef}
                                 >
@@ -436,31 +439,47 @@ export const ChatContent = ({
                                       className={`flex items-center justify-center w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 text-sm`}
                                       onClick={() => {
                                         handleReactToMessage(message, reaction.type);
-                                        setIsOpenReactToMessage(false);
+                                        setOpenReactToMessage(null);
                                       }}
                                       title={`Reacts with ${reaction.title}`}
                                     >
                                       {reaction.icon}
                                     </button>
                                   ))}
+                                  {/* <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    xmlnsXlink="http://www.w3.org/1999/xlink"
+                                    width="30%"
+                                    height="30%"
+                                    viewBox="0 0 100 100"
+                                    className="absolute bottom-0 translate-y-full rotate-180 text-zinc-800"
+                                  >
+                                    <polygon
+                                      points="50 15, 100 100, 0 100"
+                                      fill="currentColor"
+                                    />
+                                  </svg> */}
                                 </div>
                               </div>
                             </section>
                           )}
-                          <div className={`${isOpenReactToMessage === message ? "opacity-100" : "opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto"} flex items-center justify-center gap-1 m-auto absolute translate-x-0 ${isUser ? "-left-10 -translate-x-full" : "-right-2 translate-x-full"} transition-all duration-300 mt-2 sm:mt-0`}>
+                          <div className={`${openReactToMessage === message ? "opacity-100" : "opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto"} flex items-center justify-center m-auto absolute translate-x-0 ${isUser ? "-left-10 -translate-x-full" : "-right-2 translate-x-full"} transition-all duration-300 mt-2 sm:mt-0`}>
                             {!isUser && (
                               <button
-                                className="flex items-center justify-center w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 text-sm"
-                                onClick={() => handleOpenReactToMessage(message)}
+                                className="flex items-center justify-center w-8 h-8 rounded-full text-zinc-400 text-sm"
+                                onClick={() => {
+                                  if (openReactToMessage === message) setOpenReactToMessage(null);
+                                  else handleOpenReactToMessage(message);
+                                }}
                               >
-                                <Icon icon="Smiley" size={16} />
+                                <Icon icon="Smiley" size={16} className="pointer-events-none" />
                               </button>
                             )}
                             <button
                               className="opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto flex items-center justify-center w-8 h-8 rounded-full text-zinc-400 text-sm transition-all duration-300"
                               onClick={() => alert("Favorited this message.")}
                             >
-                              <Icon icon="Star" size={16} />
+                              <Icon icon="Star" size={16} className="pointer-events-none" />
                             </button>
                           </div>
                           {participants && participants.length > 2 && !isUser && (
