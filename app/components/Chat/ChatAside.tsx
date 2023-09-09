@@ -264,16 +264,26 @@ export const ChatAside = ({
 
       </ul>
       <footer className="flex justify-between items-center text-2xl p-4 h-20 sm:h-full max-h-[81px] border-t border-zinc-800 bg-zinc-1000">
+        <div className="flex flex-col w-full items-start justify-center h-full text-sm text-zinc-500 pointer-events-none select-none">
+          {!browser || !operatingSystem ? (
+            <span>Loading...</span>
+          ) : (
+            <>
+              <span>{`${browser.name}, ${browser.version}`}</span>
+              <p>{`${operatingSystem.version}`}</p>
+            </>
+          )}
+        </div>
         <a
-          className="relative flex items-center justify-center w-12 h-12 rounded bg-zinc-900 border border-zinc-800 text-base text-zinc-100 p-4"
+          className="relative flex items-center justify-center w-12 h-12 rounded bg-zinc-900 border border-zinc-800 text-base text-zinc-100 p-4 cursor-pointer"
           onClick={() => {
             setOpenedModal(openedModal === "settings" ? null : "settings");
           }}
         >
           <section
-            className={`group absolute left-0 top-0 w-fit h-fit rounded bg-zinc-900 border border-zinc-800 text-base text-zinc-100 transition-all duration-150 ${openedModal === "settings" ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"} divide-y divide-zinc-700 overflow-hidden`}
+            className={`group absolute right-0 top-0 w-fit h-fit rounded bg-zinc-900 border border-zinc-800 text-base text-zinc-100 transition-all duration-150 ${openedModal === "settings" ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"} divide-y divide-zinc-700 overflow-hidden`}
             style={{
-              transform: `${openedModal === "settings" ? "translateY(calc(-100% - .5rem))" : "translateY(0%)"} translateX(-1px)`,
+              transform: `${openedModal === "settings" ? "translateY(calc(-100% - .5rem))" : "translateY(0%)"} translateX(1px)`,
             }}
             onClick={(e: any) => e.stopPropagation()}
             aria-modal="true"
@@ -304,16 +314,6 @@ export const ChatAside = ({
           </section>
           <Icon icon="Gear" size={16} />
         </a>
-        <div className="flex flex-col w-full items-end justify-end text-sm text-zinc-500 pointer-events-none select-none">
-          {!browser || !operatingSystem ? (
-            <span>Loading...</span>
-          ) : (
-            <>
-              <span>{`${browser.name}, ${browser.version}`}</span>
-              <p>{`${operatingSystem.version}`}</p>
-            </>
-          )}
-        </div>
       </footer>
     </aside>
   )
