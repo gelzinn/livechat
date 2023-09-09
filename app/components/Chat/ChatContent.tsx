@@ -120,10 +120,6 @@ export const ChatContent = ({
   }
 
   useEffect(() => {
-    alert(isMobile)
-  }, [isMobile]);
-
-  useEffect(() => {
     if (textareaRef.current) handleChangeTextAreaHeight(textareaRef.current);
   }, [typedMessage]);
 
@@ -486,7 +482,7 @@ export const ChatContent = ({
                   if (isOpenEmojiPicker) setIsOpenEmojiPicker(false);
                 }}
                 onKeyDown={(e) => {
-                  if (documentWidth > 768 && e.key === 'Enter' && !e.shiftKey) {
+                  if (!isMobile && e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     handleWriteMessage();
                   }
