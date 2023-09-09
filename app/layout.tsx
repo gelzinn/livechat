@@ -1,7 +1,8 @@
 import { AuthContextProvider } from './contexts/AuthContext';
+import { DocumentSizeContextProvider } from './contexts/DocumentSizeContext';
+import { UserAgentContextProvider } from './contexts/UserAgentContext';
 
 import '../styles/globals.css';
-import { DocumentSizeContextProvider } from './contexts/DocumentSizeContext';
 
 export default function RootLayout({ children }: any) {
   return (
@@ -13,13 +14,15 @@ export default function RootLayout({ children }: any) {
         <link rel="shortcut icon" href="../favicon.png" type="image/x-icon" />
       </head>
 
-      <DocumentSizeContextProvider>
-        <AuthContextProvider>
-          <body className="bg-zinc-950">
-            {children}
-          </body>
-        </AuthContextProvider>
-      </DocumentSizeContextProvider>
+      <UserAgentContextProvider>
+        <DocumentSizeContextProvider>
+          <AuthContextProvider>
+            <body className="bg-zinc-950">
+              {children}
+            </body>
+          </AuthContextProvider>
+        </DocumentSizeContextProvider>
+      </UserAgentContextProvider>
     </html>
   );
 }

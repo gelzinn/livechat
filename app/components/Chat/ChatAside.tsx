@@ -11,6 +11,7 @@ import { getChatContent } from "app/helpers/importers/getChats";
 
 import Icon from "../Icon";
 import { useDocumentSize } from "app/hooks/useDocumentSize";
+import { useUserAgent } from "app/hooks/useUserAgent";
 
 interface ChatAsideProps {
   chats: any;
@@ -31,6 +32,7 @@ export const ChatAside = ({
 
   const { user, signOut } = useAuth();
   const { documentHeight } = useDocumentSize();
+  const { browser } = useUserAgent();
 
   const router = useRouter();
   const pathname = usePathname();
