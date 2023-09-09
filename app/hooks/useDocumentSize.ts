@@ -5,7 +5,8 @@ import { useContext } from "react";
 
 export const useDocumentSize = () => {
   const {
-    documentSize
+    documentSize,
+    isMobile
   } = useContext(DocumentSizeContext);
 
   const documentWidth = documentSize.width;
@@ -14,6 +15,7 @@ export const useDocumentSize = () => {
   return {
     documentSize,
     documentWidth,
-    documentHeight
+    documentHeight,
+    isMobile
   };
 }
