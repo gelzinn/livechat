@@ -23,7 +23,7 @@ export const ChatContent = ({
   selectedChat
 }: ChatContentProps) => {
   const { user } = useAuth();
-  const { documentHeight, documentWidth } = useDocumentSize();
+  const { documentHeight, documentWidth, isMobile } = useDocumentSize();
 
   const [messages, setMessages] = useState(chat ? chat.messages : []);
   const [typedMessage, setTypedMessage] = useState("");
@@ -118,6 +118,10 @@ export const ChatContent = ({
       behavior: "smooth"
     });
   }
+
+  useEffect(() => {
+    alert(isMobile)
+  }, [isMobile]);
 
   useEffect(() => {
     if (textareaRef.current) handleChangeTextAreaHeight(textareaRef.current);
