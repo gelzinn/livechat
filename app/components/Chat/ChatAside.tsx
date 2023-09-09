@@ -32,12 +32,13 @@ export const ChatAside = ({
 
   const { user, signOut } = useAuth();
   const { documentHeight } = useDocumentSize();
-  const { browser } = useUserAgent();
+  const { browser, operatingSystem } = useUserAgent();
 
   const router = useRouter();
   const pathname = usePathname();
 
   const [localChats, setLocalChats] = useState(chats);
+  const [openedModal, setOpenedModal] = useState<null | string>(null);
 
   const firstName = user.name && user.name.split(" ")[0];
 
@@ -88,6 +89,29 @@ export const ChatAside = ({
       alert(error);
     }
   };
+
+  useEffect(() => {
+    if (!openedModal) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpenedModal(null);
+    };
+
+    const handleClickOutside = (event: any) => {
+      if (!event.target) return;
+
+      if (event.target.id !== "settings-modal" &&
+        event.target.parentNode.id !== "settings-modal") setOpenedModal(null)
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("click", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("click", handleClickOutside);
+    }
+  }, [openedModal]);
 
   useEffect(() => {
     if (chats) setLocalChats(chats);
@@ -240,20 +264,56 @@ export const ChatAside = ({
 
       </ul>
       <footer className="flex justify-between items-center text-2xl p-4 h-20 sm:h-full max-h-[81px] border-t border-zinc-800 bg-zinc-1000">
-        <button
-          className="flex items-center justify-center min-w-12 min-h-[48px] h-12 rounded bg-zinc-900 border border-zinc-800 text-base text-zinc-100 overflow-hidden"
-          onClick={handleSignOut}
+        <a
+          className="relative flex items-center justify-center w-12 h-12 rounded bg-zinc-900 border border-zinc-800 text-base text-zinc-100 p-4"
+          onClick={() => {
+            setOpenedModal(openedModal === "settings" ? null : "settings");
+          }}
         >
-          <i className="p-4 border-r border-zinc-800 border">
-            <Icon icon="SignOut" className="-scale-x-100" size={16} />
-          </i>
-          <span className="hidden xs:flex items-center justify-center p-4 h-full text-center">Sign Out</span>
-        </button>
-        <button
-          className="flex items-center justify-center min-w-12 h-12 rounded bg-zinc-900 border border-zinc-800 text-base text-zinc-100 p-4"
-        >
+          <section
+            className={`group absolute left-0 top-0 w-fit h-fit rounded bg-zinc-900 border border-zinc-800 text-base text-zinc-100 transition-all duration-150 ${openedModal === "settings" ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"} divide-y divide-zinc-700 overflow-hidden`}
+            style={{
+              transform: `${openedModal === "settings" ? "translateY(calc(-100% - .5rem))" : "translateY(0%)"} translateX(-1px)`,
+            }}
+            onClick={(e: any) => e.stopPropagation()}
+            aria-modal="true"
+            role="dialog"
+            id="settings-modal"
+          >
+            <button
+              className="flex items-center justify-start gap-2 w-full h-12 text-sm p-4 disabled:hover:bg-zinc-900 hover:bg-zinc-950 hover:border-zinc-700 transition-all duration-150 pointer-events-none group-hover:pointer-events-auto disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed"
+              disabled
+            >
+              <Icon icon="Warning" size={16} className="pointer-events-none" />
+              <p className="pointer-events-none">Report</p>
+            </button>
+            <button
+              className="flex items-center justify-start gap-2 w-full h-12 text-sm p-4 disabled:hover:bg-zinc-900 hover:bg-zinc-950 hover:border-zinc-700 transition-all duration-150 pointer-events-none group-hover:pointer-events-auto disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed"
+              disabled
+            >
+              <Icon icon="Gear" size={16} className="pointer-events-none" />
+              <p className="pointer-events-none">Settings</p>
+            </button>
+            <button
+              className="flex items-center justify-start gap-2 w-max h-12 text-sm p-4 disabled:hover:bg-zinc-900 hover:bg-zinc-950 hover:border-zinc-700 transition-all duration-150 pointer-events-none group-hover:pointer-events-auto disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed"
+              onClick={handleSignOut}
+            >
+              <Icon icon="SignOut" size={16} className="pointer-events-none" />
+              <p className="pointer-events-none">Sign Out</p>
+            </button>
+          </section>
           <Icon icon="Gear" size={16} />
-        </button>
+        </a>
+        <div className="flex flex-col w-full items-end justify-end text-sm text-zinc-500 pointer-events-none select-none">
+          {!browser || !operatingSystem ? (
+            <span>Loading...</span>
+          ) : (
+            <>
+              <span>{`${browser.name}, ${browser.version}`}</span>
+              <p>{`${operatingSystem.version}`}</p>
+            </>
+          )}
+        </div>
       </footer>
     </aside>
   )
