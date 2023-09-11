@@ -10,7 +10,7 @@ import { realtimeDb } from "app/services/firebase";
 import { RingLoading } from "@/components/Loading/Ring";
 import { useDocumentSize } from "app/hooks/useDocumentSize";
 
-const ChatPage = () => {
+const ChatPage = ({ children }: any) => {
   const { user } = useAuth();
   const { documentHeight } = useDocumentSize();
 
@@ -78,11 +78,7 @@ const ChatPage = () => {
             selectedChat={selectedChat}
             loading={loading}
           />
-          <Chat.Content
-            chat={selectedChat}
-            onChatSelected={handleSelectedChat}
-            selectedChat={selectedChat}
-          />
+          {children}
         </Chat.Root>
       ) : (
         <div className="flex flex-col items-center justify-center flex-grow">

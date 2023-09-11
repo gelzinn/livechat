@@ -4,7 +4,7 @@ import Icon from "@/components/Icon";
 import { getUsers } from "app/helpers/importers/getUsers";
 import { useEffect, useState } from "react";
 
-const UsersPage = () => {
+const ListUsersPage = () => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
@@ -64,4 +64,4 @@ const UsersPage = () => {
   );
 }
 
-export default UsersPage;
+export default ListUsersPage;

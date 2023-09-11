@@ -296,10 +296,10 @@ export const ChatAside = ({
             >
               <Icon icon="Warning" size={16} className="pointer-events-none" />
               <p className="pointer-events-none">Report</p>
-            </button>
+            </button> 
             <button
               className="flex items-center justify-start gap-2 w-full h-12 text-sm p-4 disabled:hover:bg-zinc-900 hover:bg-zinc-950 hover:border-zinc-700 transition-all duration-150 pointer-events-none group-hover:pointer-events-auto disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed"
-              disabled
+              onClick={() => location.replace("/settings")}
             >
               <Icon icon="Gear" size={16} className="pointer-events-none" />
               <p className="pointer-events-none">Settings</p>

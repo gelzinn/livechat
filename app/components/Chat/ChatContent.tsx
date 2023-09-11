@@ -40,8 +40,6 @@ export const ChatContent = ({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const emojiPickerRef = useRef<HTMLDivElement | null>(null);
 
-  const contact = chat ? chat.contact_info : null;
-
   const handleUnselectChat = () => onChatSelected(null);
 
   const handleWriteMessage = async () => {
@@ -189,7 +187,7 @@ export const ChatContent = ({
         className="relative flex flex-col flex-grow w-full overflow-hidden scrollbar-hide"
         style={{ height: documentHeight ? documentHeight : "100vh" }}
       >
-        {chat && (
+        {selectedChat && (
           <header
             className="flex justify-between items-center text-2xl sm:p-4 px-2 py-4 h-20 sm:h-full max-h-24 border-b border-zinc-800 bg-zinc-1000"
             ref={headerRef}
@@ -207,14 +205,14 @@ export const ChatContent = ({
               >
                 <picture className="w-10 h-10 sm:w-12 sm:h-12 mx-2 flex items-center justify-center border-2 border-zinc-800 rounded-full overflow-hidden">
                   <img
-                    src={contact.avatar ? contact.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${contact.username[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
-                    alt={`${contact.name} profile's picture`}
+                    src={selectedChat.contact_info.avatar ? selectedChat.contact_info.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${selectedChat.contact_info.username[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
+                    alt={`${selectedChat.contact_info.name} profile's picture`}
                     className="pointer-events-none select-none"
                   />
                 </picture>
                 <span className="flex flex-col items-start justify-start text-left">
-                  <h1 className="font-medium text-sm sm:text-lg">{contact.name}</h1>
-                  <p className="text-zinc-400 text-sm">@{contact.username}</p>
+                  <h1 className="font-medium text-sm sm:text-lg">{selectedChat.contact_info.name}</h1>
+                  <p className="text-zinc-400 text-sm">@{selectedChat.contact_info.username}</p>
                 </span>
               </button>
             </div>
@@ -506,7 +504,7 @@ export const ChatContent = ({
         )}
       </div >
 
-      {chat && contact && (
+      {selectedChat && selectedChat.contact_info && (
         <aside
           className={`flex flex-grow w-full overflow-hidden fixed inset-0 z-50 bg-black bg-opacity-80 ${isOpenChatInfo ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"} duration-300`}
           onClick={() => setIsOpenChatInfo(false)}
@@ -517,7 +515,7 @@ export const ChatContent = ({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="sticky top-0 flex items-center justify-between w-full h-20 sm:h-full max-h-24 px-4 py-4 border-b border-zinc-800 bg-zinc-1000">
-              <h1 className="text-zinc-100 text-lg font-medium">{contact.name}</h1>
+              <h1 className="text-zinc-100 text-lg font-medium">{selectedChat.contact_info.name}</h1>
               <button
                 className="flex items-center justify-center w-8 h-8 rounded-full text-zinc-100 font-medium"
                 onClick={() => setIsOpenChatInfo(false)}
@@ -529,14 +527,14 @@ export const ChatContent = ({
               <div className="flex flex-col items-center justify-center gap-2 w-full min-h-40">
                 <picture className="w-24 h-24 sm:w-32 sm:h-32 mx-2 flex items-center justify-center border border-zinc-800 rounded-full pointer-events-none select-none overflow-hidden">
                   <img
-                    src={contact.avatar ? contact.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${contact.username[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
-                    alt={`${contact.name} profile's picture`}
+                    src={selectedChat.contact_info.avatar ? selectedChat.contact_info.avatar : `https://images.placeholders.dev/?width=320&height=320&text=${selectedChat.contact_info.username[0]}&bgColor=%2318181b&textColor=%23fff&fontSize=120`}
+                    alt={`${selectedChat.contact_info.name} profile's picture`}
                     className="pointer-events-none select-none w-24 h-24 sm:w-32 sm:h-32"
                   />
                 </picture>
                 <div className="flex flex-col items-center justify-center">
-                  <h1 className="text-zinc-100 text-lg font-medium">{contact.name}</h1>
-                  <p className="text-zinc-400 text-sm">@{contact.username}</p>
+                  <h1 className="text-zinc-100 text-lg font-medium">{selectedChat.contact_info.name}</h1>
+                  <p className="text-zinc-400 text-sm">@{selectedChat.contact_info.username}</p>
                 </div>
               </div>
               <div className="flex flex-col flex-grow gap-2 p-4">
@@ -557,16 +555,16 @@ export const ChatContent = ({
                 <div className="relative inline-flex items-center justify-center w-full">
                   <hr className="w-full h-px my-8 bg-zinc-800 border-0" />
                   <span className="absolute pr-3 text-zinc-400 -translate-x-100 bg-zinc-950 left-0">
-                    Contact
+                    selectedChat.contact_info
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-zinc-400 text-sm">Delete contact</span>
                   <button
                     className="flex items-center justify-center w-8 h-8 rounded-full text-zinc-100 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={!user || !contact || !chat || !messages || !(messages.length > 0)}
+                    disabled={!user || !selectedChat || !selectedChat.contact_info || !messages || !(messages.length > 0)}
                     onClick={() => {
-                      confirm("Are you sure you want to delete this chat?") && handleRemoveContact(user.id, contact.id);
+                      confirm("Are you sure you want to delete this chat?") && handleRemoveContact(user.id, selectedChat.contact_info.id);
                     }}
                   >
                     <Icon icon="Trash" className="w-5 h-5" />
