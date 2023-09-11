@@ -434,7 +434,7 @@ export const ChatContent = ({
             <EmojiPicker
               className={`absolute bottom-20 flex flex-col w-full h-fit max-h-[480px] gap-2 p-4 bg-zinc-1000 border-t border-zinc-800 ${isOpenEmojiPicker ? "" : " translate-y-full pointer-events-none"} transition-all duration-500`}
               removeDefaultStyles
-              onEmojiSelect={({ character }: any) => setTypedMessage(typedMessage + character)}
+              onEmojiSelect={(emoji: any) => setTypedMessage(typedMessage + emoji)}
               ref={emojiPickerRef}
             />
             <form
