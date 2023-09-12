@@ -162,7 +162,7 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(({
               );
             })}
           </label>
-          <ul className="flex flex-wrap gap-4 my-2 w-full h-80 overflow-y-auto shadow-inner rounded snap-y snap-mandatory">
+          <ul className="flex flex-wrap gap-4 my-2 w-full h-80 overflow-y-auto shadow-inner rounded snap-y">
             {emojisByGroup.map((group: any) => {
               return (
                 <div
