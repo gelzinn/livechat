@@ -162,13 +162,13 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(({
               );
             })}
           </label>
-          <ul className="flex flex-wrap gap-4 my-2 w-full h-80 overflow-y-auto shadow-inner rounded snap-y">
+          <ul className="flex flex-wrap gap-4 my-2 w-full h-80 overflow-y-auto shadow-inner rounded">
             {emojisByGroup.map((group: any) => {
               return (
                 <div
                   key={group.slug}
                   id={group.slug}
-                  className="flex flex-wrap gap-4 my-2 w-full snap-start"
+                  className="flex flex-wrap gap-4 my-2 w-full"
                 >
                   <span
                     id={group.slug}
@@ -207,7 +207,10 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(({
       <footer className="relative flex items-center justify-between">
         <div
           className="flex items-center justify-between w-full bg-zinc-900 border border-zinc-800 rounded min-w-12 min-h-[48px] h-12 overflow-hidden transition-all duration-300"
-          style={{ width: search ? 'calc(100% - 48px)' : '100%' }}
+          style={{
+            width: search ? 'calc(100% - 48px)' : '100%',
+            marginTop: search ? '0.5rem' : '0',
+          }}
         >
           <button className="hidden sm:flex items-center justify-center min-w-12 h-12 bg-zinc-900 border-r border-zinc-800 text-base text-zinc-100 p-4">
             <Icon icon="MagnifyingGlass" className="h-12 text-zinc-100" />
