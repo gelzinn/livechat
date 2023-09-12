@@ -12,7 +12,7 @@ interface EmojiPickerProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 async function getEmojis() {
-  const emojiApiUrl = "https://unpkg.com/unicode-emoji-json@0.5.0/data-by-group.json";
+  const emojiApiUrl = process.env.NEXT_PUBLIC_EMOJI_API_URL || "https://unpkg.com/unicode-emoji-json@0.5.0/data-by-group.json";
 
   let res = await fetch(emojiApiUrl);
 
