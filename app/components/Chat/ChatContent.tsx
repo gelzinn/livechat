@@ -681,6 +681,36 @@ export const ChatContent = ({
                 onFocus={() => {
                   if (isOpenEmojiPicker) setIsOpenEmojiPicker(false);
                 }}
+                onPaste={(e) => {
+                  const items = e.clipboardData.items;
+
+                  if (!items || items.length === 0) return;
+
+                  for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
+
+                    if (item.kind === 'file') {
+                      const file = item.getAsFile();
+
+                      if (!file) return;
+
+                      const reader = new FileReader();
+
+                      reader.readAsDataURL(file);
+
+                      reader.onload = () => {
+                        const messageContent = {
+                          sender: user.username,
+                          content: reader.result,
+                          timestamp: new Date().toISOString(),
+                          isReaded: false
+                        };
+
+                        handleSendMessage(chat.chat_info.id, user, messageContent);
+                      };
+                    }
+                  }
+                }}
                 disabled={!chat || !user}
                 value={typedMessage}
                 style={{ maxHeight: "8rem", width: "-webkit-fill-available" }}
