@@ -1,6 +1,6 @@
 'use client';
 
-import { HTMLAttributes, forwardRef, useEffect, useState } from "react";
+import { HTMLAttributes, forwardRef, useEffect, useRef, useState } from "react";
 import Icon from "../Icon";
 
 interface EmojiPickerProps extends HTMLAttributes<HTMLDivElement> {
@@ -30,7 +30,9 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(({
   style,
   removeDefaultStyles = false,
 }, ref) => {
-  const [emojis, setEmojis] = useState([]);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const [emojis, setEmojis] = useState<any>([]);
   const [filteredEmojis, setFilteredEmojis] = useState<any>(null);
   const [emojisByGroup, setEmojisByGroup] = useState<any>([]);
   const [selectedEmojiSection, setSelectedEmojiSection] = useState<string | null>(null);
@@ -58,7 +60,7 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(({
   useEffect(() => {
     if (!emojis || (emojis && !(emojis.length > 0))) return;
 
-    const grouped = emojis.reduce((groupedEmojis: any, emoji) => {
+    const grouped = emojis.reduce((groupedEmojis: any, emoji: any) => {
       const { group } = emoji;
       if (!groupedEmojis[group]) {
         groupedEmojis[group] = [];
@@ -90,10 +92,7 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(({
   return (
     <section
       className={`${defaultStylesClass}${className}`}
-      style={{
-        width: '-webkit-fill-available',
-        ...style,
-      }}
+      style={{ width: '-webkit-fill-available' }}
       ref={ref}
     >
       {search && filteredEmojis ? (
@@ -123,8 +122,8 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(({
         )
       ) : emojis && emojis.length > 0 ? (
         <>
-          <span className="hidden md:block text-zinc-500">Categories</span>
-          <label className="hidden md:flex flex-shrink-0 flex-grow gap-1 w-full h-fit overflow-x-auto overflow-y-hidden scroll-px-0">
+          <span className="text-zinc-500">Categories</span>
+          <label className="flex flex-shrink-0 flex-grow gap-1 w-full h-fit overflow-x-auto overflow-y-hidden scroll-px-0">
             {Object.keys(emojisByGroup).map((group) => {
               return (
                 <button

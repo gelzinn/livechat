@@ -434,7 +434,7 @@ export const ChatContent = ({
             <EmojiPicker
               className={`absolute flex flex-col w-full h-fit max-h-[480px] gap-2 p-4 bg-zinc-1000 border-t border-zinc-800 ${isOpenEmojiPicker ? '' : 'bottom-0 translate-y-full pointer-events-none'} transition-all duration-500 -z-10`}
               removeDefaultStyles
-              onEmojiSelect={({ character }: any) => setTypedMessage(typedMessage + character)}
+              onEmojiSelect={(emoji: any) => setTypedMessage(typedMessage + emoji)}
               ref={emojiPickerRef}
               style={{
                 bottom: barActionRef.current ? `${barActionRef.current.clientHeight > 0 && typedMessage !== '' ? `${barActionRef.current.clientHeight}px` : "80px"}` : "0px",
