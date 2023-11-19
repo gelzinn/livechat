@@ -28,6 +28,8 @@ export const ChatContent = ({
   const [messages, setMessages] = useState(chat ? chat.messages : []);
   const [typedMessage, setTypedMessage] = useState("");
 
+  const [sendingMessage, setSendingMessage] = useState<boolean>(false);
+
   const [isOpenChatInfo, setIsOpenChatInfo] = useState<boolean>(false);
   const [isOpenEmojiPicker, setIsOpenEmojiPicker] = useState<boolean>(false);
 
@@ -165,16 +167,12 @@ export const ChatContent = ({
   }, [messages]);
 
   useEffect(() => {
-    if (!emojiPickerRef.current || !isOpenEmojiPicker || !messageDivContainerRef.current) return;
+    if (!messages) return;
 
-    messageDivContainerRef.current.style.height = `${emojiPickerRef.current.clientHeight}px`;
-  }, [emojiPickerRef, emojiPickerRef.current?.clientHeight, messageDivContainerRef, isOpenEmojiPicker]);
-
-  useEffect(() => {
-    if (!messages || !barActionRef.current || !textareaRef.current) return;
-
-    messageContainerRef.current!.style.maxHeight = `calc(100% - (calc(${barActionRef.current.clientHeight}px + 1px)) - calc(${headerRef.current!.clientHeight}px + 1px))`;
-  }, [messages, barActionRef.current?.clientHeight, textareaRef.current?.clientHeight, documentWidth]);
+    if (typedMessage === "" && sendingMessage) {
+      setSendingMessage(false);
+    };
+  }, [messages, typedMessage, sendingMessage]);
 
   useEffect(() => {
     if (!textareaRef.current) return;
@@ -186,7 +184,7 @@ export const ChatContent = ({
   return (
     <>
       <div
-        className="relative flex flex-col flex-grow w-full overflow-hidden scrollbar-hide"
+        className="relative w-full grid grid-cols-1 grid-rows-[minmax(96px,_auto),1fr,auto] gap-0"
         style={{ height: documentHeight ? documentHeight : "100vh" }}
       >
         {chat && (
@@ -238,6 +236,7 @@ export const ChatContent = ({
             </div>
           </header>
         )}
+
         <main
           className="flex-1 bg-zinc-950 overflow-y-auto"
           ref={messageContainerRef}
@@ -426,19 +425,23 @@ export const ChatContent = ({
             </div>
           )}
         </main>
+
         {chat && (
           <footer
-            className="fixed bottom-0 z-10 w-full h-fit"
+            className="relative z-10 w-full h-auto"
             style={{ width: "-webkit-fill-available" }}
           >
             <EmojiPicker
-              className={`absolute bottom-20 flex flex-col w-full h-fit max-h-[480px] gap-2 p-4 bg-zinc-1000 border-t border-zinc-800 ${isOpenEmojiPicker ? "" : " translate-y-full pointer-events-none"} transition-all duration-500`}
+              className={`absolute flex flex-col w-full h-fit max-h-[480px] gap-2 p-4 bg-zinc-1000 border-t border-zinc-800 ${isOpenEmojiPicker ? '' : 'bottom-0 translate-y-full pointer-events-none'} transition-all duration-500 -z-10`}
               removeDefaultStyles
               onEmojiSelect={({ character }: any) => setTypedMessage(typedMessage + character)}
               ref={emojiPickerRef}
+              style={{
+                bottom: barActionRef.current ? `${barActionRef.current.clientHeight > 0 && typedMessage !== '' ? `${barActionRef.current.clientHeight}px` : "80px"}` : "0px",
+              }}
             />
             <form
-              className={`fixed bottom-0 flex items-center justify-between h-fit max-h-40 w-full px-2 sm:px-4 py-4 border-t border-zinc-800 bg-zinc-1000 z-50 overflow-hidden`}
+              className={`flex items-center justify-between h-fit max-h-40 w-full px-2 sm:px-4 py-4 border-t border-zinc-800 bg-zinc-1000 z-50 overflow-hidden`}
               onSubmit={(e: FormEvent) => e.preventDefault()}
               onClick={() => textareaRef.current?.focus()}
               ref={barActionRef}
@@ -484,7 +487,9 @@ export const ChatContent = ({
                 onKeyDown={(e) => {
                   if (!isMobile && e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
+
                     handleWriteMessage();
+                    setSendingMessage(true);
                   }
                 }}
                 onFocus={() => {
