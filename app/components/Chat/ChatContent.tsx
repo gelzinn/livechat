@@ -1,14 +1,16 @@
 'use client'
 
 import { FormEvent, Fragment, useEffect, useRef, useState } from "react";
+
 import { format } from 'date-fns';
 
-import Icon from "../Icon";
 import { handleSendMessage } from "app/hooks/handles/handleSendMessage";
 import { useAuth } from "app/hooks/useAuth";
 import { handleRemoveContact } from "app/hooks/handles/handleRemoveContact";
 import { realtimeDb } from "app/services/firebase";
 import { useDocumentSize } from "app/hooks/useDocumentSize";
+
+import Icon from "../Icon";
 import { EmojiPicker } from "../Emoji/EmojiPicker";
 
 interface ChatContentProps {
@@ -23,20 +25,23 @@ export const ChatContent = ({
   selectedChat
 }: ChatContentProps) => {
   const { user } = useAuth();
-  const { documentHeight, documentWidth, isMobile } = useDocumentSize();
+  const { documentHeight, isMobile } = useDocumentSize();
 
   const [messages, setMessages] = useState(chat ? chat.messages : []);
-  const [typedMessage, setTypedMessage] = useState("");
 
+  const [typedMessage, setTypedMessage] = useState("");
   const [sendingMessage, setSendingMessage] = useState<boolean>(false);
+
+  const [isLastMessageVisible, setIsLastMessageVisible] = useState(false);
 
   const [isOpenChatInfo, setIsOpenChatInfo] = useState<boolean>(false);
   const [isOpenEmojiPicker, setIsOpenEmojiPicker] = useState<boolean>(false);
 
   const messageContainerRef = useRef<HTMLDivElement>(null);
   const messageDivContainerRef = useRef<HTMLDivElement>(null);
+  const lastMessageRef = useRef<HTMLLIElement>(null);
+
   const headerRef = useRef<HTMLHeadElement>(null);
-  const bottomOfListRef = useRef<HTMLLIElement>(null);
   const barActionRef = useRef<HTMLFormElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -119,7 +124,31 @@ export const ChatContent = ({
       top: scrollPosition,
       behavior: "smooth"
     });
+
+    setIsLastMessageVisible(true);
   }
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!lastMessageRef.current || !messageContainerRef.current) return;
+
+      const lastMessageRect = lastMessageRef.current.getBoundingClientRect();
+      const containerRect = messageContainerRef.current.getBoundingClientRect();
+
+      const threshold = 50;
+
+      const isLastMessageCloseToBottom =
+        lastMessageRect.bottom - containerRect.bottom < threshold;
+
+      setIsLastMessageVisible(isLastMessageCloseToBottom);
+    };
+
+    messageContainerRef.current?.addEventListener("scroll", handleScroll);
+
+    return () => {
+      messageContainerRef.current?.removeEventListener("scroll", handleScroll);
+    };
+  }, [messageContainerRef.current, lastMessageRef.current]);
 
   useEffect(() => {
     if (textareaRef.current) handleChangeTextAreaHeight(textareaRef.current);
@@ -239,7 +268,7 @@ export const ChatContent = ({
         )}
 
         <main
-          className="h-full flex-1 bg-zinc-950 overflow-y-auto"
+          className="relative h-full flex-1 bg-zinc-950 overflow-y-auto"
           ref={messageContainerRef}
         >
           {chat && user ? (
@@ -334,6 +363,7 @@ export const ChatContent = ({
                       <li
                         key={index}
                         className={`flex flex-col ${isUser ? "items-end" : "items-start"} gap-1 w-full ${!isSameAsPrevious && index !== 0 ? "mt-4" : "mt-1"}`}
+                        ref={index === messages.length - 1 ? lastMessageRef : null}
                       >
                         <div
                           className={`relative sm:flex flex-wrap ${isUser ? "flex-row-reverse justify-end" : "flex-row justify-start"} max-w-3xl ${isUser ? "bg-rose-950" : "bg-zinc-900"} px-4 ${participants && participants.length > 2 && !isUser ? "pt-6 pb-3" : "py-3"} rounded-md ${isSameAsNext ? "mb-0" : "mb-2"}`}
@@ -395,17 +425,15 @@ export const ChatContent = ({
                       >
                         {showDateDivider && (
                           <div className="flex items-center justify-center w-full py-4 bg-zinc-950">
-                            <span className="text-zinc-400 text-xs">{currentDateString}</span>
+                            <span className="text-zinc-400 text-xs">
+                              {currentDateString}
+                            </span>
                           </div>
                         )}
                         {messageItem}
                       </Fragment>
                     )
                   })}
-                  <li
-                    ref={bottomOfListRef}
-                    className="h-0"
-                  />
                 </ul>
                 <section
                   className="w-full transition-all duration-500"
@@ -425,6 +453,21 @@ export const ChatContent = ({
               <h1 className="text-zinc-400 text-xl text-center px-4">Select a chat to start messaging.</h1>
             </div>
           )}
+
+          {
+            chat && messages && messages.length > 0 && (
+              <button
+                className={`fixed bottom-24 right-4 flex items-center justify-center z-50 w-10 h-10 rounded text-zinc-100 font-medium bg-zinc-900 hover:bg-zinc-800 bg-opacity-50 backdrop-blur transition duration-300`}
+                style={{
+                  opacity: isLastMessageVisible ? 0 : 1,
+                  pointerEvents: isLastMessageVisible ? "none" : "auto"
+                }}
+                onClick={handleScrollToRecentMessage}
+              >
+                <Icon icon="ArrowDown" className="w-4 h-4 text-zinc-100" />
+              </button>
+            )
+          }
         </main>
 
         {chat && (
@@ -441,6 +484,7 @@ export const ChatContent = ({
                 bottom: barActionRef.current ? `${barActionRef.current.clientHeight > 0 && typedMessage !== '' ? `${barActionRef.current.clientHeight}px` : "80px"}` : "0px",
               }}
             />
+
             <form
               className={`flex items-center justify-between h-fit max-h-40 w-full px-2 sm:px-4 py-4 border-t border-zinc-800 bg-zinc-1000 z-50 overflow-hidden`}
               onSubmit={(e: FormEvent) => e.preventDefault()}
@@ -510,7 +554,7 @@ export const ChatContent = ({
             </form>
           </footer>
         )}
-      </div >
+      </div>
 
       {chat && contact && (
         <aside
