@@ -13,10 +13,9 @@ interface EmojiPickerProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 async function getEmojis() {
-  const emojiApiKey = process.env.NEXT_PUBLIC_EMOJI_API_KEY || '';
-  const basePath = `https://emoji-api.com/emojis?access_key=${emojiApiKey}`;
+  const emojiApiUrl = process.env.NEXT_PUBLIC_EMOJI_API_URL || "https://unpkg.com/unicode-emoji-json@0.5.0/data-by-group.json";
 
-  let res = await fetch(basePath);
+  let res = await fetch(emojiApiUrl);
 
   if (!res.ok) throw new Error('Failed to fetch data');
 
@@ -30,8 +29,6 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(({
   style,
   removeDefaultStyles = false,
 }, ref) => {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-
   const [emojis, setEmojis] = useState<any>([]);
   const [filteredEmojis, setFilteredEmojis] = useState<any>(null);
   const [emojisByGroup, setEmojisByGroup] = useState<any>([]);
@@ -43,7 +40,27 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(({
     ? ''
     : 'flex flex-col w-full max-w-xl h-fit gap-4 bg-zinc-950 rounded p-4';
 
-  const handleEmojiClick = (emoji: any) => {
+  const handleSearchChange = (searchValue: string) => {
+    if (!searchValue || !emojis) {
+      setFilteredEmojis(null);
+      return;
+    }
+
+    const filteredEmojiData = emojis.filter((emoji: any) =>
+      emoji.name.toLowerCase().includes(searchValue.toLowerCase()),
+    );
+
+    setFilteredEmojis(filteredEmojiData);
+  };
+
+  const handleScrollToCategory = (categoryId: string) => {
+    const categoryElement = document.getElementById(categoryId);
+    if (!categoryElement) return;
+
+    categoryElement.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleEmojiClick = (emoji: string) => {
     if (onEmojiSelect) onEmojiSelect(emoji);
   };
 
@@ -51,42 +68,26 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(({
     async function fetchData() {
       const emojiData = await getEmojis();
 
-      if (emojiData) setEmojis(emojiData);
+      if (emojiData) setEmojisByGroup(emojiData);
     }
 
     fetchData();
   }, []);
 
   useEffect(() => {
-    if (!emojis || (emojis && !(emojis.length > 0))) return;
+    if (!emojisByGroup || (emojisByGroup && !(emojisByGroup.length > 0))) return;
 
-    const grouped = emojis.reduce((groupedEmojis: any, emoji: any) => {
-      const { group } = emoji;
-      if (!groupedEmojis[group]) {
-        groupedEmojis[group] = [];
-      }
-      groupedEmojis[group].push(emoji);
-      return groupedEmojis;
-    }, {});
+    const allEmojis: any[] = [];
 
-    setEmojisByGroup(grouped);
-    setSelectedEmojiSection(Object.keys(grouped)[0]);
-  }, [emojis]);
+    emojisByGroup.forEach((group: any) => {
+      allEmojis.push(...group.emojis);
+    });
+
+    setEmojis(allEmojis);
+  }, [emojisByGroup]);
 
   useEffect(() => {
-    if (!search) return;
-
-    async function getEmojisFilter() {
-      if (!search || !emojis) return;
-
-      const filteredEmojiData = emojis.filter((emoji: any) =>
-        emoji.unicodeName.toLowerCase().includes(search.toLowerCase()),
-      );
-
-      if (filteredEmojiData) setFilteredEmojis(filteredEmojiData);
-    }
-
-    getEmojisFilter();
+    if (search !== null && search.length > 0 && emojis) handleSearchChange(search);
   }, [search]);
 
   return (
@@ -103,18 +104,20 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(({
           <>
             <span className="text-zinc-500">Results to "{search}" search</span>
             <ul className="flex flex-wrap gap-1 w-full h-fit overflow-y-auto overflow-x-hidden shadow-inner rounded">
-              {filteredEmojis.map((emoji: any) => {
+              {filteredEmojis.map((emoji: any, index: number) => {
+                const {
+                  name,
+                  emoji: character
+                } = emoji;
+
                 return (
                   <button
-                    key={emoji.slug}
-                    title={emoji.unicodeName.replace(
-                      emoji.unicodeName.split(' ').shift(),
-                      '',
-                    )}
-                    className="flex basis-14 justify-center items-center text-center text-xl w-14 h-14 rounded p-2 select-none bg-zinc-900 hover:bg-zinc-800"
-                    onClick={() => handleEmojiClick(emoji)}
+                    key={index}
+                    title={name}
+                    className="flex justify-center items-center text-center text-xl w-14 h-14 rounded p-2 select-none bg-zinc-900 hover:bg-zinc-800"
+                    onClick={() => handleEmojiClick(character)}
                   >
-                    {emoji.character}
+                    {character}
                   </button>
                 );
               })}
@@ -127,45 +130,79 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(({
         <>
           <span className="text-zinc-500">Categories</span>
           <label className="flex flex-shrink-0 flex-grow gap-1 w-full h-fit overflow-x-auto overflow-y-hidden scroll-px-0">
-            {Object.keys(emojisByGroup).map((group) => {
+            {emojisByGroup.map((group: any) => {
+              const {
+                name,
+                slug,
+                emojis,
+              } = group;
+
+              const firstEmoji = emojis[0].emoji;
+
               return (
                 <button
                   className={`w-14 h-14 flex-shrink-0 text-xl font-semibold rounded p-2 ${selectedEmojiSection === group
                     ? 'bg-zinc-800'
                     : 'bg-zinc-900'
                     }`}
-                  key={group}
-                  title={group.replace('-', ' ')}
-                  onClick={() => setSelectedEmojiSection(group)}
+                  key={slug}
+                  title={name}
+                  onClick={() => {
+                    setSelectedEmojiSection(slug);
+                    handleScrollToCategory(slug);
+                  }}
                 >
-                  {emojisByGroup[group][0].character}
+                  {
+                    firstEmoji
+                  }
                 </button>
               );
             })}
           </label>
-          <span className="text-zinc-500">Emojis</span>
-          {selectedEmojiSection && (
-            <ul className="flex flex-wrap gap-1 w-full h-80 max-h-80 overflow-y-auto overflow-x-hidden shadow-inner rounded">
-              {emojisByGroup[selectedEmojiSection].map((emoji: any) => {
-                return (
-                  <button
-                    key={emoji.slug}
-                    title={emoji.unicodeName.replace(
-                      emoji.unicodeName.split(' ').shift(),
-                      '',
-                    )}
-                    className="flex justify-center items-center text-center text-xl w-14 h-14 rounded p-2 select-none bg-zinc-900 hover:bg-zinc-800"
-                    onClick={() => handleEmojiClick(emoji)}
+
+          <ul className="flex flex-wrap gap-4 my-2 w-full h-80 overflow-y-auto shadow-inner rounded">
+            {emojisByGroup.map((group: any) => {
+              return (
+                <div
+                  key={group.slug}
+                  id={group.slug}
+                  className="flex flex-wrap gap-4 my-2 w-full"
+                >
+                  <span
+                    id={group.slug}
+                    className="text-zinc-500"
                   >
-                    {emoji.character}
-                  </button>
-                );
-              })}
-            </ul>
-          )}
+                    {group.name}
+                  </span>
+                  <ul className="flex flex-wrap gap-1 w-full h-auto shadow-inner rounded">
+                    {group.emojis.map((emoji: any) => {
+                      const {
+                        slug,
+                        name,
+                        emoji: character
+                      } = emoji;
+
+                      return (
+                        <button
+                          key={slug}
+                          title={name}
+                          className="flex justify-center items-center text-center text-xl w-14 h-14 rounded p-2 select-none bg-zinc-900 hover:bg-zinc-800"
+                          onClick={() => handleEmojiClick(character)}
+                        >
+                          {character}
+                        </button>
+                      );
+                    })}
+                  </ul>
+                </div>
+              );
+            })}
+          </ul>
         </>
       ) : (
-        <span className="text-zinc-500">Loading...</span>
+        <span className="text-zinc-500">
+          Loading...
+        </span>
       )}
       <footer className="relative flex items-center justify-between mt-4">
         <div

@@ -207,9 +207,11 @@ export const ChatContent = ({
 
       const allMessages = Object.values(snapshot.val());
 
-      const recentMessages = allMessages.slice(
-        // Math.max(allMessages.length - messagesPerPage * messagesPage, 0)
-      )
+      // const recentMessages = allMessages.slice(
+      //   Math.max(allMessages.length - messagesPerPage * messagesPage, 0)
+      // )
+
+      const recentMessages = allMessages;
 
       if (recentMessages.length === 0) {
         return setMessages(null);
