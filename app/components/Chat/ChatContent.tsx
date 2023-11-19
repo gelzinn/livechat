@@ -28,10 +28,12 @@ export const ChatContent = ({
   const { documentHeight, isMobile } = useDocumentSize();
 
   const [messages, setMessages] = useState(chat ? chat.messages : []);
+  const [messagesPage, setMessagesPage] = useState<number>(1);
 
   const [typedMessage, setTypedMessage] = useState("");
   const [sendingMessage, setSendingMessage] = useState<boolean>(false);
 
+  const [isFirstRender, setIsFirstRender] = useState<boolean>(true);
   const [isLastMessageVisible, setIsLastMessageVisible] = useState(false);
 
   const [isOpenChatInfo, setIsOpenChatInfo] = useState<boolean>(false);
@@ -129,18 +131,24 @@ export const ChatContent = ({
   }
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (!lastMessageRef.current || !messageContainerRef.current) return;
+    if (isFirstRender) setIsFirstRender(false);
+  }, []);
 
-      const lastMessageRect = lastMessageRef.current.getBoundingClientRect();
+  useEffect(() => {
+    if (isFirstRender) return;
+  }, [isFirstRender]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!messageContainerRef.current) return;
+
       const containerRect = messageContainerRef.current.getBoundingClientRect();
 
-      const threshold = 50;
+      const isAtTop = containerRect.top <= 0;
 
-      const isLastMessageCloseToBottom =
-        lastMessageRect.bottom - containerRect.bottom < threshold;
-
-      setIsLastMessageVisible(isLastMessageCloseToBottom);
+      if (isAtTop) {
+        setMessagesPage((prevPage) => prevPage + 1);
+      }
     };
 
     messageContainerRef.current?.addEventListener("scroll", handleScroll);
@@ -148,7 +156,7 @@ export const ChatContent = ({
     return () => {
       messageContainerRef.current?.removeEventListener("scroll", handleScroll);
     };
-  }, [messageContainerRef.current, lastMessageRef.current]);
+  }, [messageContainerRef.current]);
 
   useEffect(() => {
     if (textareaRef.current) handleChangeTextAreaHeight(textareaRef.current);
@@ -161,6 +169,8 @@ export const ChatContent = ({
     const chatId = chat.id;
     const messagesRef = realtimeDb.ref(`chats/${chatId}/messages`);
 
+    const messagesPerPage = 50;
+
     setMessages([]);
 
     const handleNewMessage = (snapshot: any) => {
@@ -168,11 +178,13 @@ export const ChatContent = ({
 
       const allMessages = Object.values(snapshot.val());
 
-      const uniqueMessages = new Set(allMessages);
+      const sortedMessages = allMessages.sort((a: any, b: any) =>
+        a.timestamp > b.timestamp ? 1 : -1
+      );
 
-      const uniqueMessagesArray = Array.from(uniqueMessages);
+      const recentMessages = sortedMessages.slice(0, messagesPerPage * messagesPage);
 
-      setMessages(uniqueMessagesArray);
+      setMessages(recentMessages);
     };
 
     try {
@@ -435,10 +447,15 @@ export const ChatContent = ({
                     )
                   })}
                 </ul>
+
                 <section
                   className="w-full transition-all duration-500"
                   ref={messageDivContainerRef}
-                  style={{ height: isOpenEmojiPicker && emojiPickerRef.current ? `calc(${emojiPickerRef.current.clientHeight}px + 0px)` : "0px" }}
+                  style={{
+                    height: isOpenEmojiPicker && emojiPickerRef.current ?
+                      `calc(${emojiPickerRef.current.clientHeight}px + 0px)` :
+                      "0px"
+                  }}
                 />
               </>
             ) : (
