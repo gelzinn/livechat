@@ -15,12 +15,22 @@ interface EmojiPickerProps extends HTMLAttributes<HTMLDivElement> {
 async function getEmojis() {
   const emojiApiUrl = process.env.NEXT_PUBLIC_EMOJI_API_URL || "https://unpkg.com/unicode-emoji-json@0.5.0/data-by-group.json";
 
-  let res = await fetch(emojiApiUrl);
+  const res = await fetch(emojiApiUrl);
 
   if (!res.ok) throw new Error('Failed to fetch data');
 
   return res.json();
 }
+
+// async function translateSearch(search: string) {
+//   const translateUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=pt&tl=en&dt=t&q=${search}`
+
+//   const res = await fetch(translateUrl);
+
+//   if (!res.ok) throw new Error('Failed to fetch data');
+
+//   return res.json();
+// }
 
 export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(({
   onEmojiSelect,
@@ -40,14 +50,22 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(({
     ? ''
     : 'flex flex-col w-full max-w-xl h-fit gap-4 bg-zinc-950 rounded p-4';
 
-  const handleSearchChange = (searchValue: string) => {
+  const handleSearchChange = async (searchValue: string) => {
     if (!searchValue || !emojis) {
       setFilteredEmojis(null);
       return;
     }
 
+    let searchTerm = searchValue;
+
+    // const translatedSearch = await translateSearch(searchValue);
+
+    // if (translatedSearch && translatedSearch[0] && translatedSearch[0][0] && translatedSearch[0][0][0]) {
+    //   searchTerm = translatedSearch[0][0][0];
+    // }
+
     const filteredEmojiData = emojis.filter((emoji: any) =>
-      emoji.name.toLowerCase().includes(searchValue.toLowerCase()),
+      emoji.name.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
     setFilteredEmojis(filteredEmojiData);
@@ -89,6 +107,10 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(({
   useEffect(() => {
     if (search !== null && search.length > 0 && emojis) handleSearchChange(search);
   }, [search]);
+
+  useEffect(() => {
+    setSearch(null);
+  }, [onClose]);
 
   return (
     <section
@@ -225,13 +247,7 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(({
             ? 'visible opacity-100 translate-x-0'
             : 'invisible opacity-0 translate-x-12 ml-2'
             } transition-all duration-500`}
-          onClick={() => {
-            if (onClose) {
-              onClose();
-            } else {
-              setSearch(null);
-            }
-          }}
+          onClick={() => setSearch(null)}
         >
           <Icon icon="X" className="h-12 text-zinc-100" />
         </button>
