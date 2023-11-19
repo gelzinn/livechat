@@ -417,7 +417,7 @@ export const ChatContent = ({
                         ref={index === messages.length - 1 ? lastMessageRef : null}
                       >
                         <div
-                          className={`relative sm:flex flex-wrap ${isUser ? "flex-row-reverse justify-end" : "flex-row justify-start"} max-w-3xl ${isUser ? "bg-rose-950" : "bg-zinc-900"} px-4 ${participants && participants.length > 2 && !isUser ? "pt-6 pb-3" : "py-3"} rounded-md ${isSameAsNext ? "mb-0" : "mb-2"}`}
+                          className={`relative sm:flex ${isImage(message.content) ? "flex-col" : "flex-wrap"} ${isUser ? "flex-row-reverse justify-end" : "flex-row justify-start"} max-w-3xl ${isUser ? "bg-rose-950" : "bg-zinc-900"} px-4 ${participants && participants.length > 2 && !isUser ? "pt-6 pb-3" : "py-3"} rounded-md ${isSameAsNext ? "mb-0" : "mb-2"}`}
                           style={{
                             direction: isUser ? "rtl" : "ltr"
                           }}
@@ -429,7 +429,8 @@ export const ChatContent = ({
                           )}
 
                           <article
-                            className={`w-fit text-sm text-start whitespace-pre-wrap leading-6 text-white pr-3`}
+                            className={`w-fit text-sm text-start whitespace-pre-wrap leading-6 text-white ${isImage(message.content) ? "pr-0" : "pr-3"
+                              }`}
                             style={{
                               overflowWrap: containsLongWord ? "normal" : "break-word",
                               wordBreak: containsLongWord ? "break-all" : "normal",
@@ -476,7 +477,7 @@ export const ChatContent = ({
                             }
                           </article>
 
-                          <div className={`flex ${isUser ? "basis-8" : "basis-7"} items-center gap-2 w-fit h-full pointer-events-none select-none mt-2`}>
+                          <div className={`flex ${isUser ? "basis-8" : "basis-7"} items-center gap-2 w-fit h-full mt-2 pointer-events-none select-none`}>
                             {isUser && (
                               <span className={`relative flex items-center justify-center rounded-full ${isReaded ? "text-green-600" : "text-zinc-400"} font-medium`}>
                                 {isReaded ? (
