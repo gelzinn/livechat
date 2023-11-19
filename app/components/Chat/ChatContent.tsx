@@ -621,6 +621,7 @@ export const ChatContent = ({
               >
                 <Icon icon="Smiley" className="w-5 h-5" />
               </button>
+
               <button
                 className={`flex items-center justify-center h-12 rounded text-zinc-100 font-medium ${typedMessage ? "invisible opacity-0 w-0 -translate-x-12" : "visible opacity-100 w-12 translate-x-0 mr-2 md:mr-4"} transition-all duration-150`}
                 onClick={() => fileInputRef.current?.click()}
@@ -659,6 +660,7 @@ export const ChatContent = ({
                   }}
                 />
               </button>
+
               <textarea
                 className="flex-1 w-full bg-transparent text-zinc-100 placeholder-zinc-400 focus:outline-none h-[30px] resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-rose-500 disabled:color-rose-500 overflow-y-auto"
                 ref={textareaRef}
