@@ -92,7 +92,10 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(({
   return (
     <section
       className={`${defaultStylesClass}${className}`}
-      style={{ width: '-webkit-fill-available' }}
+      style={{
+        width: '-webkit-fill-available',
+        ...style,
+      }}
       ref={ref}
     >
       {search && filteredEmojis ? (
