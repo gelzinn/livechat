@@ -405,7 +405,7 @@ export const ChatContent = ({
                     };
 
                     const isImage = (text: string) => {
-                      const base64Regex = /^data:image\/(png|jpeg|jpg|gif);base64,([^\s]+)$/;
+                      const base64Regex = /^data:image\/(png|jpeg|jpg|gif|webp);base64,([^\s]+)$/;
 
                       return base64Regex.test(text);
                     }
