@@ -33,6 +33,8 @@ export const ChatContent = ({
   const [typedMessage, setTypedMessage] = useState("");
   const [sendingMessage, setSendingMessage] = useState<boolean>(false);
 
+  const [expandedMessages, setExpandedMessages] = useState([]);
+
   const [isFirstRender, setIsFirstRender] = useState<boolean>(true);
   const [isLastMessageVisible, setIsLastMessageVisible] = useState(false);
 
@@ -70,6 +72,11 @@ export const ChatContent = ({
       }
 
       await handleSendMessage(chat.chat_info.id, user, messageContent);
+
+      setMessages(
+        messages.concat(messageContent)
+      )
+
       setTypedMessage("");
       setIsOpenEmojiPicker(false);
 
@@ -130,6 +137,26 @@ export const ChatContent = ({
     setIsLastMessageVisible(true);
   }
 
+  const handleToggleMessageExpansion = (index: number) => {
+    setExpandedMessages((prevExpandedMessages) => {
+      const newExpandedMessages: any = [...prevExpandedMessages];
+      newExpandedMessages[index] = !newExpandedMessages[index];
+      return newExpandedMessages;
+    });
+  };
+
+  const handleResetState = () => {
+    setMessages([]);
+    setMessagesPage(1);
+    setTypedMessage("");
+    setSendingMessage(false);
+    setExpandedMessages([]);
+    setIsFirstRender(true);
+    setIsLastMessageVisible(false);
+    setIsOpenChatInfo(false);
+    setIsOpenEmojiPicker(false);
+  }
+
   useEffect(() => {
     if (isFirstRender) setIsFirstRender(false);
   }, []);
@@ -165,6 +192,8 @@ export const ChatContent = ({
   useEffect(() => {
     if (!selectedChat || !selectedChat.chat_info || !selectedChat.chat_info.id) return;
 
+    handleResetState();
+
     const chat = selectedChat.chat_info;
     const chatId = chat.id;
     const messagesRef = realtimeDb.ref(`chats/${chatId}/messages`);
@@ -178,11 +207,13 @@ export const ChatContent = ({
 
       const allMessages = Object.values(snapshot.val());
 
-      const sortedMessages = allMessages.sort((a: any, b: any) =>
-        a.timestamp > b.timestamp ? 1 : -1
-      );
+      const recentMessages = allMessages.slice(
+        // Math.max(allMessages.length - messagesPerPage * messagesPage, 0)
+      )
 
-      const recentMessages = sortedMessages.slice(0, messagesPerPage * messagesPage);
+      if (recentMessages.length === 0) {
+        return setMessages(null);
+      };
 
       setMessages(recentMessages);
     };
@@ -280,7 +311,8 @@ export const ChatContent = ({
         )}
 
         <main
-          className="relative h-full flex-1 bg-zinc-950 overflow-y-auto"
+          className={`relative h-full flex-1 bg-zinc-950 ${messages && messages.length > 0 ? "overflow-y-auto" : "overflow-hidden"
+            }`}
           ref={messageContainerRef}
         >
           {chat && user ? (
@@ -300,6 +332,7 @@ export const ChatContent = ({
 
                     const isSameAsPrevious = index > 0 && prevMessage && prevMessage.sender === message.sender;
                     const isSameAsNext = nextMessage && nextMessage.sender === message.sender;
+                    const isExpanded = expandedMessages[index];
 
                     const currentDate = new Date(message.timestamp);
                     const today = new Date();
@@ -388,7 +421,8 @@ export const ChatContent = ({
                               {message.sender}
                             </strong>
                           )}
-                          <p
+
+                          <article
                             className={`w-fit text-sm text-start whitespace-pre-wrap leading-6 text-white pr-3`}
                             style={{
                               overflowWrap: containsLongWord ? "normal" : "break-word",
@@ -396,8 +430,34 @@ export const ChatContent = ({
                               direction: "ltr",
                             }}
                           >
-                            {hasUrl(message.content)}
-                          </p>
+                            {
+                              message.content.length > 1200 ? (
+                                <p>
+                                  {
+                                    isExpanded
+                                      ? hasUrl(message.content)
+                                      : hasUrl(message.content.substring(0, 120)) + "..."
+                                  }
+
+                                  <button
+                                    className="ml-2 text-rose-300 hover:underline"
+                                    onClick={() => handleToggleMessageExpansion(index)}
+                                  >
+                                    {
+                                      isExpanded ? "See less" : "See more"
+                                    }
+                                  </button>
+                                </p>
+                              ) : (
+                                <p>
+                                  {
+                                    hasUrl(message.content)
+                                  }
+                                </p>
+                              )
+                            }
+                          </article>
+
                           <div className={`flex ${isUser ? "basis-8" : "basis-7"} items-center gap-2 w-fit h-full pointer-events-none select-none mt-2`}>
                             {isUser && (
                               <span className={`relative flex items-center justify-center rounded-full ${isReaded ? "text-green-600" : "text-zinc-400"} font-medium`}>
@@ -458,18 +518,45 @@ export const ChatContent = ({
                   }}
                 />
               </>
-            ) : (
-              <div className="flex flex-col items-center justify-center w-full h-full gap-4">
-                <Icon icon="SmileyWink" weight="light" className="w-24 h-24 text-2xl text-zinc-400" />
-                <p className="text-zinc-400 text-xl text-center px-4">Your messages will appear here.</p>
-              </div>
-            )
-          ) : (
-            <div className="flex flex-col items-center justify-center w-full h-full gap-4">
-              <Icon icon="Chat" weight="light" className="w-24 h-24 text-2xl text-zinc-400" />
-              <h1 className="text-zinc-400 text-xl text-center px-4">Select a chat to start messaging.</h1>
-            </div>
-          )}
+            ) :
+              messages === null ? (
+                (
+                  <div className="flex flex-col items-center justify-center w-full h-full gap-4">
+                    <Icon icon="SmileyWink" weight="light" className="w-24 h-24 text-2xl text-zinc-400" />
+                    <p className="text-zinc-400 text-xl text-center px-4">
+                      Your messages will appear here.
+                    </p>
+                  </div>
+                )
+              ) : (
+                <div className="flex flex-col flex-1 items-center justify-start w-full h-full gap-4 p-2">
+                  {
+                    Array.from(Array(4).keys()).map((_, index) => (
+                      <li
+                        key={index}
+                        className={`flex flex-col ${index % 2 === 0 ? "items-end" : "items-start"} justify-start gap-2 w-full py-4`}
+                      >
+                        {
+                          Array.from(Array(5).keys()).map((_, index) => {
+                            const randomHeight = Math.floor((Math.random()) * 100 + 50);
+
+                            return (
+                              <div
+                                key={index}
+                                className="w-full max-w-2xl bg-zinc-900 rounded-md animate-pulse"
+                                style={{
+                                  height: randomHeight < 50 ? "50px" : `${randomHeight}px`
+                                }}
+                              />
+                            )
+                          })
+                        }
+                      </li>
+                    ))
+                  }
+                </div>
+              )
+          ) : null}
 
           {
             chat && messages && messages.length > 0 && (
