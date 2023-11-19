@@ -114,7 +114,7 @@ export const AudioPlayer = ({
 
   return (
     <div
-      className="flex items-center justify-center w-full h-auto rounded-md gap-2 bg-zinc-100 bg-opacity-10"
+      className="flex items-center justify-center w-full h-auto rounded-md bg-zinc-100 bg-opacity-10"
     >
       <audio
         ref={audioRef}
@@ -140,7 +140,7 @@ export const AudioPlayer = ({
       </button>
 
       <div
-        className="flex items-center justify-between w-full gap-2"
+        className="flex items-center justify-center w-auto gap-2 px-2"
       >
         <span>
           {
@@ -217,21 +217,26 @@ export const AudioPlayer = ({
             )}
         </button>
 
-        <input
-          id="actual-volume"
-          type="range"
-          min="0"
-          max="1"
-          step="0.01"
-          value={volume}
-          onChange={handleVolumeChange}
-          className={`absolute top-10 ${isVolumeOpen ? "w-full opacity-100 pointer-events-auto select-auto" : "w-0 opacity-0 pointer-events-none select-none"} h-2 bg-zinc-100 bg-opacity-25 rounded transition-all duration-300 cursor-pointer`}
-          style={{
-            background: `linear-gradient(to right, rgb(226, 29, 85) 0%, rgb(226, 29, 85) ${volume * 100
-              }%, rgba(255, 255, 255, .25) ${volume * 100
-              }%, rgba(255, 255, 255, .25) 100%)`,
-          }}
-        />
+        <div
+          className={`relative flex items-center justify-start ${isVolumeOpen ? "w-10 opacity-100 pointer-events-auto select-auto mr-4" : "w-0 opacity-0 pointer-events-none select-none"} h-4 rounded transition-all duration-500`}
+        >
+          <input
+            id="actual-volume"
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={volume}
+            onChange={handleVolumeChange}
+            className={`w-auto h-2 bg-zinc-100 bg-opacity-25 rounded transition-all duration-500 cursor-pointer`}
+            style={{
+              background: `linear-gradient(to right, rgb(226, 29, 85) 0%, rgb(226, 29, 85) ${volume * 100
+                }%, rgba(255, 255, 255, .25) ${volume * 100
+                }%, rgba(255, 255, 255, .25) 100%)`,
+              width: isVolumeOpen ? "100%" : "0%",
+            }}
+          />
+        </div>
       </section>
     </div >
   );
