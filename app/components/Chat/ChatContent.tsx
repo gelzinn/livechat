@@ -184,7 +184,8 @@ export const ChatContent = ({
   return (
     <>
       <div
-        className="relative w-full grid grid-cols-1 grid-rows-[minmax(96px,_auto),1fr,auto] gap-0"
+        className={`relative w-full grid grid-cols-1 ${chat && user ? 'grid-rows-[minmax(96px,_auto),1fr,auto]' : 'grid-rows-1'
+          } gap-0`}
         style={{ height: documentHeight ? documentHeight : "100vh" }}
       >
         {chat && (
@@ -238,7 +239,7 @@ export const ChatContent = ({
         )}
 
         <main
-          className="flex-1 bg-zinc-950 overflow-y-auto"
+          className="h-full flex-1 bg-zinc-950 overflow-y-auto"
           ref={messageContainerRef}
         >
           {chat && user ? (
