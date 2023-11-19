@@ -58,41 +58,39 @@ export const ChatContent = ({
   const handleWriteMessage = async () => {
     if (!user || !typedMessage) return;
 
-    try {
-      const messageContent = {
-        sender: user.username,
-        content: typedMessage.trim(),
-        timestamp: new Date().toISOString(),
-        isReaded: false
-      };
+    const messageContent = {
+      sender: user.username,
+      content: typedMessage.trim(),
+      timestamp: new Date().toISOString(),
+      isReaded: false
+    };
 
+    try {
       if (textareaRef.current) {
         handleChangeTextAreaHeight(textareaRef.current);
         textareaRef.current.disabled = true;
       }
 
       await handleSendMessage(chat.chat_info.id, user, messageContent);
-
-      setMessages(
-        messages.concat(messageContent)
-      )
-
-      setTypedMessage("");
-      setIsOpenEmojiPicker(false);
-
-      setTimeout(() => {
-        handleScrollToRecentMessage();
-
-        if (textareaRef.current) {
-          textareaRef.current.disabled = false;
-          textareaRef.current.focus();
-        }
-      }, 100);
-
-      setTypedMessage("");
     } catch (error) {
       throw error;
+    } finally {
+      if (textareaRef.current) {
+        textareaRef.current.disabled = false;
+        textareaRef.current.focus();
+      }
     }
+
+    setMessages(
+      messages.concat(messageContent)
+    )
+
+    setTypedMessage("");
+    setIsOpenEmojiPicker(false);
+
+    handleScrollToRecentMessage();
+
+    setTypedMessage("");
   }
 
   const handleReadMessage = (chat: any, chatId: string) => {
@@ -406,6 +404,12 @@ export const ChatContent = ({
                       return elements;
                     };
 
+                    const isImage = (text: string) => {
+                      const base64Regex = /^data:image\/(png|jpeg|jpg|gif);base64,([^\s]+)$/;
+
+                      return base64Regex.test(text);
+                    }
+
                     const messageItem = (
                       <li
                         key={index}
@@ -433,29 +437,41 @@ export const ChatContent = ({
                             }}
                           >
                             {
-                              message.content.length > 1200 ? (
-                                <p>
-                                  {
-                                    isExpanded
-                                      ? hasUrl(message.content)
-                                      : hasUrl(message.content.substring(0, 120)) + "..."
-                                  }
-
-                                  <button
-                                    className="ml-2 text-rose-300 hover:underline"
-                                    onClick={() => handleToggleMessageExpansion(index)}
-                                  >
-                                    {
-                                      isExpanded ? "See less" : "See more"
-                                    }
-                                  </button>
-                                </p>
+                              isImage(message.content) ? (
+                                <picture
+                                  className="flex items-center justify-center rounded-md overflow-hidden"
+                                >
+                                  <img
+                                    src={message.content}
+                                    alt="Message content"
+                                    className="w-fit h-auto pointer-events-none select-none object-cover"
+                                  />
+                                </picture>
                               ) : (
-                                <p>
-                                  {
-                                    hasUrl(message.content)
-                                  }
-                                </p>
+                                message.content.length > 1200 ? (
+                                  <p>
+                                    {
+                                      isExpanded
+                                        ? hasUrl(message.content)
+                                        : hasUrl(message.content.substring(0, 120)) + "..."
+                                    }
+
+                                    <button
+                                      className="ml-2 text-rose-300 hover:underline"
+                                      onClick={() => handleToggleMessageExpansion(index)}
+                                    >
+                                      {
+                                        isExpanded ? "See less" : "See more"
+                                      }
+                                    </button>
+                                  </p>
+                                ) : (
+                                  <p>
+                                    {
+                                      hasUrl(message.content)
+                                    }
+                                  </p>
+                                )
                               )
                             }
                           </article>
@@ -480,6 +496,7 @@ export const ChatContent = ({
                               {format(new Date(message.timestamp), "HH:mm")}
                             </span>
                           </div>
+
                           {!isSameAsNext && (
                             <div
                               className={`absolute ${isUser ? "right-0 rotate-180 rounded-br-0" : "left-0 -rotate-180 rounded-bl-0"} -bottom-2 -scale-x-100 w-4 h-4 ${isUser ? "bg-rose-950" : "bg-zinc-900"}`}
@@ -612,7 +629,8 @@ export const ChatContent = ({
                 <input
                   type="file"
                   className="hidden"
-                  accept="image/*, video/*, audio/*"
+                  // accept="image/*, video/*, audio/*"
+                  accept="image/*"
                   multiple
                   ref={fileInputRef}
                   onChange={(e) => {
@@ -620,12 +638,29 @@ export const ChatContent = ({
 
                     if (!files || files.length === 0) return;
 
-                    console.log(files);
+                    for (let i = 0; i < files.length; i++) {
+                      const file = files[i];
+
+                      const reader = new FileReader();
+
+                      reader.readAsDataURL(file);
+
+                      reader.onload = () => {
+                        const messageContent = {
+                          sender: user.username,
+                          content: reader.result,
+                          timestamp: new Date().toISOString(),
+                          isReaded: false
+                        };
+
+                        handleSendMessage(chat.chat_info.id, user, messageContent);
+                      };
+                    }
                   }}
                 />
               </button>
               <textarea
-                className="flex-1 w-full bg-transparent text-zinc-100 placeholder-zinc-400 focus:outline-none h-[30px] resize-none disabled:opacity-50 disabled:cursor-not-allowed overflow-y-auto"
+                className="flex-1 w-full bg-transparent text-zinc-100 placeholder-zinc-400 focus:outline-none h-[30px] resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-rose-500 disabled:color-rose-500 overflow-y-auto"
                 ref={textareaRef}
                 rows={1}
                 placeholder="Type a message"
@@ -652,6 +687,7 @@ export const ChatContent = ({
               />
               <button
                 type="submit"
+                aria-label="Send message"
                 className={`flex items-center justify-center w-12 h-12 rounded text-zinc-100 font-medium ${!typedMessage ? "opacity-50" : "bg-rose-600 hover:bg-rose-700"} transition duration-300 ml-2 sm:ml-4`}
                 onClick={handleWriteMessage}
               >
