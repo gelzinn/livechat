@@ -1,0 +1,29 @@
+input#actual-progress,
+input#actual-volume {
+  width: 100%;
+  appearance: none;
+  height: 5px;
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, .25);
+  outline: none;
+  cursor: pointer;
+}
+
+input#actual-progress::-webkit-slider-thumb,
+input#actual-volume::-webkit-slider-thumb {
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: rgb(226, 29, 85);
+  cursor: pointer;
+}
+
+input#actual-progress::-moz-range-thumb,
+input#actual-volume::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: rgb(226, 29, 85);
+  cursor: pointer;
+}

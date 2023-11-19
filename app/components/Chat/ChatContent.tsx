@@ -10,8 +10,11 @@ import { handleRemoveContact } from "app/hooks/handles/handleRemoveContact";
 import { realtimeDb } from "app/services/firebase";
 import { useDocumentSize } from "app/hooks/useDocumentSize";
 
+import { isMedia, getMediaType } from "app/helpers/validators/isMedia";
+
 import Icon from "../Icon";
 import { EmojiPicker } from "../Emoji/EmojiPicker";
+import { AudioPlayer } from "../Player/AudioPlayer";
 
 interface ChatContentProps {
   chat: any;
@@ -404,12 +407,6 @@ export const ChatContent = ({
                       return elements;
                     };
 
-                    const isImage = (text: string) => {
-                      const base64Regex = /^data:image\/(png|jpeg|jpg|gif|webp);base64,([^\s]+)$/;
-
-                      return base64Regex.test(text);
-                    }
-
                     const messageItem = (
                       <li
                         key={index}
@@ -417,7 +414,7 @@ export const ChatContent = ({
                         ref={index === messages.length - 1 ? lastMessageRef : null}
                       >
                         <div
-                          className={`relative sm:flex ${isImage(message.content) ? "flex-col" : "flex-wrap"} ${isUser ? "flex-row-reverse justify-end" : "flex-row justify-start"} max-w-3xl ${isUser ? "bg-rose-950" : "bg-zinc-900"} px-4 ${participants && participants.length > 2 && !isUser ? "pt-6 pb-3" : "py-3"} rounded-md ${isSameAsNext ? "mb-0" : "mb-2"}`}
+                          className={`relative sm:flex ${isMedia(message.content) ? "flex-col" : "flex-wrap"} ${isUser ? "flex-row-reverse justify-end" : "flex-row justify-start"} max-w-3xl ${isUser ? "bg-rose-950" : "bg-zinc-900"} px-4 ${participants && participants.length > 2 && !isUser ? "pt-6 pb-3" : "py-3"} rounded-md ${isSameAsNext ? "mb-0" : "mb-2"}`}
                           style={{
                             direction: isUser ? "rtl" : "ltr"
                           }}
@@ -429,7 +426,7 @@ export const ChatContent = ({
                           )}
 
                           <article
-                            className={`w-fit text-sm text-start whitespace-pre-wrap leading-6 text-white ${isImage(message.content) ? "pr-0" : "pr-3"
+                            className={`w-fit text-sm text-start whitespace-pre-wrap leading-6 text-white ${isMedia(message.content) ? "pr-0" : "pr-3"
                               }`}
                             style={{
                               overflowWrap: containsLongWord ? "normal" : "break-word",
@@ -438,16 +435,38 @@ export const ChatContent = ({
                             }}
                           >
                             {
-                              isImage(message.content) ? (
-                                <picture
-                                  className="flex items-center justify-center rounded-md overflow-hidden"
-                                >
-                                  <img
-                                    src={message.content}
-                                    alt="Message content"
-                                    className="w-fit h-auto pointer-events-none select-none object-cover"
-                                  />
-                                </picture>
+                              isMedia(message.content) ? (
+                                <>
+                                  {(() => {
+                                    const mediaType = getMediaType(message.content);
+
+                                    switch (mediaType) {
+                                      default:
+                                      case "image":
+                                        return (
+                                          <img
+                                            src={message.content}
+                                            alt="Media"
+                                            className="w-full h-auto rounded-md"
+                                          />
+                                        );
+                                      case "video":
+                                        return (
+                                          <video
+                                            src={message.content}
+                                            controls
+                                            className="w-full h-auto rounded-md"
+                                          />
+                                        );
+                                      case "audio":
+                                        return (
+                                          <AudioPlayer
+                                            src={message.content}
+                                          />
+                                        );
+                                    }
+                                  })()}
+                                </>
                               ) : (
                                 message.content.length > 1200 ? (
                                   <p>
