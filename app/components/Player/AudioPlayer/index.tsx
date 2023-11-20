@@ -196,9 +196,13 @@ export const AudioPlayer = ({
           onClick={() => {
             if (!audioRef.current) return;
 
-            audioRef.current.volume = 0;
-
-            setVolume(0);
+            if (audioRef.current.volume > 0) {
+              audioRef.current.volume = 0;
+              setVolume(0);
+            } else {
+              audioRef.current.volume = 0.5;
+              setVolume(0.5);
+            }
           }}
           className="flex items-center justify-center min-w-[48px] w-12 h-12 rounded transition-all duration-300"
         >

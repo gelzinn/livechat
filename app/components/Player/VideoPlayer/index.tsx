@@ -3,6 +3,7 @@
 import Icon from "@/components/Icon";
 
 import { useEffect, useRef, useState } from "react";
+import { setTimeout } from "timers";
 
 export const VideoPlayer = ({
   src,
@@ -19,7 +20,10 @@ export const VideoPlayer = ({
   });
 
   const [isHovering, setHovering] = useState(false);
+  const [isFullscreen, setFullscreen] = useState(false);
+
   const [isVolumeOpen, setVolumeOpen] = useState(false);
+  const [isCursorVisible, setCursorVisible] = useState(true);
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -94,12 +98,36 @@ export const VideoPlayer = ({
 
     videoRef.current.addEventListener("timeupdate", handleTimeUpdate);
 
+    videoRef.current.addEventListener("fullscreenchange", () => {
+      setFullscreen(!isFullscreen);
+    });
+
     return () => {
       if (!videoRef.current) return;
 
       videoRef.current.removeEventListener("timeupdate", handleTimeUpdate);
     };
   }, []);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+
+    videoRef.current.volume = volume;
+  }, [volume]);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+
+    if (isHovering) {
+      if (isPlaying) {
+        setTimeout(() => {
+          setCursorVisible(false)
+        }, 3000);
+      } else {
+        setCursorVisible(true);
+      }
+    }
+  }, [isCursorVisible, isHovering, isPlaying]);
 
   useEffect(() => {
     if (!progress) return;
@@ -117,19 +145,56 @@ export const VideoPlayer = ({
   }, [src]);
 
   return (
-    <picture
-      className="relative block rounded-md overflow-hidden"
+    <button
+      onClick={handleTogglePlay}
+      onKeyDown={(e) => {
+        if (!videoRef.current) return;
+
+        if (e.key === "Spacebar") handleTogglePlay();
+
+        if (e.key === "ArrowLeft") {
+          videoInfo.currentTime -= 5;
+        }
+
+        if (e.key === "ArrowRight") {
+          videoInfo.currentTime += 5;
+        }
+
+        if (e.key === "ArrowUp") {
+          if (volume < 1) {
+            setVolume(videoRef.current.volume);
+          }
+        }
+
+        if (e.key === "ArrowDown") {
+          if (videoRef.current.volume > 0) {
+            videoRef.current.volume -= 0.1;
+            setVolume(videoRef.current.volume);
+          }
+        }
+      }}
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
+      className="relative block rounded-md overflow-hidden"
+      style={{
+        width: isFullscreen ? '100vw' : '100%',
+        height: isFullscreen ? '100vh' : 'auto',
+        position: isFullscreen ? 'fixed' : 'relative',
+        top: isFullscreen ? '0' : 'auto',
+        left: isFullscreen ? '0' : 'auto',
+        zIndex: isFullscreen ? 9999 : 0,
+        background: isFullscreen ? 'rgb(0,0,0)' : 'transparent',
+      }}
     >
       <section
-        className={`absolute bottom-0 flex items-center justify-center w-full h-full pointer-events-auto transition-all duration-100 ${isHovering ? "opacity-100" : "opacity-0"}`}
+        className={`absolute bottom-0 flex items-center justify-center w-full h-full pointer-events-auto transition-all duration-100 ${isHovering ? 'opacity-100' : 'opacity-0'}`}
         style={{
           background: isHovering ? 'linear-gradient(transparent, rgba(0,0,0,0.75))' : 'transparent',
         }}
       >
         <div
           className="absolute bottom-0 flex items-center justify-center w-full px-2 pointer-events-auto"
+          onClick={(e) => e.stopPropagation()}
         >
           <button
             onClick={handleTogglePlay}
@@ -171,10 +236,10 @@ export const VideoPlayer = ({
                 type="range"
                 min="0"
                 max="1"
-                step="0.01"
+                step={`${1 / videoInfo.duration}`}
                 value={progress ? progress / 100 : 0}
                 onChange={handleChangeCurrentTime}
-                className="w-40 h-2 bg-zinc-100 bg-opacity-25 rounded transition-all duration-100 cursor-pointer"
+                className="w-40 h-2 bg-zinc-100 bg-opacity-25 rounded transition-all duration-1000 cursor-pointer"
                 style={{
                   background: `linear-gradient(to right, rgb(226, 29, 85) 0%, rgb(226, 29, 85) ${progress}%, rgba(255, 255, 255, .25) ${progress}%, rgba(255, 255, 255, .25) 100%)`,
                 }}
@@ -203,9 +268,13 @@ export const VideoPlayer = ({
               onClick={() => {
                 if (!videoRef.current) return;
 
-                videoRef.current.volume = 0;
-
-                setVolume(0);
+                if (videoRef.current.volume > 0) {
+                  videoRef.current.volume = 0;
+                  setVolume(0);
+                } else {
+                  videoRef.current.volume = 0.5;
+                  setVolume(0.5);
+                }
               }}
               className="flex items-center justify-center min-w-[48px] w-12 h-12 rounded transition-all duration-300"
             >
@@ -234,7 +303,7 @@ export const VideoPlayer = ({
               className={`relative flex items-center justify-start w-auto h-full`}
             >
               <div
-                className={`relative flex flex-col items-center justify-center ${isVolumeOpen ? "-ml-2 mx-2 w-8 opacity-100 pointer-events-auto select-auto" : "w-0 opacity-0 pointer-events-none select-none"} h-full rounded transition-all duration-500`}
+                className={`relative flex flex-col items-center justify-center ${isVolumeOpen ? "w-16 opacity-100 pointer-events-auto select-auto mr-2" : "w-0 opacity-0 pointer-events-none select-none"} h-full rounded transition-all duration-500`}
               >
                 <input
                   id="actual-volume"
@@ -244,7 +313,7 @@ export const VideoPlayer = ({
                   step="0.01"
                   value={volume}
                   onChange={handleVolumeChange}
-                  className={`h-full bg-zinc-100 bg-opacity-25 rounded transition-all duration-500 cursor-pointer -rotate-90`}
+                  className={`h-full bg-zinc-100 bg-opacity-25 rounded transition-all duration-500 cursor-pointer`}
                   style={{
                     background: `linear-gradient(to right, rgb(226, 29, 85) 0%, rgb(226, 29, 85) ${volume * 100
                       }%, rgba(255, 255, 255, .25) ${volume * 100
@@ -254,6 +323,38 @@ export const VideoPlayer = ({
               </div>
             </div>
           </section>
+
+          {/* <button
+            className="flex items-center justify-center min-w-[48px] w-12 h-12 rounded transition-all duration-100"
+          >
+            <Icon
+              icon="GearSix"
+              className="w-5 h-5"
+            />
+          </button> */}
+
+          <button
+            onClick={() => {
+              if (!videoRef.current) return;
+
+              setFullscreen(!isFullscreen);
+            }}
+            className="flex items-center justify-center min-w-[48px] w-12 h-12 rounded transition-all duration-100"
+          >
+            {
+              isFullscreen ? (
+                <Icon
+                  icon="CornersIn"
+                  className="w-5 h-5"
+                />
+              ) : (
+                <Icon
+                  icon="CornersOut"
+                  className="w-5 h-5"
+                />
+              )
+            }
+          </button>
         </div>
       </section>
 
@@ -261,8 +362,12 @@ export const VideoPlayer = ({
         ref={videoRef}
         src={src}
         controls={false}
-        className="rounded-md overflow-hidden pointer-events-none select-none"
+        className="rounded-md overflow-hidden aspect-video pointer-events-none select-none"
+        style={{
+          width: isFullscreen ? '100vw' : '100%',
+          height: isFullscreen ? '100vh' : 'auto',
+        }}
       />
-    </picture>
+    </button>
   )
 }
