@@ -576,7 +576,10 @@ export const ChatContent = ({
               )
           ) : (
             <div className="flex flex-col items-center justify-center w-full h-full gap-4">
-              <RingLoading />
+              <Icon icon="ChatCircle" weight="light" className="w-24 h-24 text-2xl text-zinc-400" />
+              <p className="text-zinc-400 text-xl text-center px-4">
+                Select a chat to start messaging.
+              </p>
             </div>
           )}
 
