@@ -643,6 +643,14 @@ export const ChatContent = ({
                     for (let i = 0; i < files.length; i++) {
                       const file = files[i];
 
+                      const maxMBSize = 3 // in MB
+                      const maxSize = maxMBSize > 1 ? maxMBSize * 1024 * 1024 : 1;
+
+                      if (file.size > maxSize) {
+                        alert(`O tamanho do arquivo excede o limite permitido de ${maxMBSize} MB.`);
+                        continue;
+                      }
+
                       const reader = new FileReader();
 
                       reader.readAsDataURL(file);
