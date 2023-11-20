@@ -15,6 +15,7 @@ import { isMedia, getMediaType } from "app/helpers/validators/isMedia";
 import Icon from "../Icon";
 import { EmojiPicker } from "../Emoji/EmojiPicker";
 import { AudioPlayer } from "../Player/AudioPlayer";
+import { VideoPlayer } from "../Player/VideoPlayer";
 
 interface ChatContentProps {
   chat: any;
@@ -452,10 +453,8 @@ export const ChatContent = ({
                                         );
                                       case "video":
                                         return (
-                                          <video
+                                          <VideoPlayer
                                             src={message.content}
-                                            controls
-                                            className="w-full h-auto rounded-md"
                                           />
                                         );
                                       case "audio":
@@ -651,8 +650,7 @@ export const ChatContent = ({
                 <input
                   type="file"
                   className="hidden"
-                  // accept="image/*, video/*, audio/*"
-                  accept="image/*"
+                  accept="image/*, video/*, audio/*"
                   multiple
                   ref={fileInputRef}
                   onChange={(e) => {

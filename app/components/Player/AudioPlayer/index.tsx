@@ -112,9 +112,15 @@ export const AudioPlayer = ({
     }
   }, [progress]);
 
+  useEffect(() => {
+    if (!src) {
+      throw new Error("Source is required for AudioPlayer");
+    }
+  }, [src]);
+
   return (
     <div
-      className="flex items-center justify-center w-full h-auto rounded-md bg-zinc-100 bg-opacity-10"
+      className="flex items-center justify-center w-full h-auto rounded-md px-2 bg-zinc-100 bg-opacity-10"
     >
       <audio
         ref={audioRef}
