@@ -184,7 +184,7 @@ export const AudioPlayer = ({
       <section
         onMouseEnter={() => setVolumeOpen(true)}
         onMouseLeave={() => setVolumeOpen(false)}
-        className="relative flex items-center justify-center w-auto rounded transition-all duration-300"
+        className={`relative flex items-center justify-center w-auto rounded py-2 transition-all duration-300`}
       >
         <button
           onClick={() => {
@@ -218,24 +218,27 @@ export const AudioPlayer = ({
         </button>
 
         <div
-          className={`relative flex items-center justify-start ${isVolumeOpen ? "w-10 opacity-100 pointer-events-auto select-auto mr-4" : "w-0 opacity-0 pointer-events-none select-none"} h-4 rounded transition-all duration-500`}
+          className={`relative flex items-center justify-start w-auto h-full`}
         >
-          <input
-            id="actual-volume"
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={volume}
-            onChange={handleVolumeChange}
-            className={`w-auto h-2 bg-zinc-100 bg-opacity-25 rounded transition-all duration-500 cursor-pointer`}
-            style={{
-              background: `linear-gradient(to right, rgb(226, 29, 85) 0%, rgb(226, 29, 85) ${volume * 100
-                }%, rgba(255, 255, 255, .25) ${volume * 100
-                }%, rgba(255, 255, 255, .25) 100%)`,
-              width: isVolumeOpen ? "100%" : "0%",
-            }}
-          />
+          <div
+            className={`relative flex flex-col items-center justify-center ${isVolumeOpen ? "-ml-2 mx-2 w-8 opacity-100 pointer-events-auto select-auto" : "w-0 opacity-0 pointer-events-none select-none"} h-full rounded transition-all duration-500`}
+          >
+            <input
+              id="actual-volume"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={volume}
+              onChange={handleVolumeChange}
+              className={`h-full bg-zinc-100 bg-opacity-25 rounded transition-all duration-500 cursor-pointer -rotate-90`}
+              style={{
+                background: `linear-gradient(to right, rgb(226, 29, 85) 0%, rgb(226, 29, 85) ${volume * 100
+                  }%, rgba(255, 255, 255, .25) ${volume * 100
+                  }%, rgba(255, 255, 255, .25) 100%)`,
+              }}
+            />
+          </div>
         </div>
       </section>
     </div >

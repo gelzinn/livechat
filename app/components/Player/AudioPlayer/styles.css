@@ -2,8 +2,8 @@ input#actual-progress,
 input#actual-volume {
   width: 100%;
   appearance: none;
-  height: 5px;
-  border-radius: 5px;
+  height: 4px;
+  border-radius: 4px;
   background-color: rgba(255, 255, 255, .25);
   outline: none;
   cursor: pointer;
@@ -12,18 +12,27 @@ input#actual-volume {
 input#actual-progress::-webkit-slider-thumb,
 input#actual-volume::-webkit-slider-thumb {
   appearance: none;
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background-color: rgb(226, 29, 85);
   cursor: pointer;
 }
 
-input#actual-progress::-moz-range-thumb,
-input#actual-volume::-moz-range-thumb {
-  width: 15px;
-  height: 15px;
+input#actual-volume::-webkit-slider-thumb {
+  width: 0;
+  height: 0;
+}
+
+input#actual-progress::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background-color: rgb(226, 29, 85);
   cursor: pointer;
+}
+
+input#actual-volume::-moz-range-thumb {
+  width: 0;
+  height: 0;
 }
