@@ -12,6 +12,7 @@ import { getChatContent } from "app/helpers/importers/getChats";
 import Icon from "../Icon";
 import { useDocumentSize } from "app/hooks/useDocumentSize";
 import { useUserAgent } from "app/hooks/useUserAgent";
+import { getMediaType, isMedia } from "app/helpers/validators/isMedia";
 
 interface ChatAsideProps {
   chats: any;
@@ -175,8 +176,12 @@ export const ChatAside = ({
           </div>
           <div className="flex items-center justify-start overflow-hidden w-full gap-4">
             <div className="flex flex-col items-start w-full overflow-hidden">
-              <strong className="text-zinc-200">Personal Chat</strong>
-              <p className="text-zinc-400 truncate">Your saved messages</p>
+              <strong className="text-zinc-200">
+                Personal Chat
+              </strong>
+              <p className="text-zinc-400 truncate">
+                Your saved messages
+              </p>
             </div>
           </div>
         </li>
@@ -202,6 +207,21 @@ export const ChatAside = ({
                 message: chatMessages[chatMessages.length - 1]?.content,
                 sender: chatMessages[chatMessages.length - 1]?.sender,
               }
+
+              const lastMessageIsMedia = isMedia(lastMessage.message);
+              const lastMessageMediaType = lastMessageIsMedia ? getMediaType(lastMessage.message) : null;
+
+              const lastMessagePreview = (
+                lastMessageIsMedia
+                  ? lastMessageMediaType === "image"
+                    ? "Sent an image."
+                    : lastMessageMediaType === "video"
+                      ? "Sent a video."
+                      : lastMessageMediaType === "audio"
+                        ? "Sent an audio."
+                        : lastMessage.message
+                  : lastMessage.message
+              )
 
               const chatMessagesArray = chatMessages ? Object.values(chatMessages) : [];
               const isUnread = chatMessagesArray.some((message: any) => !message.isReaded);
@@ -239,8 +259,8 @@ export const ChatAside = ({
                         ) : (
                           lastMessage.message
                             ? lastMessage.sender === user.username
-                              ? `You: ${lastMessage.message}`
-                              : lastMessage.message
+                              ? `You: ${lastMessagePreview}`
+                              : lastMessagePreview
                             : `Start a conversation with ${contact_info.name}.`
                         )}
                       </p>
@@ -295,21 +315,27 @@ export const ChatAside = ({
               disabled
             >
               <Icon icon="Warning" size={16} className="pointer-events-none" />
-              <p className="pointer-events-none">Report</p>
+              <p className="pointer-events-none">
+                Report
+              </p>
             </button>
             <button
               className="flex items-center justify-start gap-2 w-full h-12 text-sm p-4 disabled:hover:bg-zinc-900 hover:bg-zinc-950 hover:border-zinc-700 transition-all duration-150 pointer-events-none group-hover:pointer-events-auto disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed"
               disabled
             >
               <Icon icon="Gear" size={16} className="pointer-events-none" />
-              <p className="pointer-events-none">Settings</p>
+              <p className="pointer-events-none">
+                Settings
+              </p>
             </button>
             <button
               className="flex items-center justify-start gap-2 w-max h-12 text-sm p-4 disabled:hover:bg-zinc-900 hover:bg-zinc-950 hover:border-zinc-700 transition-all duration-150 pointer-events-none group-hover:pointer-events-auto disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed"
               onClick={handleSignOut}
             >
               <Icon icon="SignOut" size={16} className="pointer-events-none" />
-              <p className="pointer-events-none">Sign Out</p>
+              <p className="pointer-events-none">
+                Sign Out
+              </p>
             </button>
           </section>
           <Icon icon="Gear" size={16} />

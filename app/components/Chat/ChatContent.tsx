@@ -13,9 +13,11 @@ import { useDocumentSize } from "app/hooks/useDocumentSize";
 import { isMedia, getMediaType } from "app/helpers/validators/isMedia";
 
 import Icon from "../Icon";
+
 import { EmojiPicker } from "../Emoji/EmojiPicker";
 import { AudioPlayer } from "../Player/AudioPlayer";
 import { VideoPlayer } from "../Player/VideoPlayer";
+
 import { RingLoading } from "../Loading/Ring";
 
 interface ChatContentProps {
