@@ -239,7 +239,7 @@ export const VideoPlayer = ({
                 step={`${1 / videoInfo.duration}`}
                 value={progress ? progress / 100 : 0}
                 onChange={handleChangeCurrentTime}
-                className="w-40 h-2 bg-zinc-100 bg-opacity-25 rounded transition-all duration-1000 cursor-pointer"
+                className="w-40 h-2 bg-zinc-100 bg-opacity-25 rounded transition-all duration-100 cursor-pointer"
                 style={{
                   background: `linear-gradient(to right, rgb(226, 29, 85) 0%, rgb(226, 29, 85) ${progress}%, rgba(255, 255, 255, .25) ${progress}%, rgba(255, 255, 255, .25) 100%)`,
                 }}

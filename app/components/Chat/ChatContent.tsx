@@ -16,6 +16,7 @@ import Icon from "../Icon";
 import { EmojiPicker } from "../Emoji/EmojiPicker";
 import { AudioPlayer } from "../Player/AudioPlayer";
 import { VideoPlayer } from "../Player/VideoPlayer";
+import { RingLoading } from "../Loading/Ring";
 
 interface ChatContentProps {
   chat: any;
@@ -567,34 +568,15 @@ export const ChatContent = ({
                   </div>
                 )
               ) : (
-                <div className="flex flex-col flex-1 items-center justify-start w-full h-full gap-4 p-2">
-                  {
-                    Array.from(Array(4).keys()).map((_, index) => (
-                      <li
-                        key={index}
-                        className={`flex flex-col ${index % 2 === 0 ? "items-end" : "items-start"} justify-start gap-2 w-full py-4`}
-                      >
-                        {
-                          Array.from(Array(5).keys()).map((_, index) => {
-                            const randomHeight = Math.floor((Math.random()) * 100 + 50);
-
-                            return (
-                              <div
-                                key={index}
-                                className="w-full max-w-2xl bg-zinc-900 rounded-md animate-pulse"
-                                style={{
-                                  height: randomHeight < 50 ? "50px" : `${randomHeight}px`
-                                }}
-                              />
-                            )
-                          })
-                        }
-                      </li>
-                    ))
-                  }
+                <div className="flex flex-col items-center justify-center w-full h-full gap-4">
+                  <RingLoading />
                 </div>
               )
-          ) : null}
+          ) : (
+            <div className="flex flex-col items-center justify-center w-full h-full gap-4">
+              <RingLoading />
+            </div>
+          )}
 
           {
             chat && messages && messages.length > 0 && (
