@@ -213,52 +213,6 @@ export const VideoPlayer = ({
             )}
           </button>
 
-          <div
-            className="flex items-center justify-center w-full gap-2 px-2"
-          >
-            <span
-              className="w-10"
-            >
-              {
-                videoInfo.currentTime ? (
-                  formatTime(
-                    videoInfo.currentTime
-                  )
-                ) : "0:00"
-              }
-            </span>
-
-            <div
-              className="relative flex items-center justify-start w-full h-4 mx-2"
-            >
-              <input
-                id="actual-progress"
-                type="range"
-                min="0"
-                max="1"
-                step={`${1 / videoInfo.duration}`}
-                value={progress ? progress / 100 : 0}
-                onChange={handleChangeCurrentTime}
-                className="w-40 h-2 bg-zinc-100 bg-opacity-25 rounded transition-all duration-100 cursor-pointer"
-                style={{
-                  background: `linear-gradient(to right, rgb(226, 29, 85) 0%, rgb(226, 29, 85) ${progress}%, rgba(255, 255, 255, .25) ${progress}%, rgba(255, 255, 255, .25) 100%)`,
-                }}
-              />
-            </div>
-
-            <span
-              className="w-10"
-            >
-              {
-                videoInfo.duration ? (
-                  formatTime(
-                    videoInfo.duration
-                  )
-                ) : "0:00"
-              }
-            </span>
-          </div>
-
           <section
             onMouseEnter={() => setVolumeOpen(true)}
             onMouseLeave={() => setVolumeOpen(false)}
@@ -324,14 +278,61 @@ export const VideoPlayer = ({
             </div>
           </section>
 
-          {/* <button
-            className="flex items-center justify-center min-w-[48px] w-12 h-12 rounded transition-all duration-100"
+          <div
+            className="flex items-center justify-center w-full gap-2 px-2"
+          >
+            <span
+              className="w-10"
+            >
+              {
+                videoInfo.currentTime ? (
+                  formatTime(
+                    videoInfo.currentTime
+                  )
+                ) : "0:00"
+              }
+            </span>
+
+            <div
+              className="relative flex items-center justify-start w-full h-4 mx-2"
+            >
+              <input
+                id="actual-progress"
+                type="range"
+                min="0"
+                max="1"
+                step={`${1 / videoInfo.duration}`}
+                value={progress ? progress / 100 : 0}
+                onChange={handleChangeCurrentTime}
+                className="w-40 h-2 bg-zinc-100 bg-opacity-25 rounded transition-all duration-100 cursor-pointer"
+                style={{
+                  background: `linear-gradient(to right, rgb(226, 29, 85) 0%, rgb(226, 29, 85) ${progress}%, rgba(255, 255, 255, .25) ${progress}%, rgba(255, 255, 255, .25) 100%)`,
+                }}
+              />
+            </div>
+
+            <span
+              className="w-10"
+            >
+              {
+                videoInfo.duration ? (
+                  formatTime(
+                    videoInfo.duration
+                  )
+                ) : "0:00"
+              }
+            </span>
+          </div>
+
+          <button
+            disabled
+            className="flex items-center justify-center min-w-[48px] w-12 h-12 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-100"
           >
             <Icon
               icon="GearSix"
               className="w-5 h-5"
             />
-          </button> */}
+          </button>
 
           <button
             onClick={() => {
