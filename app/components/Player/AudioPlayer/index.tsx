@@ -6,12 +6,15 @@ import { useEffect, useRef, useState } from "react";
 import Icon from "@/components/Icon";
 
 import "./styles.css";
+import { useDocumentSize } from "app/hooks/useDocumentSize";
 
 export const AudioPlayer = ({
   src,
 }: {
   src: string;
 }) => {
+  const { isMobile } = useDocumentSize();
+
   const [isPlaying, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [volume, setVolume] = useState(0.5);
@@ -135,12 +138,12 @@ export const AudioPlayer = ({
         {isPlaying ? (
           <Icon
             icon="Pause"
-            className="w-5 h-5"
+            className="w-4 h-4 md:w-5 md:h-5"
           />
         ) : (
           <Icon
             icon="Play"
-            className="w-5 h-5"
+            className="w-4 h-4 md:w-5 md:h-5"
           />
         )}
       </button>
@@ -190,7 +193,7 @@ export const AudioPlayer = ({
       <section
         onMouseEnter={() => setVolumeOpen(true)}
         onMouseLeave={() => setVolumeOpen(false)}
-        className={`relative flex items-center justify-center w-auto rounded py-2 transition-all duration-300`}
+        className={`${isMobile ? 'hidden' : 'flex'} relative items-center justify-center w-auto rounded py-2 transition-all duration-300`}
       >
         <button
           onClick={() => {
@@ -208,21 +211,26 @@ export const AudioPlayer = ({
         >
           {
             volume > 0 ? (
-              volume > 0.5 ? (
+              volume > 0.75 ? (
                 <Icon
                   icon="SpeakerSimpleHigh"
-                  className="w-5 h-5"
+                  className="w-4 h-4 md:w-5 md:h-5"
+                />
+              ) : volume > 0.35 ? (
+                <Icon
+                  icon="SpeakerSimpleLow"
+                  className="w-4 h-4 md:w-5 md:h-5"
                 />
               ) : (
                 <Icon
-                  icon="SpeakerSimpleLow"
-                  className="w-5 h-5"
+                  icon="SpeakerSimpleNone"
+                  className="w-4 h-4 md:w-5 md:h-5"
                 />
               )
             ) : (
               <Icon
-                icon="SpeakerSimpleNone"
-                className="w-5 h-5"
+                icon="SpeakerSimpleX"
+                className="w-4 h-4 md:w-5 md:h-5"
               />
             )}
         </button>

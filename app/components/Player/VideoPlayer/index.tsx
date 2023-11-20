@@ -1,6 +1,7 @@
 'use client'
 
 import Icon from "@/components/Icon";
+import { useDocumentSize } from "app/hooks/useDocumentSize";
 
 import { useEffect, useRef, useState } from "react";
 import { setTimeout } from "timers";
@@ -10,6 +11,8 @@ export const VideoPlayer = ({
 }: {
   src: string;
 }) => {
+  const { isMobile } = useDocumentSize();
+
   const [isPlaying, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [volume, setVolume] = useState(0.5);
@@ -146,7 +149,7 @@ export const VideoPlayer = ({
 
   return (
     <button
-      onClick={handleTogglePlay}
+      onClick={() => isMobile ? handleTogglePlay() : null}
       onKeyDown={(e) => {
         if (!videoRef.current) return;
 
@@ -203,12 +206,12 @@ export const VideoPlayer = ({
             {isPlaying ? (
               <Icon
                 icon="Pause"
-                className="w-5 h-5"
+                className="w-4 h-4 md:w-5 md:h-5"
               />
             ) : (
               <Icon
                 icon="Play"
-                className="w-5 h-5"
+                className="w-4 h-4 md:w-5 md:h-5"
               />
             )}
           </button>
@@ -237,18 +240,18 @@ export const VideoPlayer = ({
                   volume > 0.5 ? (
                     <Icon
                       icon="SpeakerSimpleHigh"
-                      className="w-5 h-5"
+                      className="w-4 h-4 md:w-5 md:h-5"
                     />
                   ) : (
                     <Icon
                       icon="SpeakerSimpleLow"
-                      className="w-5 h-5"
+                      className="w-4 h-4 md:w-5 md:h-5"
                     />
                   )
                 ) : (
                   <Icon
                     icon="SpeakerSimpleNone"
-                    className="w-5 h-5"
+                    className="w-4 h-4 md:w-5 md:h-5"
                   />
                 )}
             </button>
@@ -279,10 +282,10 @@ export const VideoPlayer = ({
           </section>
 
           <div
-            className="flex items-center justify-center w-full gap-2 px-2"
+            className="flex items-center justify-center w-full md:gap-2 md:px-2"
           >
             <span
-              className="w-10"
+              className="w-14 text-xs md:w-10 md:text-base"
             >
               {
                 videoInfo.currentTime ? (
@@ -312,7 +315,7 @@ export const VideoPlayer = ({
             </div>
 
             <span
-              className="w-10"
+              className="w-14 text-xs md:w-10 md:text-base"
             >
               {
                 videoInfo.duration ? (
@@ -330,7 +333,7 @@ export const VideoPlayer = ({
           >
             <Icon
               icon="GearSix"
-              className="w-5 h-5"
+              className="w-4 h-4 md:w-5 md:h-5"
             />
           </button>
 
@@ -346,12 +349,12 @@ export const VideoPlayer = ({
               isFullscreen ? (
                 <Icon
                   icon="CornersIn"
-                  className="w-5 h-5"
+                  className="w-4 h-4 md:w-5 md:h-5"
                 />
               ) : (
                 <Icon
                   icon="CornersOut"
-                  className="w-5 h-5"
+                  className="w-4 h-4 md:w-5 md:h-5"
                 />
               )
             }
